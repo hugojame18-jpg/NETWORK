@@ -4,8 +4,21 @@ import { PrismaClient } from "../src/generated/prisma/client";
 import type { DeviceType } from "../src/generated/prisma/enums";
 import bcrypt from "bcryptjs";
 
+// Match src/lib/prisma.ts: managed Postgres (Supabase/Neon) needs an explicit
+// `ssl` option, and a `sslmode=` in the URL conflicts with it — so for non-local
+// hosts we strip sslmode and pass ssl ourselves.
+const rawUrl = process.env.DATABASE_URL;
+const isLocalDb = !rawUrl || /@(localhost|127\.0\.0\.1|\[::1\])/.test(rawUrl);
+const connectionString =
+  rawUrl && !isLocalDb
+    ? rawUrl.replace(/([?&])sslmode=[^&]*(&|$)/, (_m, p1, p2) => (p2 === "&" ? p1 : "")).replace(/[?&]$/, "")
+    : rawUrl;
+
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+  adapter: new PrismaPg({
+    connectionString,
+    ...(isLocalDb ? {} : { ssl: { rejectUnauthorized: false } }),
+  }),
 });
 
 const PERMISSIONS = [

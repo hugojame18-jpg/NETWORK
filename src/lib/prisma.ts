@@ -29,8 +29,22 @@ export function isTransientConnectionError(error: unknown): boolean {
 }
 
 function createPrismaClient() {
+  const rawConnectionString = process.env.DATABASE_URL;
+  // Managed Postgres (Supabase, Neon, RDS…) requires TLS, but the node-postgres
+  // driver behind `@prisma/adapter-pg` doesn't enable it from `sslmode=` in the
+  // URL — it needs an explicit `ssl` pool option. Worse, a `sslmode=require` in
+  // the URL actively conflicts with that option and fails the handshake (P1011).
+  // So for any non-local host we strip `sslmode` from the URL and pass the
+  // `ssl` option ourselves; the local `prisma dev` proxy (localhost) stays plain
+  // TCP with no SSL.
+  const isLocal = !rawConnectionString || /@(localhost|127\.0\.0\.1|\[::1\])/.test(rawConnectionString);
+  const connectionString =
+    rawConnectionString && !isLocal
+      ? rawConnectionString.replace(/([?&])sslmode=[^&]*(&|$)/, (_m, p1, p2) => (p2 === "&" ? p1 : "")).replace(/[?&]$/, "")
+      : rawConnectionString;
   const adapter = new PrismaPg({
-    connectionString: process.env.DATABASE_URL,
+    connectionString,
+    ...(isLocal ? {} : { ssl: { rejectUnauthorized: false } }),
     // The local `prisma dev` proxy (and some managed Postgres providers)
     // silently drop idle sockets. Closing our own idle connections quickly —
     // before the server does — minimizes the window where the pool hands out a
