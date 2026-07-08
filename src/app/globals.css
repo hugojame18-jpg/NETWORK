@@ -1,0 +1,325 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  --shadow-premium: 0 1px 1px rgb(0 0 0 / 0.03), 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 40px rgb(0 0 0 / 0.08);
+  --shadow-premium-dark: 0 1px 1px rgb(0 0 0 / 0.2), 0 8px 24px rgb(0 0 0 / 0.35), 0 32px 64px rgb(0 0 0 / 0.4);
+
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-shimmer: shimmer 2.4s linear infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+}
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.16 0.01 275);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.01 275);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.01 275);
+
+  --primary: oklch(0.5 0.21 276);
+  --primary-foreground: oklch(0.98 0.01 276);
+
+  --secondary: oklch(0.96 0.005 275);
+  --secondary-foreground: oklch(0.22 0.02 275);
+  --muted: oklch(0.96 0.005 275);
+  --muted-foreground: oklch(0.5 0.02 275);
+  --accent: oklch(0.94 0.03 276);
+  --accent-foreground: oklch(0.3 0.1 276);
+
+  --brand: oklch(0.5 0.21 276);
+  --brand-foreground: oklch(0.98 0.01 276);
+  --success: oklch(0.62 0.15 155);
+  --success-foreground: oklch(0.98 0.02 155);
+  --warning: oklch(0.75 0.15 80);
+  --warning-foreground: oklch(0.2 0.02 80);
+
+  --destructive: oklch(0.58 0.24 27);
+  --border: oklch(0.9 0.006 275);
+  --input: oklch(0.9 0.006 275);
+  --ring: oklch(0.5 0.21 276);
+
+  --chart-1: oklch(0.55 0.21 276);
+  --chart-2: oklch(0.62 0.17 230);
+  --chart-3: oklch(0.68 0.14 200);
+  --chart-4: oklch(0.65 0.15 155);
+  --chart-5: oklch(0.75 0.16 80);
+
+  --radius: 0.75rem;
+
+  --sidebar: oklch(0.985 0.003 275);
+  --sidebar-foreground: oklch(0.2 0.01 275);
+  --sidebar-primary: oklch(0.5 0.21 276);
+  --sidebar-primary-foreground: oklch(0.98 0.01 276);
+  --sidebar-accent: oklch(0.94 0.02 276);
+  --sidebar-accent-foreground: oklch(0.3 0.1 276);
+  --sidebar-border: oklch(0.9 0.006 275);
+  --sidebar-ring: oklch(0.5 0.21 276);
+}
+
+.dark {
+  --background: oklch(0.145 0.008 275);
+  --foreground: oklch(0.97 0.005 275);
+  --card: oklch(0.185 0.012 275);
+  --card-foreground: oklch(0.97 0.005 275);
+  --popover: oklch(0.19 0.012 275);
+  --popover-foreground: oklch(0.97 0.005 275);
+
+  --primary: oklch(0.72 0.18 276);
+  --primary-foreground: oklch(0.16 0.02 276);
+
+  --secondary: oklch(0.26 0.015 275);
+  --secondary-foreground: oklch(0.95 0.005 275);
+  --muted: oklch(0.24 0.012 275);
+  --muted-foreground: oklch(0.66 0.015 275);
+  --accent: oklch(0.28 0.05 276);
+  --accent-foreground: oklch(0.92 0.03 276);
+
+  --brand: oklch(0.72 0.18 276);
+  --brand-foreground: oklch(0.16 0.02 276);
+  --success: oklch(0.7 0.16 155);
+  --success-foreground: oklch(0.16 0.02 155);
+  --warning: oklch(0.78 0.15 80);
+  --warning-foreground: oklch(0.18 0.02 80);
+
+  --destructive: oklch(0.7 0.19 22);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.72 0.18 276);
+
+  --chart-1: oklch(0.72 0.18 276);
+  --chart-2: oklch(0.72 0.15 230);
+  --chart-3: oklch(0.75 0.13 200);
+  --chart-4: oklch(0.72 0.14 155);
+  --chart-5: oklch(0.8 0.15 80);
+
+  --sidebar: oklch(0.16 0.012 275);
+  --sidebar-foreground: oklch(0.95 0.005 275);
+  --sidebar-primary: oklch(0.72 0.18 276);
+  --sidebar-primary-foreground: oklch(0.16 0.02 276);
+  --sidebar-accent: oklch(0.24 0.04 276);
+  --sidebar-accent-foreground: oklch(0.92 0.03 276);
+  --sidebar-border: oklch(1 0 0 / 8%);
+  --sidebar-ring: oklch(0.72 0.18 276);
+}
+
+/* Scoped light palette for the public marketing/landing pages. Re-declares the
+   light design tokens so everything inside reads light even when the document
+   root carries `.dark` (the app default). Mirrors the `:root` values. */
+.theme-light {
+  color-scheme: light;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.16 0.01 275);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.01 275);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.01 275);
+
+  --primary: oklch(0.5 0.21 276);
+  --primary-foreground: oklch(0.98 0.01 276);
+
+  --secondary: oklch(0.96 0.005 275);
+  --secondary-foreground: oklch(0.22 0.02 275);
+  --muted: oklch(0.97 0.004 275);
+  --muted-foreground: oklch(0.5 0.02 275);
+  --accent: oklch(0.94 0.03 276);
+  --accent-foreground: oklch(0.3 0.1 276);
+
+  --brand: oklch(0.5 0.21 276);
+  --brand-foreground: oklch(0.98 0.01 276);
+  --success: oklch(0.62 0.15 155);
+  --success-foreground: oklch(0.98 0.02 155);
+  --warning: oklch(0.75 0.15 80);
+  --warning-foreground: oklch(0.2 0.02 80);
+
+  --destructive: oklch(0.58 0.24 27);
+  --border: oklch(0.92 0.005 275);
+  --input: oklch(0.9 0.006 275);
+  --ring: oklch(0.5 0.21 276);
+
+  --chart-1: oklch(0.55 0.21 276);
+  --chart-2: oklch(0.62 0.17 230);
+  --chart-3: oklch(0.68 0.14 200);
+  --chart-4: oklch(0.65 0.15 155);
+  --chart-5: oklch(0.75 0.16 80);
+}
+
+/* Inside the light landing, use the soft light elevation even though an
+   ancestor `.dark` would otherwise select the heavier dark shadow. */
+.theme-light .shadow-premium {
+  box-shadow: var(--shadow-premium);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+@layer utilities {
+  /* Discreet glassmorphism: translucent surface with a soft blur and hairline border. */
+  .glass {
+    background: color-mix(in oklch, var(--card) 68%, transparent);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent);
+  }
+
+  .glass-strong {
+    background: color-mix(in oklch, var(--card) 85%, transparent);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
+  }
+
+  /* Subtle layered elevation used for cards that should feel "premium", not flat. */
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  .dark .shadow-premium {
+    box-shadow: var(--shadow-premium-dark);
+  }
+
+  /* Light 3D tilt-on-hover, kept understated on purpose. */
+  .hover-lift {
+    transition:
+      transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+  }
+
+  .text-gradient-brand {
+    background: linear-gradient(120deg, var(--primary), color-mix(in oklch, var(--primary) 55%, var(--chart-3)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklch, var(--foreground) 5%, transparent) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Perspective dot floor used under the hero (rotated in 3D by the markup). */
+  .dotted-floor {
+    background-image: radial-gradient(color-mix(in oklch, var(--foreground) 45%, transparent) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    -webkit-mask-image: radial-gradient(ellipse 60% 80% at 50% 100%, black, transparent 75%);
+    mask-image: radial-gradient(ellipse 60% 80% at 50% 100%, black, transparent 75%);
+  }
+
+  .bg-noise {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  }
+
+  .animate-shimmer {
+    animation: var(--animate-shimmer);
+  }
+
+  /* Seamless horizontal marquee (content is duplicated, so -50% loops).
+     Longhand props so per-row inline duration/direction override reliably. */
+  .animate-marquee {
+    animation-name: marquee-x;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-duration: 30s;
+    will-change: transform;
+  }
+  /* Pause the scrolling text while the strip is hovered. */
+  .marquee-group:hover .animate-marquee {
+    animation-play-state: paused;
+  }
+}
+
+@keyframes marquee-x {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
