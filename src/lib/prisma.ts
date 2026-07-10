@@ -45,12 +45,16 @@ function createPrismaClient() {
   const adapter = new PrismaPg({
     connectionString,
     ...(isLocal ? {} : { ssl: { rejectUnauthorized: false } }),
-    // The local `prisma dev` proxy (and some managed Postgres providers)
-    // silently drop idle sockets. Closing our own idle connections quickly —
-    // before the server does — minimizes the window where the pool hands out a
-    // dead socket; TCP keepalive detects half-open ones. Any that still slip
-    // through are absorbed by the retry wrapper below.
-    max: 10,
+    // On serverless (Vercel) every function instance owns its own pool, so a
+    // high `max` multiplied across concurrent instances quickly exhausts a
+    // shared pooler (Supabase session pooler caps at pool_size 15 →
+    // "EMAXCONNSESSION"). One connection per instance keeps the total bounded.
+    // Locally (`prisma dev`) a larger pool is fine.
+    //
+    // Idle connections are also closed quickly (before the server drops them),
+    // TCP keepalive detects half-open ones, and the retry wrapper below absorbs
+    // any dead socket that still slips through.
+    max: process.env.VERCEL ? 1 : 10,
     idleTimeoutMillis: 3_000,
     keepAlive: true,
     allowExitOnIdle: true,
