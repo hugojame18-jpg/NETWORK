@@ -190,6 +190,10 @@ model Publisher {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Short, human-readable sequential affiliate number (e.g. #1000) for easy
+  // identification in the admin. Auto-assigned by the DB on creation.
+  memberId Int @unique @default(autoincrement())
+
   companyName       String?
   website           String?
   trafficSources    String[]

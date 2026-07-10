@@ -31,6 +31,7 @@ export default async function AdminAffiliatesPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>ID</TableHead>
               <TableHead>Publisher</TableHead>
               <TableHead>Candidature</TableHead>
               <TableHead>Statut compte</TableHead>
@@ -43,6 +44,7 @@ export default async function AdminAffiliatesPage() {
           <TableBody>
             {publishers.map((publisher) => (
               <TableRow key={publisher.id}>
+                <TableCell className="font-mono text-sm font-medium text-muted-foreground">#{publisher.memberId}</TableCell>
                 <TableCell>
                   <p className="font-medium">{publisher.user.name}</p>
                   <p className="text-xs text-muted-foreground">{publisher.user.email}</p>

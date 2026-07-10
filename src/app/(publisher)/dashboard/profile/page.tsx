@@ -32,6 +32,7 @@ export default async function ProfilePage() {
           <div>
             <p className="text-lg font-semibold">{user.name}</p>
             <p className="text-sm text-muted-foreground">{user.email}</p>
+            <p className="mt-1 font-mono text-xs text-muted-foreground">ID affilié&nbsp;: #{publisher.memberId}</p>
             <div className="mt-2 flex gap-2">
               <Badge>Publisher</Badge>
               <Badge variant={publisher.applicationStatus === "APPROVED" ? "default" : "secondary"}>
