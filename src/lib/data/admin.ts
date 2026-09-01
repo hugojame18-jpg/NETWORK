@@ -63,9 +63,31 @@ export async function getPlatformSeries(days = 90) {
 }
 
 export async function getPublishersAdminList() {
-  return prisma.publisher.findMany({
-    include: { user: true },
-    orderBy: { createdAt: "desc" },
+  const [publishers, statTotals] = await Promise.all([
+    prisma.publisher.findMany({
+      include: { user: true },
+      orderBy: { createdAt: "desc" },
+    }),
+    // Cumulative total of the daily stats you enter each evening, per affiliate.
+    prisma.publisherDailyStat.groupBy({
+      by: ["publisherId"],
+      _sum: { clicks: true, hosts: true, conversions: true, revenue: true },
+    }),
+  ]);
+
+  const totalsByPublisher = new Map(statTotals.map((t) => [t.publisherId, t._sum]));
+
+  return publishers.map((publisher) => {
+    const totals = totalsByPublisher.get(publisher.id);
+    return {
+      ...publisher,
+      totals: {
+        clicks: totals?.clicks ?? 0,
+        hosts: totals?.hosts ?? 0,
+        conversions: totals?.conversions ?? 0,
+        revenue: toNumber(totals?.revenue),
+      },
+    };
   });
 }
 
@@ -141,6 +163,18 @@ export async function getPublishersForSelect() {
     label: p.user.name || p.user.email,
     email: p.user.email,
   }));
+}
+
+export async function getLinkRequestsAdminList(take = 200) {
+  return prisma.affiliateLink.findMany({
+    include: {
+      publisher: { select: { memberId: true, user: { select: { name: true, email: true } } } },
+      offer: { select: { name: true, category: true } },
+    },
+    // Pending requests first, then most recent.
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    take,
+  });
 }
 
 interface DailyStatFilters {

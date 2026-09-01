@@ -9,6 +9,7 @@ import {
   ScrollText,
   Settings,
   BarChart3,
+  Link2,
 } from "lucide-react";
 import type { NavItem } from "@/components/dashboard/sidebar-nav";
 
@@ -19,6 +20,7 @@ export const adminNavItems: NavItem[] = [
   { href: "/admin/advertisers", label: "Annonceurs", icon: <Megaphone /> },
   { href: "/admin/campaigns", label: "Campagnes", icon: <Megaphone /> },
   { href: "/admin/offers", label: "Offres", icon: <Layers /> },
+  { href: "/admin/link-requests", label: "Demandes de liens", icon: <Link2 /> },
   { href: "/admin/payments", label: "Paiements", icon: <Wallet /> },
   { href: "/admin/commissions", label: "Commissions", icon: <Coins /> },
   { href: "/admin/users", label: "Utilisateurs & rôles", icon: <ShieldCheck /> },

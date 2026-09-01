@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { OfferFormDialog, type OfferFormValues } from "@/components/dashboard/offer-form-dialog";
 import { formatCurrency, toNumber } from "@/lib/format";
+import { verticalIcon, verticalLabel } from "@/lib/verticals";
 
 export const metadata: Metadata = { title: "Offres" };
 
@@ -70,7 +71,7 @@ export default async function AdvertiserOffersPage() {
                 return (
                   <TableRow key={offer.id}>
                     <TableCell className="font-medium">{offer.name}</TableCell>
-                    <TableCell>{offer.category}</TableCell>
+                    <TableCell>{verticalIcon(offer.category)} {verticalLabel(offer.category)}</TableCell>
                     <TableCell>{formatCurrency(offer.payout)}</TableCell>
                     <TableCell className="text-right">{offer._count.affiliateLinks}</TableCell>
                     <TableCell className="text-right">{offer._count.conversions}</TableCell>

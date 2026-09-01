@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GenerateLinkButton } from "@/components/dashboard/generate-link-button";
 import { formatCurrency } from "@/lib/format";
+import { verticalIcon, verticalLabel } from "@/lib/verticals";
 
 export const metadata: Metadata = { title: "Offres disponibles" };
 
@@ -45,7 +46,7 @@ export default async function OffersPage({ searchParams }: OffersPageProps) {
         {categories.map((cat) => (
           <Link key={cat} href={`/dashboard/offers?category=${encodeURIComponent(cat)}`}>
             <Badge variant={category === cat ? "default" : "secondary"} className="cursor-pointer px-3 py-1">
-              {cat}
+              {verticalIcon(cat)} {verticalLabel(cat)}
             </Badge>
           </Link>
         ))}
@@ -66,7 +67,7 @@ export default async function OffersPage({ searchParams }: OffersPageProps) {
                     </CardTitle>
                     <p className="mt-1 text-xs text-muted-foreground">{offer.advertiser.companyName}</p>
                   </div>
-                  <Badge variant="secondary">{offer.category}</Badge>
+                  <Badge variant="secondary">{verticalIcon(offer.category)} {verticalLabel(offer.category)}</Badge>
                 </div>
               </CardHeader>
               <CardContent className="flex flex-1 flex-col gap-4">
@@ -88,7 +89,14 @@ export default async function OffersPage({ searchParams }: OffersPageProps) {
                     <p className="text-lg font-semibold">{formatCurrency(offer.payout)}</p>
                     <p className="text-xs text-muted-foreground">{PAYOUT_LABELS[offer.payoutType]} · cookie {offer.cookieDays}j</p>
                   </div>
-                  <GenerateLinkButton offerId={offer.id} initialToken={existingLink?.token} />
+                  <GenerateLinkButton
+                    offerId={offer.id}
+                    initialLink={
+                      existingLink
+                        ? { status: existingLink.status, targetUrl: existingLink.targetUrl, token: existingLink.token }
+                        : null
+                    }
+                  />
                 </div>
               </CardContent>
             </Card>

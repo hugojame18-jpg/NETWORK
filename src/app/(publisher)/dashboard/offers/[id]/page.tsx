@@ -99,8 +99,15 @@ export default async function OfferDetailPage({ params }: OfferDetailPageProps) 
           )}
 
           <div className="border-t border-border pt-6">
-            <p className="mb-3 text-sm font-medium">Votre lien de tracking</p>
-            <GenerateLinkButton offerId={offer.id} initialToken={existingLink?.token} />
+            <p className="mb-3 text-sm font-medium">Votre lien d&apos;affiliation</p>
+            <GenerateLinkButton
+              offerId={offer.id}
+              initialLink={
+                existingLink
+                  ? { status: existingLink.status, targetUrl: existingLink.targetUrl, token: existingLink.token }
+                  : null
+              }
+            />
           </div>
         </CardContent>
       </Card>

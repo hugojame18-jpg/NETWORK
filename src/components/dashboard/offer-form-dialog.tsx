@@ -19,6 +19,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { VERTICALS } from "@/lib/verticals";
 
 const DEVICE_OPTIONS = ["DESKTOP", "MOBILE", "TABLET", "ALL"] as const;
 const PAYOUT_TYPES = ["CPA", "CPL", "CPS", "REVSHARE"] as const;
@@ -145,8 +146,19 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
               <Input id="name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="category">Catégorie</Label>
-              <Input id="category" required value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+              <Label>Catégorie / Vertical</Label>
+              <Select value={form.category || undefined} onValueChange={(v) => v && setForm({ ...form, category: v })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choisir un vertical" />
+                </SelectTrigger>
+                <SelectContent>
+                  {VERTICALS.map((v) => (
+                    <SelectItem key={v.value} value={v.value}>
+                      {v.icon} {v.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

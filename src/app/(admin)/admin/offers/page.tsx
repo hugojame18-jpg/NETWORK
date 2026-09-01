@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { OfferStatusMenu } from "@/components/dashboard/admin/offer-status-menu";
 import { formatCurrency } from "@/lib/format";
+import { verticalIcon, verticalLabel } from "@/lib/verticals";
 
 export const metadata: Metadata = { title: "Offres" };
 
@@ -40,7 +41,7 @@ export default async function AdminOffersPage() {
               <TableRow key={offer.id}>
                 <TableCell className="font-medium">{offer.name}</TableCell>
                 <TableCell>{offer.advertiser.companyName}</TableCell>
-                <TableCell>{offer.category}</TableCell>
+                <TableCell>{verticalIcon(offer.category)} {verticalLabel(offer.category)}</TableCell>
                 <TableCell>{formatCurrency(offer.payout)}</TableCell>
                 <TableCell className="text-right">{offer._count.affiliateLinks}</TableCell>
                 <TableCell className="text-right">{offer._count.conversions}</TableCell>

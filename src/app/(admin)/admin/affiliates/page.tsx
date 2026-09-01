@@ -35,6 +35,8 @@ export default async function AdminAffiliatesPage() {
               <TableHead>Publisher</TableHead>
               <TableHead>Candidature</TableHead>
               <TableHead>Statut compte</TableHead>
+              <TableHead className="text-right">Conv. totales</TableHead>
+              <TableHead className="text-right">Revenu total</TableHead>
               <TableHead className="text-right">Solde</TableHead>
               <TableHead className="text-right">Total gagné</TableHead>
               <TableHead>Inscrit le</TableHead>
@@ -58,6 +60,8 @@ export default async function AdminAffiliatesPage() {
                 <TableCell>
                   <Badge variant={STATUS_VARIANT[publisher.user.status]}>{publisher.user.status}</Badge>
                 </TableCell>
+                <TableCell className="text-right font-medium">{publisher.totals.conversions}</TableCell>
+                <TableCell className="text-right font-medium">{formatCurrency(publisher.totals.revenue)}</TableCell>
                 <TableCell className="text-right">{formatCurrency(publisher.balance)}</TableCell>
                 <TableCell className="text-right">{formatCurrency(publisher.totalEarned)}</TableCell>
                 <TableCell className="text-muted-foreground">{formatDate(publisher.createdAt)}</TableCell>

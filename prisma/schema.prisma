@@ -35,6 +35,14 @@ enum OfferStatus {
   ARCHIVED
 }
 
+// Lifecycle of an affiliate link. The publisher REQUESTS a link for an offer;
+// the admin then DELIVERs it by pasting the real (e.g. casino) tracking URL,
+// which surfaces on the publisher's dashboard.
+enum LinkStatus {
+  REQUESTED
+  DELIVERED
+}
+
 enum PayoutType {
   CPA
   CPL
@@ -330,6 +338,13 @@ model AffiliateLink {
   label      String?
   subId      String?
   clickCount Int     @default(0)
+
+  // Request/deliver flow: a link starts REQUESTED (publisher asked for it) and
+  // becomes DELIVERED once the admin fills targetUrl with the real casino/brand
+  // affiliate URL to show on the publisher's dashboard.
+  status      LinkStatus @default(REQUESTED)
+  targetUrl   String?
+  deliveredAt DateTime?
 
   clicks Click[]
   leads  Lead[]
