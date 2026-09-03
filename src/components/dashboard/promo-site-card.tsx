@@ -17,6 +17,8 @@ const PREVIEW_SCALE = 0.36;
 interface PromoSiteCardProps {
   site: PromoSite;
   initialStatus?: RequestStatus | null;
+  /** Catalogue-only view (admin): preview and link, but nothing to request. */
+  readOnly?: boolean;
 }
 
 const STATUS_LABEL: Record<RequestStatus, string> = {
@@ -25,7 +27,7 @@ const STATUS_LABEL: Record<RequestStatus, string> = {
   REJECTED: "Demande refusée",
 };
 
-export function PromoSiteCard({ site, initialStatus }: PromoSiteCardProps) {
+export function PromoSiteCard({ site, initialStatus, readOnly }: PromoSiteCardProps) {
   const [status, setStatus] = useState<RequestStatus | null>(initialStatus ?? null);
   const [isPending, startTransition] = useTransition();
 
@@ -96,7 +98,17 @@ export function PromoSiteCard({ site, initialStatus }: PromoSiteCardProps) {
         <p className="line-clamp-3 text-sm text-muted-foreground">{site.description}</p>
 
         <div className="mt-auto pt-2">
-          {status === null ? (
+          {readOnly ? (
+            <a
+              href={site.url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center justify-center gap-1.5 rounded-md border border-border py-2 text-sm font-medium hover:bg-muted"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              Ouvrir le site
+            </a>
+          ) : status === null ? (
             <Button className="w-full" onClick={request} disabled={isPending}>
               {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               Demander

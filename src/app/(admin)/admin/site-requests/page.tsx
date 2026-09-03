@@ -5,7 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { SiteRequestActions } from "@/components/dashboard/admin/site-request-actions";
 import { formatDate } from "@/lib/format";
-import { getPromoSite, promoSiteName } from "@/lib/promo-sites";
+import { PROMO_SITES, getPromoSite, promoSiteName } from "@/lib/promo-sites";
+import { PromoSiteCard } from "@/components/dashboard/promo-site-card";
 
 export const metadata: Metadata = { title: "Demandes de sites" };
 
@@ -26,7 +27,23 @@ export default async function AdminSiteRequestsPage() {
   const pending = requests.filter((r) => r.status === "PENDING").length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold">Catalogue des sites</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Ce que voient tes affiliés dans « Sites à promouvoir ». Clique sur un aperçu pour ouvrir le site.
+          </p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {PROMO_SITES.map((site) => (
+            <PromoSiteCard key={site.slug} site={site} readOnly />
+          ))}
+        </div>
+      </section>
+
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Demandes reçues</h2>
       {pending > 0 && (
         <p className="text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{pending}</span> demande{pending > 1 ? "s" : ""} de site en
@@ -86,7 +103,8 @@ export default async function AdminSiteRequestsPage() {
             <p className="py-16 text-center text-sm text-muted-foreground">Aucune demande de site pour le moment.</p>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </section>
     </div>
   );
 }
