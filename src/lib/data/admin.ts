@@ -165,6 +165,17 @@ export async function getPublishersForSelect() {
   }));
 }
 
+export async function getSiteRequestsAdminList(take = 200) {
+  return prisma.siteRequest.findMany({
+    include: {
+      publisher: { select: { memberId: true, user: { select: { name: true, email: true } } } },
+    },
+    // Pending first (enum order), then most recent.
+    orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+    take,
+  });
+}
+
 export async function getLinkRequestsAdminList(take = 200) {
   return prisma.affiliateLink.findMany({
     include: {

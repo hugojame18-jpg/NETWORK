@@ -45,6 +45,10 @@ export const dailyStatSchema = z.object({
 
 export const dailyStatUpdateSchema = dailyStatSchema.omit({ publisherId: true, date: true }).partial();
 
+export const siteRequestStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
+});
+
 export const deliverLinkSchema = z.object({
   // The real affiliate URL (e.g. casino/brand tracker) the admin pastes.
   targetUrl: z.string().trim().url("URL invalide").max(2000),

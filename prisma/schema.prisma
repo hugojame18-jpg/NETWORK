@@ -43,6 +43,13 @@ enum LinkStatus {
   DELIVERED
 }
 
+// Lifecycle of a publisher's request to promote one of the network's sites.
+enum SiteRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 enum PayoutType {
   CPA
   CPL
@@ -232,12 +239,33 @@ model Publisher {
   commissions    Commission[]
   payments       Payment[]
   dailyStats     PublisherDailyStat[]
+  siteRequests   SiteRequest[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([applicationStatus])
   @@index([referredById])
+}
+
+// A publisher asking to promote one of the network's ready-made sites. The
+// site catalogue itself lives in code (src/lib/promo-sites.ts) — only the
+// requests are persisted, keyed by the catalogue's stable slug.
+model SiteRequest {
+  id          String    @id @default(cuid())
+  publisherId String
+  publisher   Publisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  siteSlug String
+  status   SiteRequestStatus @default(PENDING)
+  note     String?
+
+  handledAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([publisherId, siteSlug])
+  @@index([status])
 }
 
 model Advertiser {

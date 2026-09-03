@@ -5,6 +5,11 @@ export const generateLinkSchema = z.object({
   label: z.string().trim().max(120).optional(),
 });
 
+export const requestSiteSchema = z.object({
+  // Slug from the PROMO_SITES catalogue; existence is checked server-side.
+  siteSlug: z.string().trim().min(1).max(60),
+});
+
 export const requestPaymentSchema = z.object({
   amount: z.number().positive().max(1_000_000),
   method: z.enum(["PAYPAL", "BANK_WIRE", "CRYPTO", "PAYONEER"]),
