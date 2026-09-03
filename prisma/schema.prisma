@@ -214,6 +214,14 @@ model Publisher {
   trafficSources    String[]
   applicationStatus PublisherApplicationStatus @default(PENDING)
 
+  // Application answers collected at sign-up and reviewed by an admin before
+  // the publisher dashboard unlocks. Nullable so accounts created before the
+  // questionnaire existed stay valid.
+  workedWithNetworks Boolean @default(false)
+  previousNetworks   String? // which ones, when workedWithNetworks is true
+  affiliateExperience String?
+  tiktokLinks         String?
+
   // Loyalty / referral. `referralCode` is a short, human-shareable code (see
   // generateReferralCode). Nullable so this additive migration needs no upfront
   // backfill — it's lazily ensured the first time a publisher opens the rewards

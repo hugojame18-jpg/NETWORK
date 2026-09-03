@@ -1,11 +1,30 @@
 import { requireRole } from "@/lib/rbac";
+import { prisma } from "@/lib/prisma";
 import { getUnreadNotifications } from "@/lib/data/notifications";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
+import { ApplicationPending } from "@/components/dashboard/application-pending";
 import { publisherNavItems } from "./nav-items";
 
 export default async function PublisherDashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireRole("PUBLISHER");
+
+  // Applications are vetted by hand: until an admin approves, the dashboard is
+  // replaced wholesale by a status screen. Gating here covers every child route
+  // at once, so a new page can't accidentally ship unprotected.
+  const publisher = await prisma.publisher.findUnique({
+    where: { userId: user.id },
+    select: { applicationStatus: true },
+  });
+  if (publisher && publisher.applicationStatus !== "APPROVED") {
+    return (
+      <ApplicationPending
+        name={user.name ?? ""}
+        rejected={publisher.applicationStatus === "REJECTED"}
+      />
+    );
+  }
+
   const notifications = await getUnreadNotifications(user.id);
 
   return (

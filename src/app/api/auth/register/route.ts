@@ -19,7 +19,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Données invalides", issues: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { name, email, password, role, companyName, website, referralCode } = parsed.data;
+  const {
+    name,
+    email,
+    password,
+    role,
+    companyName,
+    website,
+    referralCode,
+    workedWithNetworks,
+    previousNetworks,
+    affiliateExperience,
+    tiktokLinks,
+  } = parsed.data;
 
   const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (existing) {
@@ -47,6 +59,10 @@ export async function POST(request: Request) {
                 companyName: companyName || null,
                 website: website || null,
                 applicationStatus: "PENDING",
+                workedWithNetworks: workedWithNetworks ?? false,
+                previousNetworks: previousNetworks || null,
+                affiliateExperience: affiliateExperience || null,
+                tiktokLinks: tiktokLinks || null,
                 referralCode: generateReferralCode(),
                 referredById,
               },
@@ -63,6 +79,21 @@ export async function POST(request: Request) {
     },
     select: { id: true, email: true, name: true },
   });
+
+  // Publisher sign-ups are vetted, so admins need to know a review is waiting.
+  if (role === "PUBLISHER") {
+    const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+    if (admins.length > 0) {
+      await prisma.notification.createMany({
+        data: admins.map((admin) => ({
+          userId: admin.id,
+          type: "INFO" as const,
+          title: "Nouvelle candidature affilié",
+          body: `${user.name} (${user.email}) a déposé une candidature à valider.`,
+        })),
+      });
+    }
+  }
 
   const token = crypto.randomUUID();
   await prisma.verificationToken.create({

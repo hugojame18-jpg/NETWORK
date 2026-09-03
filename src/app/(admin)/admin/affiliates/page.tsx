@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { UserStatusMenu } from "@/components/dashboard/admin/user-status-menu";
 import { ApplicationStatusActions } from "@/components/dashboard/admin/application-status-actions";
+import { ApplicationDetails } from "@/components/dashboard/admin/application-details";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Affiliés" };
@@ -50,11 +51,20 @@ export default async function AdminAffiliatesPage() {
                 <TableCell>
                   <p className="font-medium">{publisher.user.name}</p>
                   <p className="text-xs text-muted-foreground">{publisher.user.email}</p>
+                  <ApplicationDetails
+                    workedWithNetworks={publisher.workedWithNetworks}
+                    previousNetworks={publisher.previousNetworks}
+                    affiliateExperience={publisher.affiliateExperience}
+                    tiktokLinks={publisher.tiktokLinks}
+                    website={publisher.website}
+                  />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Badge variant={APPLICATION_VARIANT[publisher.applicationStatus]}>{publisher.applicationStatus}</Badge>
-                    {publisher.applicationStatus === "PENDING" && <ApplicationStatusActions publisherId={publisher.id} />}
+                    {/* Always available: a decision can be reversed, and access
+                        to an approved account can be revoked. */}
+                    <ApplicationStatusActions publisherId={publisher.id} />
                   </div>
                 </TableCell>
                 <TableCell>

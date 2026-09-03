@@ -11,6 +11,7 @@ import { Loader2, Megaphone, Users, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { signUpSchema, type SignUpInput } from "@/lib/validations/auth";
 
@@ -46,6 +47,7 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
   });
 
   const role = watch("role");
+  const workedWithNetworks = watch("workedWithNetworks");
 
   const onSubmit = (data: SignUpInput) => {
     setFormError(null);
@@ -152,9 +154,79 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
         </div>
       </div>
 
+      {/* Publisher applications are reviewed by hand, so we collect what an
+          admin needs to make that call. Advertisers skip all of this. */}
+      {role === "PUBLISHER" && (
+        <div className="space-y-5 rounded-lg border border-border bg-muted/30 p-4">
+          <p className="text-sm font-medium">Ta candidature</p>
+
+          <div className="space-y-2">
+            <Label>As-tu déjà travaillé avec d&apos;autres réseaux d&apos;affiliation&nbsp;?</Label>
+            <div className="flex gap-2">
+              {[
+                { value: true, label: "Oui" },
+                { value: false, label: "Non" },
+              ].map((option) => (
+                <button
+                  key={option.label}
+                  type="button"
+                  onClick={() => setValue("workedWithNetworks", option.value, { shouldValidate: true })}
+                  className={cn(
+                    "flex-1 rounded-lg border px-3 py-2 text-sm transition",
+                    workedWithNetworks === option.value
+                      ? "border-primary bg-primary/10 font-medium text-foreground"
+                      : "border-border text-muted-foreground hover:border-primary/40",
+                  )}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {workedWithNetworks === true && (
+            <div className="space-y-2">
+              <Label htmlFor="previousNetworks">Lesquels&nbsp;?</Label>
+              <Input id="previousNetworks" placeholder="Ex. CrakRevenue, Mobidea…" {...register("previousNetworks")} />
+              {errors.previousNetworks && (
+                <p className="text-xs text-destructive">{errors.previousNetworks.message}</p>
+              )}
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label htmlFor="affiliateExperience">Parle-nous de ton activité en affiliation</Label>
+            <Textarea
+              id="affiliateExperience"
+              rows={3}
+              placeholder="Depuis combien de temps, quelles verticales, quels volumes…"
+              {...register("affiliateExperience")}
+            />
+            {errors.affiliateExperience && (
+              <p className="text-xs text-destructive">{errors.affiliateExperience.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="tiktokLinks">Tes posts / comptes TikTok</Label>
+            <Textarea
+              id="tiktokLinks"
+              rows={2}
+              placeholder="@moncompte, https://tiktok.com/@moncompte/video/..."
+              {...register("tiktokLinks")}
+            />
+            {errors.tiktokLinks && <p className="text-xs text-destructive">{errors.tiktokLinks.message}</p>}
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Ta candidature sera examinée manuellement. Tu recevras une réponse dès qu&apos;elle est traitée.
+          </p>
+        </div>
+      )}
+
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-        Créer mon compte
+        {role === "PUBLISHER" ? "Envoyer ma candidature" : "Créer mon compte"}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
