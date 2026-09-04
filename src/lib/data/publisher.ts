@@ -391,6 +391,16 @@ export async function getRewardsOverview(publisherId: string): Promise<RewardsOv
  * publisher's own rank is returned in `me` when they fall outside the top slice
  * so they always know where they stand.
  */
+/** Admin messages currently pinned to every publisher dashboard. */
+export async function getActiveAnnouncements(limit = 3) {
+  return prisma.announcement.findMany({
+    where: { active: true },
+    select: { id: true, title: true, body: true, createdAt: true },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+}
+
 export async function getMonthlyLeaderboard(currentPublisherId: string, limit = 5): Promise<Leaderboard> {
   const today = startOfTodayLocalAsUtc();
   const startMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));

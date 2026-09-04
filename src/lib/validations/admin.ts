@@ -45,6 +45,15 @@ export const dailyStatSchema = z.object({
 
 export const dailyStatUpdateSchema = dailyStatSchema.omit({ publisherId: true, date: true }).partial();
 
+export const announcementSchema = z.object({
+  title: z.string().trim().min(3, "Titre trop court").max(120),
+  body: z.string().trim().min(5, "Message trop court").max(4000),
+});
+
+export const announcementUpdateSchema = z.object({
+  active: z.boolean(),
+});
+
 export const siteRequestStatusSchema = z.object({
   status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
 });

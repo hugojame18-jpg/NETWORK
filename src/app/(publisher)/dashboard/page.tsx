@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import { CalendarDays, CalendarRange, Wallet, TrendingUp } from "lucide-react";
 import { requireRole } from "@/lib/rbac";
-import { getPublisherByUserId, getRevenueSummary, getPerformanceSeries, getMonthlyLeaderboard } from "@/lib/data/publisher";
+import {
+  getPublisherByUserId,
+  getRevenueSummary,
+  getPerformanceSeries,
+  getMonthlyLeaderboard,
+  getActiveAnnouncements,
+} from "@/lib/data/publisher";
+import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TopPerformers } from "@/components/dashboard/top-performers";
 import { PerformanceChart, type ChartSeriesConfig } from "@/components/dashboard/performance-chart";
@@ -27,16 +34,19 @@ export default async function PublisherOverviewPage() {
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
 
-  const [revenue, series, leaderboard] = await Promise.all([
+  const [revenue, series, leaderboard, announcements] = await Promise.all([
     getRevenueSummary(publisher.id),
     getPerformanceSeries(publisher.id, 90),
     getMonthlyLeaderboard(publisher.id),
+    getActiveAnnouncements(),
   ]);
 
   const recentDays = [...series].reverse().filter((d) => d.clicks > 0 || d.conversions > 0 || d.revenue > 0).slice(0, 7);
 
   return (
     <div className="space-y-6">
+      <AnnouncementBanner announcements={announcements} />
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Revenus aujourd'hui"

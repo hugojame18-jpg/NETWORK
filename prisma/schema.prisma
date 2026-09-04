@@ -139,6 +139,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   sessions            Session[]
   enteredDailyStats   PublisherDailyStat[]
+  announcements       Announcement[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -254,6 +255,25 @@ model Publisher {
 
   @@index([applicationStatus])
   @@index([referredById])
+}
+
+// A message written by an admin and shown on every publisher's dashboard.
+// Kept separate from Notification: a notification is per-user and read once,
+// an announcement is a single row that stays visible while `active`.
+model Announcement {
+  id     String  @id @default(cuid())
+  title  String
+  body   String
+  active Boolean @default(true)
+
+  // Kept if the admin account is later deleted, so the message doesn't vanish.
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, createdAt])
 }
 
 // A publisher asking to promote one of the network's ready-made sites. The

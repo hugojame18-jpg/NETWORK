@@ -165,6 +165,14 @@ export async function getPublishersForSelect() {
   }));
 }
 
+export async function getAnnouncementsAdminList(take = 50) {
+  return prisma.announcement.findMany({
+    include: { author: { select: { name: true } } },
+    orderBy: { createdAt: "desc" },
+    take,
+  });
+}
+
 export async function getSiteRequestsAdminList(take = 200) {
   return prisma.siteRequest.findMany({
     include: {
