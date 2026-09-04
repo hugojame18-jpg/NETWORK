@@ -1,7 +1,7 @@
-// Canonical list of affiliate verticals used across the network. The Offer
-// model stores `category` as a free-text string (legacy offers may hold any
-// value), but new offers are picked from this list so a vertical like Casino
-// is always spelled and grouped consistently.
+// Canonical list of offer categories used across the network. The Offer model
+// stores `category` as a free-text string (legacy offers may hold any value),
+// but new offers are picked from this list so a category is always spelled and
+// grouped consistently.
 
 export interface Vertical {
   /** Stored value in Offer.category — keep stable, it's persisted. */
@@ -13,20 +13,17 @@ export interface Vertical {
 }
 
 export const VERTICALS: Vertical[] = [
-  { value: "Casino", label: "Casino & iGaming", icon: "🎰" },
-  { value: "Sports Betting", label: "Paris sportifs", icon: "🎯" },
-  { value: "Sweepstakes", label: "Sweepstakes", icon: "🎁" },
-  { value: "VOD", label: "VOD & Streaming", icon: "🎬" },
-  { value: "Nutra", label: "Nutra & Santé", icon: "💊" },
-  { value: "Finance", label: "Finance & Crypto", icon: "📈" },
-  { value: "Dating", label: "Dating", icon: "💘" },
-  { value: "E-commerce", label: "E-commerce", icon: "🛒" },
-  { value: "Mobile", label: "Apps & Mobile", icon: "📱" },
+  { value: "CC Submit", label: "CC Submit", icon: "💳" },
+  { value: "SOI", label: "SOI — Single Opt-In", icon: "✉️" },
+  { value: "DOI", label: "DOI — Double Opt-In", icon: "📧" },
+  { value: "CPA", label: "CPA", icon: "🎯" },
+  { value: "Casino", label: "Casino", icon: "🎰" },
+  { value: "Nutra", label: "Nutra", icon: "💊" },
 ];
 
 const VERTICAL_BY_VALUE = new Map(VERTICALS.map((v) => [v.value, v]));
 
-/** Look up a vertical by its stored value; returns undefined for legacy/free-text categories. */
+/** Look up a category by its stored value; undefined for legacy/free-text ones. */
 export function getVertical(value: string): Vertical | undefined {
   return VERTICAL_BY_VALUE.get(value);
 }
@@ -36,7 +33,7 @@ export function verticalIcon(value: string): string {
   return VERTICAL_BY_VALUE.get(value)?.icon ?? "🏷️";
 }
 
-/** Label for a category value, falling back to the raw value for legacy categories. */
+/** Label for a category value, falling back to the raw value for legacy ones. */
 export function verticalLabel(value: string): string {
   return VERTICAL_BY_VALUE.get(value)?.label ?? value;
 }

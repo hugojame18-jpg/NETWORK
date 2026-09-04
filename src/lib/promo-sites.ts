@@ -19,7 +19,7 @@ export const PROMO_SITES: PromoSite[] = [
     slug: "centralfoot",
     name: "Central Foot",
     url: "https://centralfoot.site/",
-    category: "E-commerce",
+    category: "CPA",
     description:
       "Boutique de maillots de football — clubs, nations et rétro. Offres de déstockage et livraison offerte, pensée pour la conversion.",
   },
@@ -27,14 +27,14 @@ export const PROMO_SITES: PromoSite[] = [
     slug: "flatlay",
     name: "Flatlay",
     url: "https://flatlay.site/#/",
-    category: "E-commerce",
+    category: "CPA",
     description: "Boutique lifestyle au design épuré, orientée mobile et réseaux sociaux.",
   },
   {
     slug: "studioneige",
     name: "Studio Neige",
     url: "https://studioneige.site/",
-    category: "E-commerce",
+    category: "CPA",
     description: "Vitrine produit haut de gamme, idéale pour du trafic social et natif.",
   },
 ];
