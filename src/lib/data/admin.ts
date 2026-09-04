@@ -4,23 +4,24 @@ import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
 
 export async function getPlatformStats() {
-  const [publisherCount, advertiserCount, revenueAgg, commissionAgg, conversionCount, pendingOffers, pendingPayments] =
-    await Promise.all([
-      prisma.publisher.count(),
-      prisma.advertiser.count(),
-      prisma.conversion.aggregate({ where: { status: { not: "REJECTED" } }, _sum: { payout: true } }),
-      prisma.commission.aggregate({ _sum: { amount: true } }),
-      prisma.conversion.count({ where: { status: { not: "REJECTED" } } }),
-      prisma.offer.count({ where: { status: "PENDING" } }),
-      prisma.payment.count({ where: { status: "PENDING" } }),
-    ]);
+  const [publisherCount, advertiserCount, dailyAgg, commissionAgg, pendingOffers, pendingPayments] = await Promise.all([
+    prisma.publisher.count(),
+    prisma.advertiser.count(),
+    // Revenue and conversions come from the hand-entered daily stats, not from
+    // the Conversion table: tracking is manual, so Conversion stays empty and
+    // reading it would show $0 next to real earnings.
+    prisma.publisherDailyStat.aggregate({ _sum: { revenue: true, conversions: true } }),
+    prisma.commission.aggregate({ _sum: { amount: true } }),
+    prisma.offer.count({ where: { status: "PENDING" } }),
+    prisma.payment.count({ where: { status: "PENDING" } }),
+  ]);
 
   return {
     publisherCount,
     advertiserCount,
-    revenue: toNumber(revenueAgg._sum.payout),
+    revenue: toNumber(dailyAgg._sum.revenue),
     commissions: toNumber(commissionAgg._sum.amount),
-    conversionCount,
+    conversionCount: dailyAgg._sum.conversions ?? 0,
     pendingOffers,
     pendingPayments,
   };
@@ -162,6 +163,155 @@ export async function getPublishersForSelect() {
     id: p.id,
     label: p.user.name || p.user.email,
     email: p.user.email,
+  }));
+}
+
+// ---------------------------------------------------------------------------
+// Network revenue
+//
+// Revenue lives in PublisherDailyStat — the figures entered by hand each
+// evening — not in the Conversion table, which stays empty while tracking is
+// manual. Every number below therefore reads from the daily stats, so the
+// admin totals match what publishers see.
+// ---------------------------------------------------------------------------
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Today at 00:00 of the local calendar day, expressed as UTC midnight. */
+function startOfTodayLocalAsUtc(now = new Date()): Date {
+  return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+}
+
+export type RevenuePeriod = "7d" | "30d" | "month" | "last-month" | "year" | "all";
+
+export interface PeriodRange {
+  /** Inclusive lower bound; null means "since the beginning". */
+  from: Date | null;
+  /** Exclusive upper bound. */
+  to: Date;
+  label: string;
+}
+
+/** Resolves a preset (or an explicit from/to) to a concrete date range. */
+export function resolvePeriod(period: RevenuePeriod, from?: string, to?: string): PeriodRange {
+  const today = startOfTodayLocalAsUtc();
+  const tomorrow = new Date(today.getTime() + DAY_MS);
+
+  // An explicit range wins over the preset.
+  if (from || to) {
+    const parsedFrom = from ? new Date(`${from}T00:00:00.000Z`) : null;
+    const parsedTo = to ? new Date(new Date(`${to}T00:00:00.000Z`).getTime() + DAY_MS) : tomorrow;
+    return {
+      from: parsedFrom && !Number.isNaN(parsedFrom.getTime()) ? parsedFrom : null,
+      to: Number.isNaN(parsedTo.getTime()) ? tomorrow : parsedTo,
+      label: "Période personnalisée",
+    };
+  }
+
+  switch (period) {
+    case "7d":
+      return { from: new Date(today.getTime() - 6 * DAY_MS), to: tomorrow, label: "7 derniers jours" };
+    case "30d":
+      return { from: new Date(today.getTime() - 29 * DAY_MS), to: tomorrow, label: "30 derniers jours" };
+    case "month":
+      return {
+        from: new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)),
+        to: tomorrow,
+        label: "Ce mois-ci",
+      };
+    case "last-month": {
+      const start = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth() - 1, 1));
+      const end = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
+      return { from: start, to: end, label: "Mois dernier" };
+    }
+    case "year":
+      return { from: new Date(Date.UTC(today.getUTCFullYear(), 0, 1)), to: tomorrow, label: "Cette année" };
+    case "all":
+    default:
+      return { from: null, to: tomorrow, label: "Depuis le début" };
+  }
+}
+
+function dateFilter(range: PeriodRange) {
+  return range.from ? { date: { gte: range.from, lt: range.to } } : { date: { lt: range.to } };
+}
+
+export interface RevenueTotals {
+  revenue: number;
+  conversions: number;
+  clicks: number;
+  hosts: number;
+  /** Days with at least one entry, useful to spot gaps in the manual input. */
+  daysWithData: number;
+}
+
+export async function getNetworkRevenue(range: PeriodRange): Promise<RevenueTotals> {
+  const where = dateFilter(range);
+
+  const [totals, days] = await Promise.all([
+    prisma.publisherDailyStat.aggregate({
+      where,
+      _sum: { revenue: true, conversions: true, clicks: true, hosts: true },
+    }),
+    prisma.publisherDailyStat.findMany({ where, select: { date: true }, distinct: ["date"] }),
+  ]);
+
+  return {
+    revenue: toNumber(totals._sum.revenue),
+    conversions: totals._sum.conversions ?? 0,
+    clicks: totals._sum.clicks ?? 0,
+    hosts: totals._sum.hosts ?? 0,
+    daysWithData: days.length,
+  };
+}
+
+/** Revenue per affiliate over the range, best first. */
+export async function getRevenueByPublisher(range: PeriodRange) {
+  const grouped = await prisma.publisherDailyStat.groupBy({
+    by: ["publisherId"],
+    where: dateFilter(range),
+    _sum: { revenue: true, conversions: true, clicks: true, hosts: true },
+  });
+
+  if (grouped.length === 0) return [];
+
+  const publishers = await prisma.publisher.findMany({
+    where: { id: { in: grouped.map((group) => group.publisherId) } },
+    select: { id: true, memberId: true, user: { select: { name: true, email: true } } },
+  });
+  const byId = new Map(publishers.map((publisher) => [publisher.id, publisher]));
+
+  return grouped
+    .map((group) => {
+      const publisher = byId.get(group.publisherId);
+      return {
+        publisherId: group.publisherId,
+        memberId: publisher?.memberId ?? 0,
+        name: publisher?.user.name ?? "—",
+        email: publisher?.user.email ?? "",
+        revenue: toNumber(group._sum.revenue),
+        conversions: group._sum.conversions ?? 0,
+        clicks: group._sum.clicks ?? 0,
+        hosts: group._sum.hosts ?? 0,
+      };
+    })
+    .sort((a, b) => b.revenue - a.revenue);
+}
+
+/** Daily revenue points over the range, oldest first, for the chart. */
+export async function getRevenueSeries(range: PeriodRange) {
+  const grouped = await prisma.publisherDailyStat.groupBy({
+    by: ["date"],
+    where: dateFilter(range),
+    _sum: { revenue: true, conversions: true, clicks: true },
+    orderBy: { date: "asc" },
+  });
+
+  return grouped.map((group) => ({
+    date: group.date.toISOString().slice(0, 10),
+    revenue: toNumber(group._sum.revenue),
+    conversions: group._sum.conversions ?? 0,
+    clicks: group._sum.clicks ?? 0,
   }));
 }
 
