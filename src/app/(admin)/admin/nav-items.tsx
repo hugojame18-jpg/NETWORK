@@ -12,6 +12,7 @@ import {
   Link2,
   MonitorSmartphone,
   Megaphone as MegaphoneIcon,
+  GraduationCap,
 } from "lucide-react";
 import type { NavItem } from "@/components/dashboard/sidebar-nav";
 
@@ -19,6 +20,7 @@ export const adminNavItems: NavItem[] = [
   { href: "/admin", label: "Overview", icon: <LayoutDashboard />, exact: true },
   { href: "/admin/affiliates", label: "Affiliés", icon: <Users /> },
   { href: "/admin/announcements", label: "Messages aux affiliés", icon: <MegaphoneIcon /> },
+  { href: "/admin/training", label: "Formation", icon: <GraduationCap /> },
   { href: "/admin/stats", label: "Statistiques quotidiennes", icon: <BarChart3 /> },
   { href: "/admin/advertisers", label: "Annonceurs", icon: <Megaphone /> },
   { href: "/admin/campaigns", label: "Campagnes", icon: <Megaphone /> },

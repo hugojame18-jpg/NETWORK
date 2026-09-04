@@ -140,6 +140,7 @@ model User {
   sessions            Session[]
   enteredDailyStats   PublisherDailyStat[]
   announcements       Announcement[]
+  trainingVideos      TrainingVideo[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -259,6 +260,27 @@ model Publisher {
 
   @@index([applicationStatus])
   @@index([referredById])
+}
+
+// A training video an admin publishes for publishers. Only the link is stored:
+// the video itself lives wherever it was uploaded (YouTube, Loom…).
+model TrainingVideo {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  url         String
+  active      Boolean @default(true)
+  // Manual ordering, so lessons can be shown in teaching order rather than by
+  // date. Ties fall back to creation order.
+  position    Int     @default(0)
+
+  authorId String?
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([active, position])
 }
 
 // A message written by an admin and shown on every publisher's dashboard.

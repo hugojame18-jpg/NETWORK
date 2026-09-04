@@ -165,6 +165,14 @@ export async function getPublishersForSelect() {
   }));
 }
 
+export async function getTrainingVideosAdminList(take = 100) {
+  return prisma.trainingVideo.findMany({
+    include: { author: { select: { name: true } } },
+    orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+    take,
+  });
+}
+
 export async function getAnnouncementsAdminList(take = 50) {
   return prisma.announcement.findMany({
     include: { author: { select: { name: true } } },

@@ -391,6 +391,15 @@ export async function getRewardsOverview(publisherId: string): Promise<RewardsOv
  * publisher's own rank is returned in `me` when they fall outside the top slice
  * so they always know where they stand.
  */
+/** Training videos visible to publishers, in teaching order. */
+export async function getTrainingVideos() {
+  return prisma.trainingVideo.findMany({
+    where: { active: true },
+    select: { id: true, title: true, description: true, url: true },
+    orderBy: [{ position: "asc" }, { createdAt: "asc" }],
+  });
+}
+
 /** Admin messages currently pinned to every publisher dashboard. */
 export async function getActiveAnnouncements(limit = 3) {
   return prisma.announcement.findMany({

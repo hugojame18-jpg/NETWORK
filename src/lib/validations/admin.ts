@@ -62,6 +62,17 @@ export const adminOfferUpdateSchema = z.object({
   landingUrl: z.string().trim().url("URL invalide"),
 });
 
+export const trainingVideoSchema = z.object({
+  title: z.string().trim().min(3, "Titre trop court").max(150),
+  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  url: z.string().trim().url("Lien invalide").max(2000),
+  position: z.number().int().min(0).max(999).optional(),
+});
+
+export const trainingVideoUpdateSchema = z.object({
+  active: z.boolean(),
+});
+
 export const announcementSchema = z.object({
   title: z.string().trim().min(3, "Titre trop court").max(120),
   body: z.string().trim().min(5, "Message trop court").max(4000),

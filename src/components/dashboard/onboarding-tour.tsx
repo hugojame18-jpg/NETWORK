@@ -39,18 +39,23 @@ const STEPS: Step[] = [
     body: "Sur une offre, clique « Demander mon lien ». Ta demande nous arrive, on te renvoie ton lien d'affiliation personnel — tu le retrouves ensuite dans « Mes liens », prêt à copier.",
   },
   {
+    icon: "🎓",
+    title: "4. Forme-toi",
+    body: "L'espace « Formation » regroupe nos vidéos : générer du trafic, choisir ses angles, convertir. Si tu débutes, commence par là avant de lancer une campagne.",
+  },
+  {
     icon: "📊",
-    title: "4. Suis tes résultats",
+    title: "5. Suis tes résultats",
     body: "« Statistiques » affiche tes clics, conversions et revenus jour par jour. Ces chiffres sont saisis chaque soir par l'équipe : ce sont les mêmes que ceux qui servent à te payer.",
   },
   {
     icon: "🎁",
-    title: "5. Débloque des récompenses",
+    title: "6. Débloque des récompenses",
     body: "Plus tu génères de revenus, plus tu montes : paliers avec bonus de payout, badges, et des lots concrets — bonus cash, AirPods, Apple Watch, iPhone… Parraine aussi des affiliés pour toucher 5 % de leurs revenus.",
   },
   {
     icon: "💰",
-    title: "6. Demande ton paiement",
+    title: "7. Demande ton paiement",
     body: "Renseigne ta méthode de paiement dans « Profil », puis demande ton virement depuis « Paiements » dès que tu atteins le minimum.",
   },
   {
