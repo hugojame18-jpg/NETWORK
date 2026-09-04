@@ -25,7 +25,16 @@ export function ApplicationPending({ name, rejected }: { name: string; rejected?
               <h1 className="text-xl font-semibold">Candidature non retenue</h1>
               <p className="text-sm text-muted-foreground">
                 Merci pour ton intérêt, {name}. Ta candidature n&apos;a pas été retenue cette fois-ci. Si tu penses
-                qu&apos;il s&apos;agit d&apos;une erreur, écris-nous et nous la réexaminerons.
+                qu&apos;il s&apos;agit d&apos;une erreur, écris à{" "}
+                <a
+                  href="https://t.me/solangerev"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="font-semibold text-primary hover:underline"
+                >
+                  @solangerev
+                </a>{" "}
+                sur Telegram et nous la réexaminerons.
               </p>
             </>
           ) : (
@@ -39,6 +48,21 @@ export function ApplicationPending({ name, rejected }: { name: string; rejected?
                 Tu recevras un email dès qu&apos;elle est validée&nbsp;: ton dashboard, les offres et les sites à
                 promouvoir seront alors accessibles.
               </p>
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
+                <p className="font-medium">Pour accélérer ta validation</p>
+                <p className="mt-1 text-muted-foreground">
+                  Envoie un message à{" "}
+                  <a
+                    href="https://t.me/solangerev"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-semibold text-primary hover:underline"
+                  >
+                    @solangerev
+                  </a>{" "}
+                  sur Telegram en précisant ton adresse email.
+                </p>
+              </div>
             </>
           )}
 

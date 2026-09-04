@@ -45,6 +45,23 @@ export const dailyStatSchema = z.object({
 
 export const dailyStatUpdateSchema = dailyStatSchema.omit({ publisherId: true, date: true }).partial();
 
+// Offers the network runs itself, created straight from the admin panel
+// (no advertiser account involved). Deliberately lighter than the advertiser
+// form: the rest of the fields keep their schema defaults.
+export const adminOfferSchema = z.object({
+  name: z.string().trim().min(2, "Nom trop court").max(150),
+  category: z.string().trim().min(2).max(60),
+  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  payout: z.number().min(0).max(100_000),
+  payoutType: z.enum(["CPA", "CPL", "CPS", "REVSHARE"]),
+  // Empty means "link not decided yet"; a placeholder is stored instead.
+  landingUrl: z.string().trim().url("URL invalide").optional().or(z.literal("")),
+});
+
+export const adminOfferUpdateSchema = z.object({
+  landingUrl: z.string().trim().url("URL invalide"),
+});
+
 export const announcementSchema = z.object({
   title: z.string().trim().min(3, "Titre trop court").max(120),
   body: z.string().trim().min(5, "Message trop court").max(4000),
