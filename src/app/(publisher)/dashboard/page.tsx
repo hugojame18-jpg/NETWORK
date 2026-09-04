@@ -9,6 +9,7 @@ import {
   getActiveAnnouncements,
 } from "@/lib/data/publisher";
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
+import { OnboardingTour } from "@/components/dashboard/onboarding-tour";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { TopPerformers } from "@/components/dashboard/top-performers";
 import { PerformanceChart, type ChartSeriesConfig } from "@/components/dashboard/performance-chart";
@@ -45,6 +46,8 @@ export default async function PublisherOverviewPage() {
 
   return (
     <div className="space-y-6">
+      {publisher.onboardingSeenAt === null && <OnboardingTour />}
+
       <AnnouncementBanner announcements={announcements} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

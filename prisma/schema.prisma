@@ -218,6 +218,10 @@ model Publisher {
   // Application answers collected at sign-up and reviewed by an admin before
   // the publisher dashboard unlocks. Nullable so accounts created before the
   // questionnaire existed stay valid.
+  // Set the first time the publisher finishes (or skips) the guided tour, so
+  // it shows once per account rather than once per browser.
+  onboardingSeenAt DateTime?
+
   workedWithNetworks Boolean @default(false)
   previousNetworks   String? // which ones, when workedWithNetworks is true
   affiliateExperience String?

@@ -4,6 +4,7 @@ import { getPublisherByUserId } from "@/lib/data/publisher";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChangePasswordForm } from "@/components/dashboard/change-password-form";
 import { PaymentMethodForm } from "@/components/dashboard/payment-method-form";
+import { ReplayTourButton } from "@/components/dashboard/replay-tour-button";
 
 export const metadata: Metadata = { title: "Paramètres" };
 
@@ -31,6 +32,18 @@ export default async function SettingsPage() {
         </CardHeader>
         <CardContent>
           <ChangePasswordForm />
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-premium">
+        <CardHeader>
+          <CardTitle>Prise en main</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Rejoue le guide pas-à-pas qui explique comment demander un lien, suivre tes statistiques et être payé.
+          </p>
+          <ReplayTourButton />
         </CardContent>
       </Card>
     </div>
