@@ -37,6 +37,108 @@ export const TIERS: Tier[] = [
 /** Referral reward: share of a referred affiliate's lifetime revenue. */
 export const REFERRAL_RATE = 0.05;
 
+// ---------------------------------------------------------------------------
+// Prize ladder
+// ---------------------------------------------------------------------------
+
+export interface Prize {
+  key: string;
+  label: string;
+  description: string;
+  /** Emoji shown on the card. */
+  icon: string;
+  /** Lifetime revenue (USD) that unlocks this prize. */
+  minRevenue: number;
+  /** Tailwind gradient for the unlocked card. */
+  gradient: string;
+}
+
+/**
+ * Physical and cash rewards unlocked by lifetime revenue. Ordered ascending
+ * and strictly increasing in value, so the best prizes always sit behind the
+ * hardest thresholds — a ladder that rewards the top performers, not whoever
+ * happens to pass by. Thresholds are deliberately spaced so each step feels
+ * reachable from the one before.
+ */
+export const PRIZES: Prize[] = [
+  {
+    key: "bonus-50",
+    label: "50 € de bonus",
+    description: "Versés avec ton prochain paiement.",
+    icon: "💶",
+    minRevenue: 500,
+    gradient: "from-emerald-400 to-emerald-600",
+  },
+  {
+    key: "airpods",
+    label: "AirPods",
+    description: "Livrés chez toi, à nos frais.",
+    icon: "🎧",
+    minRevenue: 1_500,
+    gradient: "from-slate-200 to-slate-400",
+  },
+  {
+    key: "bonus-100",
+    label: "100 € de bonus",
+    description: "Cash, en plus de tes commissions.",
+    icon: "💰",
+    minRevenue: 3_000,
+    gradient: "from-emerald-400 to-teal-600",
+  },
+  {
+    key: "apple-watch",
+    label: "Apple Watch",
+    description: "Le palier des affiliés réguliers.",
+    icon: "⌚",
+    minRevenue: 7_500,
+    gradient: "from-rose-300 to-rose-500",
+  },
+  {
+    key: "iphone",
+    label: "iPhone",
+    description: "Dernier modèle, pour les gros volumes.",
+    icon: "📱",
+    minRevenue: 15_000,
+    gradient: "from-indigo-300 to-indigo-600",
+  },
+  {
+    key: "macbook",
+    label: "MacBook Air",
+    description: "Réservé au très haut de tableau.",
+    icon: "💻",
+    minRevenue: 30_000,
+    gradient: "from-amber-300 to-orange-500",
+  },
+  {
+    key: "elite",
+    label: "1 000 € + statut Élite",
+    description: "Le sommet : bonus cash et conditions sur-mesure.",
+    icon: "👑",
+    minRevenue: 60_000,
+    gradient: "from-fuchsia-400 via-purple-500 to-indigo-600",
+  },
+];
+
+export interface PrizeProgress extends Prize {
+  unlocked: boolean;
+  /** 0–100 progress toward this prize's threshold. */
+  progress: number;
+  /** Revenue still needed (0 once unlocked). */
+  remaining: number;
+}
+
+export function computePrizes(lifetimeRevenue: number): PrizeProgress[] {
+  return PRIZES.map((prize) => {
+    const unlocked = lifetimeRevenue >= prize.minRevenue;
+    return {
+      ...prize,
+      unlocked,
+      progress: Math.max(0, Math.min(100, (lifetimeRevenue / prize.minRevenue) * 100)),
+      remaining: Math.max(0, prize.minRevenue - lifetimeRevenue),
+    };
+  });
+}
+
 export interface TierProgress {
   current: Tier;
   next: Tier | null;

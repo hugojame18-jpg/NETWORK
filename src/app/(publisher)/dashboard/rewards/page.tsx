@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { requireRole } from "@/lib/rbac";
 import { getPublisherByUserId, getRewardsOverview } from "@/lib/data/publisher";
 import { RewardsPanel } from "@/components/dashboard/rewards-panel";
+import { RewardLadder } from "@/components/dashboard/reward-ladder";
+import { computePrizes } from "@/lib/loyalty";
 
 export const metadata: Metadata = { title: "Récompenses" };
 
@@ -20,6 +22,10 @@ export default async function RewardsPage() {
           Montez en palier, débloquez des badges et parrainez des affiliés pour gagner plus.
         </p>
       </div>
+      <div className="pt-4">
+        <RewardLadder prizes={computePrizes(rewards.lifetimeRevenue)} lifetimeRevenue={rewards.lifetimeRevenue} />
+      </div>
+
       <div className="pt-4">
         <RewardsPanel
           appUrl={APP_URL}
