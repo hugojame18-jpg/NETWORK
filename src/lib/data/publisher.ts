@@ -70,13 +70,27 @@ export async function getPublisherByUserId(userId: string) {
   return prisma.publisher.findUniqueOrThrow({ where: { userId } });
 }
 
+/**
+ * The affiliate's share of gross revenue. Stats hold what the advertiser pays
+ * the network; everything shown to a publisher is their cut of it, so this is
+ * read once per page and applied at the edge of each loader.
+ */
+async function commissionRate(publisherId: string): Promise<number> {
+  const publisher = await prisma.publisher.findUnique({
+    where: { id: publisherId },
+    select: { commissionRate: true },
+  });
+  return toNumber(publisher?.commissionRate ?? 0.5);
+}
+
 export async function getRevenueSummary(publisherId: string) {
   const startToday = startOfTodayLocalAsUtc();
   const startYesterday = new Date(startToday.getTime() - DAY_MS);
   const startMonth = new Date(Date.UTC(startToday.getUTCFullYear(), startToday.getUTCMonth(), 1));
   const startTomorrow = new Date(startToday.getTime() + DAY_MS);
 
-  const [todayAgg, yesterdayAgg, monthAgg, totalAgg] = await Promise.all([
+  const [rate, todayAgg, yesterdayAgg, monthAgg, totalAgg] = await Promise.all([
+    commissionRate(publisherId),
     prisma.publisherDailyStat.aggregate({ where: { publisherId, date: dayRange(startToday) }, _sum: { revenue: true } }),
     prisma.publisherDailyStat.aggregate({ where: { publisherId, date: dayRange(startYesterday) }, _sum: { revenue: true } }),
     prisma.publisherDailyStat.aggregate({
@@ -86,11 +100,13 @@ export async function getRevenueSummary(publisherId: string) {
     prisma.publisherDailyStat.aggregate({ where: { publisherId }, _sum: { revenue: true } }),
   ]);
 
+  // Publishers see their own earnings, never the gross the advertiser pays.
   return {
-    today: toNumber(todayAgg._sum.revenue),
-    yesterday: toNumber(yesterdayAgg._sum.revenue),
-    month: toNumber(monthAgg._sum.revenue),
-    total: toNumber(totalAgg._sum.revenue),
+    today: toNumber(todayAgg._sum.revenue) * rate,
+    yesterday: toNumber(yesterdayAgg._sum.revenue) * rate,
+    month: toNumber(monthAgg._sum.revenue) * rate,
+    total: toNumber(totalAgg._sum.revenue) * rate,
+    rate,
   };
 }
 
@@ -104,10 +120,13 @@ export async function getPerformanceSeries(publisherId: string, days = 90): Prom
   const today = startOfTodayLocalAsUtc();
   const since = new Date(today.getTime() - (days - 1) * DAY_MS);
 
-  const rows = await prisma.publisherDailyStat.findMany({
-    where: { publisherId, date: { gte: since } },
-    orderBy: { date: "asc" },
-  });
+  const [rate, rows] = await Promise.all([
+    commissionRate(publisherId),
+    prisma.publisherDailyStat.findMany({
+      where: { publisherId, date: { gte: since } },
+      orderBy: { date: "asc" },
+    }),
+  ]);
 
   const buckets = new Map<string, DailyStatPoint>();
   for (let t = since.getTime(); t <= today.getTime(); t += DAY_MS) {
@@ -121,7 +140,7 @@ export async function getPerformanceSeries(publisherId: string, days = 90): Prom
       bucket.clicks = row.clicks;
       bucket.hosts = row.hosts;
       bucket.conversions = row.conversions;
-      bucket.revenue = toNumber(row.revenue);
+      bucket.revenue = toNumber(row.revenue) * rate;
     }
   });
 
@@ -183,7 +202,8 @@ export function resolveStatsPeriod(
 }
 
 export async function getStatsForPeriod(publisherId: string, start: Date, end: Date) {
-  const [rows, agg] = await Promise.all([
+  const [rate, rows, agg] = await Promise.all([
+    commissionRate(publisherId),
     prisma.publisherDailyStat.findMany({
       where: { publisherId, date: { gte: start, lte: end } },
       orderBy: { date: "asc" },
@@ -198,12 +218,14 @@ export async function getStatsForPeriod(publisherId: string, start: Date, end: D
   const conversions = agg._sum.conversions ?? 0;
 
   return {
-    rows,
+    // Each row's revenue is rewritten to the affiliate's share, so the daily
+    // table and the totals below can never disagree.
+    rows: rows.map((row) => ({ ...row, revenue: toNumber(row.revenue) * rate })),
     totals: {
       clicks,
       hosts: agg._sum.hosts ?? 0,
       conversions,
-      revenue: toNumber(agg._sum.revenue),
+      revenue: toNumber(agg._sum.revenue) * rate,
       conversionRate: clicks > 0 ? (conversions / clicks) * 100 : 0,
     },
   };
@@ -325,20 +347,29 @@ export async function getRewardsOverview(publisherId: string): Promise<RewardsOv
     return new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1));
   })();
 
-  const [lifetimeAgg, monthAgg, referralCode, referred] = await Promise.all([
+  const [rate, lifetimeAgg, monthAgg, referralCode, referred] = await Promise.all([
+    commissionRate(publisherId),
     prisma.publisherDailyStat.aggregate({ where: { publisherId }, _sum: { revenue: true, conversions: true } }),
     prisma.publisherDailyStat.aggregate({ where: { publisherId, date: { gte: startMonth } }, _sum: { revenue: true } }),
     ensureReferralCode(publisherId),
     prisma.publisher.findMany({
       where: { referredById: publisherId },
-      select: { id: true, createdAt: true, companyName: true, user: { select: { name: true, email: true } } },
+      select: {
+        id: true,
+        createdAt: true,
+        companyName: true,
+        commissionRate: true,
+        user: { select: { name: true, email: true } },
+      },
       orderBy: { createdAt: "desc" },
     }),
   ]);
 
-  const lifetimeRevenue = toNumber(lifetimeAgg._sum.revenue);
+  // Tiers, badges and prizes are earned on what the affiliate actually makes,
+  // not on the gross the network bills.
+  const lifetimeRevenue = toNumber(lifetimeAgg._sum.revenue) * rate;
   const lifetimeConversions = lifetimeAgg._sum.conversions ?? 0;
-  const monthRevenue = toNumber(monthAgg._sum.revenue);
+  const monthRevenue = toNumber(monthAgg._sum.revenue) * rate;
 
   // Per-referred-affiliate lifetime revenue in a single grouped query.
   const referredIds = referred.map((r) => r.id);
@@ -355,12 +386,15 @@ export async function getRewardsOverview(publisherId: string): Promise<RewardsOv
 
   const referrals: ReferredAffiliate[] = referred.map((r) => {
     const s = statByPublisher.get(r.id) ?? { revenue: 0, conversions: 0 };
+    // What the referred affiliate earns, using their own rate — never the
+    // network's gross, which no publisher should see.
+    const earnings = s.revenue * toNumber(r.commissionRate);
     return {
       displayName: maskAffiliateName(r),
       joinedAt: r.createdAt,
-      revenue: s.revenue,
+      revenue: earnings,
       conversions: s.conversions,
-      reward: s.revenue * REFERRAL_RATE,
+      reward: earnings * REFERRAL_RATE,
     };
   });
   const referralEarnings = referrals.reduce((sum, r) => sum + r.reward, 0);
@@ -428,19 +462,27 @@ export async function getMonthlyLeaderboard(currentPublisherId: string, limit = 
   const publishers = ids.length
     ? await prisma.publisher.findMany({
         where: { id: { in: ids } },
-        select: { id: true, companyName: true, user: { select: { name: true, email: true } } },
+        select: {
+          id: true,
+          companyName: true,
+          commissionRate: true,
+          user: { select: { name: true, email: true } },
+        },
       })
     : [];
   const byId = new Map(publishers.map((publisher) => [publisher.id, publisher]));
 
   const entries: LeaderboardEntry[] = ranked.map((group, index) => {
     const isCurrent = group.publisherId === currentPublisherId;
+    const publisher = byId.get(group.publisherId);
     return {
       rank: index + 1,
       publisherId: group.publisherId,
-      displayName: leaderboardName(byId.get(group.publisherId), isCurrent),
+      displayName: leaderboardName(publisher, isCurrent),
       conversions: group._sum.conversions ?? 0,
-      revenue: toNumber(group._sum.revenue),
+      // Each affiliate's own earnings. Ranking is by conversions, so differing
+      // commission rates can't reorder the board.
+      revenue: toNumber(group._sum.revenue) * toNumber(publisher?.commissionRate ?? 0.5),
       clicks: group._sum.clicks ?? 0,
       isCurrent,
     };

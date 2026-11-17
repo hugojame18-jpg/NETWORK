@@ -237,7 +237,12 @@ function dateFilter(range: PeriodRange) {
 }
 
 export interface RevenueTotals {
+  /** Gross billed to advertisers, before the affiliates' share. */
   revenue: number;
+  /** Sum owed to affiliates, each at their own commission rate. */
+  affiliateShare: number;
+  /** What the network keeps: gross minus the affiliates' share. */
+  margin: number;
   conversions: number;
   clicks: number;
   hosts: number;
@@ -248,16 +253,29 @@ export interface RevenueTotals {
 export async function getNetworkRevenue(range: PeriodRange): Promise<RevenueTotals> {
   const where = dateFilter(range);
 
-  const [totals, days] = await Promise.all([
+  const [totals, perPublisher, rates, days] = await Promise.all([
     prisma.publisherDailyStat.aggregate({
       where,
       _sum: { revenue: true, conversions: true, clicks: true, hosts: true },
     }),
+    // Grouped separately because each affiliate can sit on a different rate,
+    // so the share can't be derived from the grand total.
+    prisma.publisherDailyStat.groupBy({ by: ["publisherId"], where, _sum: { revenue: true } }),
+    prisma.publisher.findMany({ select: { id: true, commissionRate: true } }),
     prisma.publisherDailyStat.findMany({ where, select: { date: true }, distinct: ["date"] }),
   ]);
 
+  const rateById = new Map(rates.map((r) => [r.id, toNumber(r.commissionRate)]));
+  const affiliateShare = perPublisher.reduce(
+    (sum, group) => sum + toNumber(group._sum.revenue) * (rateById.get(group.publisherId) ?? 0.5),
+    0,
+  );
+  const revenue = toNumber(totals._sum.revenue);
+
   return {
-    revenue: toNumber(totals._sum.revenue),
+    revenue,
+    affiliateShare,
+    margin: revenue - affiliateShare,
     conversions: totals._sum.conversions ?? 0,
     clicks: totals._sum.clicks ?? 0,
     hosts: totals._sum.hosts ?? 0,
@@ -277,19 +295,29 @@ export async function getRevenueByPublisher(range: PeriodRange) {
 
   const publishers = await prisma.publisher.findMany({
     where: { id: { in: grouped.map((group) => group.publisherId) } },
-    select: { id: true, memberId: true, user: { select: { name: true, email: true } } },
+    select: {
+      id: true,
+      memberId: true,
+      commissionRate: true,
+      user: { select: { name: true, email: true } },
+    },
   });
   const byId = new Map(publishers.map((publisher) => [publisher.id, publisher]));
 
   return grouped
     .map((group) => {
       const publisher = byId.get(group.publisherId);
+      const revenue = toNumber(group._sum.revenue);
+      const rate = toNumber(publisher?.commissionRate ?? 0.5);
       return {
         publisherId: group.publisherId,
         memberId: publisher?.memberId ?? 0,
         name: publisher?.user.name ?? "—",
         email: publisher?.user.email ?? "",
-        revenue: toNumber(group._sum.revenue),
+        revenue,
+        rate,
+        affiliateShare: revenue * rate,
+        margin: revenue * (1 - rate),
         conversions: group._sum.conversions ?? 0,
         clicks: group._sum.clicks ?? 0,
         hosts: group._sum.hosts ?? 0,

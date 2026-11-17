@@ -58,7 +58,7 @@ export function OfferComposer() {
         <Input
           id="offer-name"
           required
-          placeholder="Ex. Casino Brand FR"
+          placeholder="Ex. Sweepstake iPhone 17 — FR"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />

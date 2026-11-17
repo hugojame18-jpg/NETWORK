@@ -87,6 +87,6 @@ export const siteRequestStatusSchema = z.object({
 });
 
 export const deliverLinkSchema = z.object({
-  // The real affiliate URL (e.g. casino/brand tracker) the admin pastes.
+  // The real affiliate URL (the advertiser's tracker) the admin pastes.
   targetUrl: z.string().trim().url("URL invalide").max(2000),
 });

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { TrendingUp, Target, MousePointerClick, CalendarDays } from "lucide-react";
+import { TrendingUp, Target, Users, Wallet } from "lucide-react";
 import {
   getNetworkRevenue,
   getRevenueByPublisher,
@@ -59,8 +59,13 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
       <Card className="shadow-premium border-primary/30 bg-primary/5">
         <CardContent className="flex flex-wrap items-end justify-between gap-4 pt-6">
           <div>
-            <p className="text-sm text-muted-foreground">Chiffre d&apos;affaires depuis le début</p>
+            <p className="text-sm text-muted-foreground">Chiffre d&apos;affaires brut depuis le début</p>
             <p className="mt-1 text-4xl font-semibold tracking-tight">{formatCurrency(lifetime.revenue)}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              dont <span className="font-medium text-foreground">{formatCurrency(lifetime.affiliateShare)}</span> aux
+              affiliés — il te reste{" "}
+              <span className="font-medium text-success">{formatCurrency(lifetime.margin)}</span>
+            </p>
           </div>
           <div className="flex flex-wrap gap-6 text-sm">
             <div>
@@ -94,10 +99,10 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label={`CA — ${range.label}`} value={totals.revenue} prefix="$" decimals={2} icon={<TrendingUp />} index={0} />
-        <StatCard label="Conversions" value={totals.conversions} icon={<Target />} index={1} />
-        <StatCard label="Clics" value={totals.clicks} icon={<MousePointerClick />} index={2} />
-        <StatCard label="Jours avec données" value={totals.daysWithData} icon={<CalendarDays />} index={3} />
+        <StatCard label={`CA brut — ${range.label}`} value={totals.revenue} prefix="$" decimals={2} icon={<TrendingUp />} index={0} />
+        <StatCard label="Part affiliés" value={totals.affiliateShare} prefix="$" decimals={2} icon={<Users />} index={1} />
+        <StatCard label="Ta marge" value={totals.margin} prefix="$" decimals={2} icon={<Wallet />} index={2} />
+        <StatCard label="Conversions" value={totals.conversions} icon={<Target />} index={3} />
       </div>
 
       <Card className="shadow-premium">
@@ -126,9 +131,11 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
                 <TableHead>ID</TableHead>
                 <TableHead>Affilié</TableHead>
                 <TableHead className="text-right">Clics</TableHead>
-                <TableHead className="text-right">Conversions</TableHead>
-                <TableHead className="text-right">CA</TableHead>
-                <TableHead className="text-right">Part</TableHead>
+                <TableHead className="text-right">Conv.</TableHead>
+                <TableHead className="text-right">CA brut</TableHead>
+                <TableHead className="text-right">Taux</TableHead>
+                <TableHead className="text-right">Part affilié</TableHead>
+                <TableHead className="text-right">Ta marge</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -142,9 +149,9 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
                   <TableCell className="text-right">{formatNumber(row.clicks)}</TableCell>
                   <TableCell className="text-right">{formatNumber(row.conversions)}</TableCell>
                   <TableCell className="text-right font-medium">{formatCurrency(row.revenue)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">
-                    {totals.revenue > 0 ? `${Math.round((row.revenue / totals.revenue) * 100)} %` : "—"}
-                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">{Math.round(row.rate * 100)} %</TableCell>
+                  <TableCell className="text-right">{formatCurrency(row.affiliateShare)}</TableCell>
+                  <TableCell className="text-right font-medium text-success">{formatCurrency(row.margin)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

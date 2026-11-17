@@ -47,7 +47,7 @@ export function AnnouncementComposer() {
           id="title"
           required
           maxLength={120}
-          placeholder="Ex. Nouvelles offres casino disponibles"
+          placeholder="Ex. Nouvelles offres CC Submit disponibles"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />

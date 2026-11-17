@@ -23,7 +23,7 @@ export function GenerateLinkButton({ offerId, initialLink }: GenerateLinkButtonP
   const [isPending, startTransition] = useTransition();
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
-  // Prefer the real (casino/brand) URL the admin delivered; fall back to the
+  // Prefer the real advertiser URL the admin delivered; fall back to the
   // internal tracking URL for legacy links created before the request flow.
   const deliveredUrl =
     link?.status === "DELIVERED" ? link.targetUrl || `${origin}/api/track/click/${link.token}` : null;

@@ -63,7 +63,7 @@ export function DeliverLinkForm({ linkId, currentUrl, delivered }: DeliverLinkFo
       <Input
         type="url"
         required
-        placeholder="https://casino.com/aff?..."
+        placeholder="https://tracker-annonceur.com/?aff=..."
         value={url}
         onChange={(e) => setUrl(e.target.value)}
         className="h-8 w-[260px] text-xs"

@@ -26,7 +26,7 @@ const STEPS: Step[] = [
   {
     icon: "🎯",
     title: "1. Choisis ce que tu veux promouvoir",
-    body: "Dans « Offres disponibles », filtre par catégorie — CC Submit, SOI, DOI, CPA, Casino, Nutra — et ouvre celle qui t'intéresse. Chaque offre affiche son payout et son type de rémunération.",
+    body: "Dans « Offres disponibles », filtre par catégorie — CC Submit, Trial, SOI, DOI, CPA, PIN Submit — et ouvre celle qui t'intéresse. Chaque offre affiche son payout et son type de rémunération.",
   },
   {
     icon: "🖥️",
