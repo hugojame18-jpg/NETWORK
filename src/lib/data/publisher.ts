@@ -434,6 +434,20 @@ export async function getTrainingVideos() {
   });
 }
 
+/**
+ * The few facts the home page needs to tell an affiliate what to do next,
+ * rather than showing an empty chart and leaving them to guess.
+ */
+export async function getPublisherSnapshot(publisherId: string) {
+  const [requestedLinks, deliveredLinks, statDays] = await Promise.all([
+    prisma.affiliateLink.count({ where: { publisherId } }),
+    prisma.affiliateLink.count({ where: { publisherId, status: "DELIVERED" } }),
+    prisma.publisherDailyStat.count({ where: { publisherId } }),
+  ]);
+
+  return { requestedLinks, deliveredLinks, statDays };
+}
+
 /** Admin messages currently pinned to every publisher dashboard. */
 export async function getActiveAnnouncements(limit = 3) {
   return prisma.announcement.findMany({

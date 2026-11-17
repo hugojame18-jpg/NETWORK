@@ -343,6 +343,41 @@ export async function getRevenueSeries(range: PeriodRange) {
   }));
 }
 
+/**
+ * The admin home answers one question: what needs me right now? These are the
+ * queues that block an affiliate until someone acts on them, plus today's
+ * money so the first screen of the day is useful without a click.
+ */
+export async function getAdminPulse() {
+  const today = startOfTodayLocalAsUtc();
+  const tomorrow = new Date(today.getTime() + DAY_MS);
+  const startMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
+
+  const [todayRange, monthRange, publisherCount, activeToday, pendingLinks, pendingSites, pendingPayments, statsToday] =
+    await Promise.all([
+      getNetworkRevenue({ from: today, to: tomorrow, label: "Aujourd'hui" }),
+      getNetworkRevenue({ from: startMonth, to: tomorrow, label: "Ce mois-ci" }),
+      prisma.publisher.count(),
+      prisma.publisherDailyStat.count({ where: { date: { gte: today, lt: tomorrow } } }),
+      prisma.affiliateLink.count({ where: { status: "REQUESTED" } }),
+      prisma.siteRequest.count({ where: { status: "PENDING" } }),
+      prisma.payment.count({ where: { status: "PENDING" } }),
+      prisma.publisherDailyStat.count({ where: { date: { gte: today, lt: tomorrow } } }),
+    ]);
+
+  return {
+    today: todayRange,
+    month: monthRange,
+    publisherCount,
+    /** Affiliates with figures entered for today — how far tonight's input got. */
+    activeToday,
+    pendingLinks,
+    pendingSites,
+    pendingPayments,
+    statsEnteredToday: statsToday,
+  };
+}
+
 export async function getTrainingVideosAdminList(take = 100) {
   return prisma.trainingVideo.findMany({
     include: { author: { select: { name: true } } },

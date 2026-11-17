@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { CalendarDays, CalendarRange, Wallet, TrendingUp } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { requireRole } from "@/lib/rbac";
 import {
   getPublisherByUserId,
@@ -7,109 +8,134 @@ import {
   getPerformanceSeries,
   getMonthlyLeaderboard,
   getActiveAnnouncements,
+  getPublisherSnapshot,
 } from "@/lib/data/publisher";
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { OnboardingTour } from "@/components/dashboard/onboarding-tour";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { NextStep, EarningsHero } from "@/components/dashboard/next-step";
 import { TopPerformers } from "@/components/dashboard/top-performers";
 import { PerformanceChart, type ChartSeriesConfig } from "@/components/dashboard/performance-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatCurrency, formatCalendarDate, formatNumber } from "@/lib/format";
 
-export const metadata: Metadata = { title: "Overview" };
+export const metadata: Metadata = { title: "Accueil" };
 
-const DAILY_STAT_SERIES: ChartSeriesConfig[] = [
-  { key: "clicks", label: "Clics", color: "#818cf8" },
-  { key: "hosts", label: "Hosts", color: "#38bdf8" },
+// Clicks and conversions live on wildly different scales from euros, so the
+// home chart shows the two the affiliate steers on. The full breakdown is one
+// click away in Statistiques.
+const HOME_SERIES: ChartSeriesConfig[] = [
   { key: "conversions", label: "Conversions", color: "#34d399" },
-  { key: "revenue", label: "Revenus ($)", color: "#fbbf24" },
+  { key: "revenue", label: "Gains ($)", color: "#fbbf24" },
 ];
 
-function pctDelta(current: number, previous: number) {
-  if (previous <= 0) return current > 0 ? 100 : 0;
-  return ((current - previous) / previous) * 100;
-}
-
-export default async function PublisherOverviewPage() {
+export default async function PublisherHomePage() {
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
 
-  const [revenue, series, leaderboard, announcements] = await Promise.all([
+  const [revenue, series, leaderboard, announcements, snapshot] = await Promise.all([
     getRevenueSummary(publisher.id),
-    getPerformanceSeries(publisher.id, 90),
+    getPerformanceSeries(publisher.id, 30),
     getMonthlyLeaderboard(publisher.id),
     getActiveAnnouncements(),
+    getPublisherSnapshot(publisher.id),
   ]);
 
-  const recentDays = [...series].reverse().filter((d) => d.clicks > 0 || d.conversions > 0 || d.revenue > 0).slice(0, 7);
+  const recentDays = [...series]
+    .reverse()
+    .filter((day) => day.clicks > 0 || day.conversions > 0 || day.revenue > 0)
+    .slice(0, 7);
+
+  const firstName = (user.name ?? "").split(" ")[0];
 
   return (
     <div className="space-y-6">
       {publisher.onboardingSeenAt === null && <OnboardingTour />}
 
+      <div>
+        <h1 className="text-xl font-semibold tracking-tight">
+          Salut {firstName || "👋"}
+        </h1>
+        <p className="text-sm text-muted-foreground">Voici où tu en es aujourd&apos;hui.</p>
+      </div>
+
       <AnnouncementBanner announcements={announcements} />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Revenus aujourd'hui"
-          value={revenue.today}
-          prefix="$"
-          decimals={2}
-          icon={<Wallet />}
-          delta={pctDelta(revenue.today, revenue.yesterday)}
-          index={0}
-        />
-        <StatCard label="Revenus hier" value={revenue.yesterday} prefix="$" decimals={2} icon={<CalendarDays />} index={1} />
-        <StatCard label="Revenus du mois" value={revenue.month} prefix="$" decimals={2} icon={<CalendarRange />} index={2} />
-        <StatCard label="Revenus totaux" value={revenue.total} prefix="$" decimals={2} icon={<TrendingUp />} index={3} />
-      </div>
+      <EarningsHero
+        month={revenue.month}
+        today={revenue.today}
+        total={revenue.total}
+        rate={revenue.rate}
+        formatValue={formatCurrency}
+      />
 
-      <PerformanceChart data={series} series={DAILY_STAT_SERIES} />
+      <NextStep
+        requestedLinks={snapshot.requestedLinks}
+        deliveredLinks={snapshot.deliveredLinks}
+        statDays={snapshot.statDays}
+      />
 
-      <div className="grid gap-6 lg:grid-cols-5">
-        <Card className="shadow-premium lg:col-span-3">
-          <CardHeader>
-            <CardTitle>Dernières journées renseignées</CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Clics</TableHead>
-                  <TableHead className="text-right">Conversions</TableHead>
-                  <TableHead className="text-right">Revenus</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {recentDays.map((day) => (
-                  <TableRow key={day.date}>
-                    <TableCell>{formatCalendarDate(day.date)}</TableCell>
-                    <TableCell className="text-right">{formatNumber(day.clicks)}</TableCell>
-                    <TableCell className="text-right">{formatNumber(day.conversions)}</TableCell>
-                    <TableCell className="text-right font-medium">{formatCurrency(day.revenue)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            {recentDays.length === 0 && (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                Aucune statistique n&apos;a encore été renseignée pour votre compte.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+      {/* Charts and tables only earn their place once there is data to show. */}
+      {snapshot.statDays > 0 && (
+        <>
+          <Card className="shadow-premium">
+            <CardHeader>
+              <CardTitle>30 derniers jours</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <PerformanceChart data={series} series={HOME_SERIES} />
+            </CardContent>
+          </Card>
 
-        <div className="lg:col-span-2">
-          <TopPerformers
-            periodLabel={leaderboard.periodLabel}
-            top={leaderboard.top}
-            me={leaderboard.me}
-            totalRanked={leaderboard.totalRanked}
-          />
-        </div>
-      </div>
+          <div className="grid gap-6 lg:grid-cols-5">
+            <Card className="shadow-premium lg:col-span-3">
+              <CardHeader>
+                <div className="flex items-center justify-between gap-2">
+                  <CardTitle>Tes dernières journées</CardTitle>
+                  <Link
+                    href="/dashboard/stats"
+                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    Tout voir
+                    <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Date</TableHead>
+                      <TableHead className="text-right">Clics</TableHead>
+                      <TableHead className="text-right">Conversions</TableHead>
+                      <TableHead className="text-right">Tes gains</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {recentDays.map((day) => (
+                      <TableRow key={day.date}>
+                        <TableCell>{formatCalendarDate(day.date)}</TableCell>
+                        <TableCell className="text-right">{formatNumber(day.clicks)}</TableCell>
+                        <TableCell className="text-right">{formatNumber(day.conversions)}</TableCell>
+                        <TableCell className="text-right font-medium">{formatCurrency(day.revenue)}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+
+            <div className="lg:col-span-2">
+              <TopPerformers
+                periodLabel={leaderboard.periodLabel}
+                top={leaderboard.top}
+                me={leaderboard.me}
+                totalRanked={leaderboard.totalRanked}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
