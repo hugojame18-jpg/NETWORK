@@ -11,12 +11,10 @@
  * through the return value for callers that care.
  */
 
+import { appUrl } from "@/lib/app-url";
+
 const BRAND = "RevNetwork";
 const SUPPORT_TELEGRAM = "https://t.me/solangerev";
-
-function appUrl() {
-  return process.env.NEXT_PUBLIC_APP_URL ?? "https://revnetwork.live";
-}
 
 function from() {
   return process.env.EMAIL_FROM ?? `${BRAND} <no-reply@revnetwork.live>`;

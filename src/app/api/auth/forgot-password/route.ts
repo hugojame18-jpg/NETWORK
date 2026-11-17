@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { sendEmail, passwordResetEmail } from "@/lib/email";
+import { appUrl } from "@/lib/app-url";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
@@ -31,7 +32,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
+    const resetUrl = `${appUrl()}/reset-password?token=${token}`;
     await sendEmail(user.email, passwordResetEmail(user.name, resetUrl));
   }
 

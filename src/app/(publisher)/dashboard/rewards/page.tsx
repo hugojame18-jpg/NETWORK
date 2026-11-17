@@ -7,7 +7,7 @@ import { computePrizes } from "@/lib/loyalty";
 
 export const metadata: Metadata = { title: "Récompenses" };
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+import { appUrl } from "@/lib/app-url";
 
 export default async function RewardsPage() {
   const user = await requireRole("PUBLISHER");
@@ -28,7 +28,7 @@ export default async function RewardsPage() {
 
       <div className="pt-4">
         <RewardsPanel
-          appUrl={APP_URL}
+          appUrl={appUrl()}
           tier={rewards.tier}
           lifetimeRevenue={rewards.lifetimeRevenue}
           bonusLifetime={rewards.bonusLifetime}

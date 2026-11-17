@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+import { appUrl } from "@/lib/app-url";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -10,6 +10,6 @@ export default function robots(): MetadataRoute.Robots {
       // Private surfaces and tracking endpoints must never be indexed.
       disallow: ["/dashboard", "/advertiser", "/admin", "/api/"],
     },
-    sitemap: `${appUrl}/sitemap.xml`,
+    sitemap: `${appUrl()}/sitemap.xml`,
   };
 }

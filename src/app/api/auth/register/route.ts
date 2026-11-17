@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
 import { sendEmail, verificationEmail } from "@/lib/email";
+import { appUrl } from "@/lib/app-url";
 import { generateReferralCode, resolveReferrer } from "@/lib/data/publisher";
 import { signUpSchema } from "@/lib/validations/auth";
 
@@ -104,7 +105,7 @@ export async function POST(request: Request) {
     },
   });
 
-  const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}`;
+  const verifyUrl = `${appUrl()}/api/auth/verify-email?token=${token}`;
   await sendEmail(user.email, verificationEmail(user.name, verifyUrl));
 
   return NextResponse.json({ success: true });
