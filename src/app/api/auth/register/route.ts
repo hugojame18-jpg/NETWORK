@@ -59,7 +59,10 @@ export async function POST(request: Request) {
               create: {
                 companyName: companyName || null,
                 website: website || null,
-                applicationStatus: "PENDING",
+                // Sign-up is open: publishers get their dashboard immediately.
+                // The status stays on the model so an admin can still revoke
+                // access later from the affiliates page.
+                applicationStatus: "APPROVED",
                 workedWithNetworks: workedWithNetworks ?? false,
                 previousNetworks: previousNetworks || null,
                 affiliateExperience: affiliateExperience || null,
@@ -81,7 +84,8 @@ export async function POST(request: Request) {
     select: { id: true, email: true, name: true },
   });
 
-  // Publisher sign-ups are vetted, so admins need to know a review is waiting.
+  // No review to do any more, but a new affiliate joining is still worth
+  // knowing about.
   if (role === "PUBLISHER") {
     const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
     if (admins.length > 0) {
@@ -89,8 +93,8 @@ export async function POST(request: Request) {
         data: admins.map((admin) => ({
           userId: admin.id,
           type: "INFO" as const,
-          title: "Nouvelle candidature affilié",
-          body: `${user.name} (${user.email}) a déposé une candidature à valider.`,
+          title: "Nouvel affilié inscrit",
+          body: `${user.name} (${user.email}) vient de rejoindre le réseau.`,
         })),
       });
     }

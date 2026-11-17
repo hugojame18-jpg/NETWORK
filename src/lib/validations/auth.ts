@@ -24,7 +24,8 @@ export const signUpSchema = z
     companyName: z.string().trim().max(150).optional(),
     website: z.string().trim().url("URL invalide").optional().or(z.literal("")),
     referralCode: z.string().trim().max(32).optional(),
-    // Publisher application questionnaire.
+    // Optional background, kept for the admin's reference. Sign-up no longer
+    // depends on it: publishers register straight away.
     workedWithNetworks: z.boolean().optional(),
     previousNetworks: z.string().trim().max(500).optional().or(z.literal("")),
     affiliateExperience: z.string().trim().max(2000).optional().or(z.literal("")),
@@ -33,19 +34,6 @@ export const signUpSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
-  })
-  // Publishers are vetted, so the questionnaire is mandatory for them only.
-  .refine((data) => data.role !== "PUBLISHER" || (data.affiliateExperience ?? "").length >= 10, {
-    message: "Décris ton expérience en quelques mots (10 caractères minimum)",
-    path: ["affiliateExperience"],
-  })
-  .refine((data) => data.role !== "PUBLISHER" || (data.tiktokLinks ?? "").length >= 3, {
-    message: "Indique au moins un compte ou lien de post TikTok",
-    path: ["tiktokLinks"],
-  })
-  .refine((data) => !data.workedWithNetworks || (data.previousNetworks ?? "").length >= 2, {
-    message: "Précise avec quels réseaux tu as travaillé",
-    path: ["previousNetworks"],
   });
 
 export const forgotPasswordSchema = z.object({
