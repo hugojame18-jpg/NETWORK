@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { sendEmail, verificationEmailHtml } from "@/lib/email";
+import { sendEmail, verificationEmail } from "@/lib/email";
 import { generateReferralCode, resolveReferrer } from "@/lib/data/publisher";
 import { signUpSchema } from "@/lib/validations/auth";
 
@@ -105,11 +105,7 @@ export async function POST(request: Request) {
   });
 
   const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${token}`;
-  await sendEmail({
-    to: user.email,
-    subject: "Confirmez votre adresse email — RevNetwork",
-    html: verificationEmailHtml(user.name, verifyUrl),
-  });
+  await sendEmail(user.email, verificationEmail(user.name, verifyUrl));
 
   return NextResponse.json({ success: true });
 }

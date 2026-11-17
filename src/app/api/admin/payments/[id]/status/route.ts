@@ -4,6 +4,7 @@ import { ApiAuthError, requireApiRole } from "@/lib/rbac";
 import { logAction } from "@/lib/audit";
 import { checkMutationRateLimit } from "@/lib/rate-limit";
 import { paymentStatusSchema } from "@/lib/validations/admin";
+import { sendEmail, paymentStatusEmail } from "@/lib/email";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -50,7 +51,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       }
     });
 
-    const publisher = await prisma.publisher.findUniqueOrThrow({ where: { id: payment.publisherId } });
+    const publisher = await prisma.publisher.findUniqueOrThrow({
+      where: { id: payment.publisherId },
+      include: { user: { select: { name: true, email: true } } },
+    });
     await prisma.notification.create({
       data: {
         userId: publisher.userId,
@@ -69,6 +73,19 @@ export async function PATCH(request: Request, { params }: RouteParams) {
               : `Le statut de votre paiement est maintenant "${parsed.data.status}".`,
       },
     });
+
+    // Money moving is the one event an affiliate should never have to discover
+    // by refreshing a page. PENDING is a bookkeeping state, not news.
+    if (parsed.data.status !== "PENDING") {
+      await sendEmail(
+        publisher.user.email,
+        paymentStatusEmail(
+          publisher.user.name,
+          parsed.data.status,
+          `${Number(payment.amount).toFixed(2)} $`,
+        ),
+      );
+    }
 
     await logAction({
       actorId: admin.id,

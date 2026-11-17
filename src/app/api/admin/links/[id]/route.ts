@@ -4,6 +4,7 @@ import { ApiAuthError, requireApiRole } from "@/lib/rbac";
 import { logAction } from "@/lib/audit";
 import { checkMutationRateLimit } from "@/lib/rate-limit";
 import { deliverLinkSchema } from "@/lib/validations/admin";
+import { sendEmail, linkDeliveredEmail } from "@/lib/email";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -31,7 +32,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         deliveredAt: new Date(),
       },
       include: {
-        publisher: { select: { userId: true } },
+        publisher: { select: { userId: true, user: { select: { name: true, email: true } } } },
         offer: { select: { name: true } },
       },
     });
@@ -44,6 +45,13 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         body: `Ton lien pour "${link.offer.name}" est disponible sur ton dashboard.`,
       },
     });
+
+    // A delivered link is only useful once the affiliate knows about it, and
+    // they may not have the dashboard open.
+    await sendEmail(
+      link.publisher.user.email,
+      linkDeliveredEmail(link.publisher.user.name, link.offer.name),
+    );
 
     await logAction({
       actorId: admin.id,

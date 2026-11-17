@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Clock, XCircle, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { emailDeliveryEnabled } from "@/lib/email";
 
 /**
  * Shown in place of the whole publisher dashboard while an application is
@@ -45,8 +46,11 @@ export function ApplicationPending({ name, rejected }: { name: string; rejected?
                 expérience en affiliation et tes contenus TikTok avant d&apos;ouvrir l&apos;accès.
               </p>
               <p className="text-sm text-muted-foreground">
-                Tu recevras un email dès qu&apos;elle est validée&nbsp;: ton dashboard, les offres et les sites à
-                promouvoir seront alors accessibles.
+                {/* Only promise an email when one can actually be sent. */}
+                {emailDeliveryEnabled()
+                  ? "Tu recevras un email dès qu'elle est validée : "
+                  : "Dès qu'elle est validée, "}
+                ton dashboard, les offres et les sites à promouvoir seront accessibles.
               </p>
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
                 <p className="font-medium">Pour accélérer ta validation</p>

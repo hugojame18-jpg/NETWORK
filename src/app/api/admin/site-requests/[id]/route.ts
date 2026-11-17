@@ -5,6 +5,7 @@ import { logAction } from "@/lib/audit";
 import { checkMutationRateLimit } from "@/lib/rate-limit";
 import { siteRequestStatusSchema } from "@/lib/validations/admin";
 import { promoSiteName } from "@/lib/promo-sites";
+import { sendEmail, siteRequestApprovedEmail } from "@/lib/email";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -30,7 +31,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         status: parsed.data.status,
         handledAt: parsed.data.status === "PENDING" ? null : new Date(),
       },
-      include: { publisher: { select: { userId: true } } },
+      include: { publisher: { select: { userId: true, user: { select: { name: true, email: true } } } } },
     });
 
     const siteName = promoSiteName(siteRequest.siteSlug);
@@ -48,6 +49,15 @@ export async function PATCH(request: Request, { params }: RouteParams) {
             : `Ta demande pour "${siteName}" est désormais "${parsed.data.status}".`,
       },
     });
+
+    // Only approval is worth an email: it unblocks the affiliate. A rejection
+    // or a reset to pending stays in the dashboard notification.
+    if (parsed.data.status === "APPROVED") {
+      await sendEmail(
+        siteRequest.publisher.user.email,
+        siteRequestApprovedEmail(siteRequest.publisher.user.name, siteName),
+      );
+    }
 
     await logAction({
       actorId: admin.id,

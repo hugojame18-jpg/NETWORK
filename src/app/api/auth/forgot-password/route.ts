@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, rateLimit } from "@/lib/rate-limit";
-import { sendEmail, passwordResetEmailHtml } from "@/lib/email";
+import { sendEmail, passwordResetEmail } from "@/lib/email";
 import { forgotPasswordSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
@@ -32,11 +32,7 @@ export async function POST(request: Request) {
     });
 
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`;
-    await sendEmail({
-      to: user.email,
-      subject: "Réinitialisation de votre mot de passe — RevNetwork",
-      html: passwordResetEmailHtml(user.name, resetUrl),
-    });
+    await sendEmail(user.email, passwordResetEmail(user.name, resetUrl));
   }
 
   return NextResponse.json({ success: true });
