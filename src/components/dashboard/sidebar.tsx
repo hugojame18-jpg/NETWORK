@@ -3,17 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ChevronsLeft, ChevronsRight } from "lucide-react";
-import { SidebarNav, type NavItem } from "./sidebar-nav";
+import { SidebarNav, type NavSection } from "./sidebar-nav";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
-  items: NavItem[];
+  sections: NavSection[];
   brandLabel: string;
   brandHref: string;
 }
 
-export function Sidebar({ items, brandLabel, brandHref }: SidebarProps) {
+export function Sidebar({ sections, brandLabel, brandHref }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
@@ -33,7 +33,7 @@ export function Sidebar({ items, brandLabel, brandHref }: SidebarProps) {
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 py-2">
-        <SidebarNav items={items} collapsed={collapsed} />
+        <SidebarNav sections={sections} collapsed={collapsed} />
       </div>
 
       <div className="border-t border-border p-3">

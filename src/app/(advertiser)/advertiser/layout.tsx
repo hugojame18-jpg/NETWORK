@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/rbac";
 import { getUnreadNotifications } from "@/lib/data/notifications";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
-import { advertiserNavItems } from "./nav-items";
+import { advertiserNavSections } from "./nav-items";
 
 export default async function AdvertiserDashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireRole("ADVERTISER");
@@ -10,10 +10,10 @@ export default async function AdvertiserDashboardLayout({ children }: { children
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-      <Sidebar items={advertiserNavItems} brandLabel="RevNetwork" brandHref="/advertiser" />
+      <Sidebar sections={advertiserNavSections} brandLabel="RevNetwork" brandHref="/advertiser" />
       <div className="flex min-h-screen flex-1 flex-col">
         <Topbar
-          navItems={advertiserNavItems}
+          navSections={advertiserNavSections}
           brandLabel="RevNetwork"
           notifications={notifications}
           notificationsHref="/advertiser/notifications"

@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/rbac";
 import { getUnreadNotifications } from "@/lib/data/notifications";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
-import { adminNavItems } from "./nav-items";
+import { adminNavSections } from "./nav-items";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireRole("ADMIN");
@@ -10,10 +10,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-      <Sidebar items={adminNavItems} brandLabel="RevNetwork Admin" brandHref="/admin" />
+      <Sidebar sections={adminNavSections} brandLabel="RevNetwork Admin" brandHref="/admin" />
       <div className="flex min-h-screen flex-1 flex-col">
         <Topbar
-          navItems={adminNavItems}
+          navSections={adminNavSections}
           brandLabel="RevNetwork Admin"
           notifications={notifications}
           notificationsHref="/admin"

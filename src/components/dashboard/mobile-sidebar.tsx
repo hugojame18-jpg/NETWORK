@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
-import { SidebarNav, type NavItem } from "./sidebar-nav";
+import { SidebarNav, type NavSection } from "./sidebar-nav";
 
-export function MobileSidebar({ items, brandLabel }: { items: NavItem[]; brandLabel: string }) {
+export function MobileSidebar({ sections, brandLabel }: { sections: NavSection[]; brandLabel: string }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -28,7 +28,7 @@ export function MobileSidebar({ items, brandLabel }: { items: NavItem[]; brandLa
           </SheetTitle>
         </SheetHeader>
         <div className="px-3 py-2" onClick={() => setOpen(false)}>
-          <SidebarNav items={items} />
+          <SidebarNav sections={sections} />
         </div>
       </SheetContent>
     </Sheet>
