@@ -18,6 +18,7 @@ import { StatsPeriodSelector } from "@/components/dashboard/stats-period-selecto
 import { Metric } from "@/components/dashboard/metric-card";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
+import { PeriodChart } from "@/components/dashboard/period-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -64,6 +65,16 @@ export default async function PublisherStatsPage({ searchParams }: PageProps) {
   const { start, end } = resolveStatsPeriod(period, from, to);
   const { rows, totals } = await getStatsForPeriod(publisher.id, start, end);
 
+  // The chart reads the same rows as the table below, so the two can never
+  // disagree; it just needs the calendar day as a plain string.
+  const points = rows.map((row) => ({
+    date: row.date.toISOString().slice(0, 10),
+    clicks: row.clicks,
+    hosts: row.hosts,
+    conversions: row.conversions,
+    revenue: row.revenue,
+  }));
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -102,6 +113,17 @@ export default async function PublisherStatsPage({ searchParams }: PageProps) {
           icon={<Percent />}
         />
       </div>
+
+      {points.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Évolution sur la période</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PeriodChart data={points} />
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

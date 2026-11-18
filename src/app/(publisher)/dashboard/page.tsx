@@ -40,7 +40,7 @@ const HOME_SERIES: ChartSeriesConfig[] = [
   {
     key: "revenue",
     label: "Gains ($)",
-    color: "var(--chart-5)",
+    color: "var(--chart-1)",
     axis: "right",
   },
 ];

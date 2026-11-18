@@ -36,13 +36,13 @@ export interface ChartSeriesConfig {
 /* Series colours come from the theme's chart ramp, so the graph belongs to the
    same room as the rest of the page instead of importing a stock palette. */
 const DEFAULT_SERIES: ChartSeriesConfig[] = [
-  { key: "clicks", label: "Clics", color: "var(--chart-1)" },
+  { key: "clicks", label: "Clics", color: "var(--chart-3)" },
   { key: "leads", label: "Leads", color: "var(--chart-2)" },
   { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
   {
     key: "commissions",
     label: "Commissions ($)",
-    color: "var(--chart-5)",
+    color: "var(--chart-1)",
     axis: "right",
   },
 ];
@@ -60,14 +60,17 @@ interface TooltipEntry {
 }
 
 /** Recharts' default tooltip is a white box with a border; this one is ours. */
-function ChartTooltip({
+export function ChartTooltip({
   active,
   payload,
   label,
+  formatValue,
 }: {
   active?: boolean;
   payload?: TooltipEntry[];
   label?: string | number;
+  /** Lets a caller render euros as euros instead of a bare number. */
+  formatValue?: (value: number) => string;
 }) {
   if (!active || !payload?.length) return null;
 
@@ -85,7 +88,11 @@ function ChartTooltip({
               aria-hidden
             />
             <span className="text-muted-foreground">{entry.name}</span>
-            <span className="num ml-auto font-medium">{entry.value}</span>
+            <span className="num ml-auto font-medium">
+              {formatValue && typeof entry.value === "number"
+                ? formatValue(entry.value)
+                : entry.value}
+            </span>
           </div>
         ))}
       </div>

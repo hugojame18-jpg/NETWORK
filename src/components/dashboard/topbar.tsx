@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import type { NavSection } from "./sidebar-nav";
 import { MobileSidebar } from "./mobile-sidebar";
-import { ThemeToggle } from "./theme-toggle";
 import {
   NotificationsBell,
   type NotificationPreview,
@@ -71,7 +70,6 @@ export function Topbar({
       </div>
 
       <div className="flex shrink-0 items-center gap-1">
-        <ThemeToggle />
         <NotificationsBell
           notifications={notifications}
           notificationsHref={notificationsHref}

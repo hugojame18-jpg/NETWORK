@@ -38,10 +38,14 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <SessionProvider>
+          {/* The dashboards are light only — there is no theme switch any
+              more, and a preference stored by an earlier visit must not bring
+              the dark build back. The marketing landing stays dark through its
+              own `dark` wrapper, which is plain CSS and unaffected by this. */}
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
-            enableSystem
+            forcedTheme="light"
+            enableSystem={false}
             disableTransitionOnChange
           >
             <TooltipProvider delay={150}>
