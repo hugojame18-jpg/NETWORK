@@ -245,6 +245,13 @@ model Publisher {
   referredBy   Publisher?  @relation("PublisherReferrals", fields: [referredById], references: [id], onDelete: SetNull)
   referrals    Publisher[] @relation("PublisherReferrals")
 
+  // Value this affiliate's traffic carries as sub3. The upstream network
+  // echoes it back on its postback, which is how an incoming conversion finds
+  // the right account. Random rather than sequential, so nobody can claim
+  // someone else's conversions by guessing a number. Nullable because it is
+  // assigned lazily to accounts that existed before postbacks.
+  postbackToken String? @unique
+
   paymentMethod  PaymentMethod?
   paymentDetails Json?
 
@@ -260,6 +267,7 @@ model Publisher {
   payments       Payment[]
   dailyStats     PublisherDailyStat[]
   siteRequests   SiteRequest[]
+  postbackHits   PostbackHit[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -640,4 +648,50 @@ model AuditLog {
   @@index([actorId])
   @@index([targetType, targetId])
   @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Global postback
+// ---------------------------------------------------------------------------
+
+enum PostbackStatus {
+  ACCEPTED
+  DUPLICATE
+  UNKNOWN_TOKEN
+  UNAUTHORIZED
+  INVALID
+}
+
+/// Every call to the global postback endpoint, counted or not. These calls turn
+/// directly into money owed, so there has to be a raw record of what arrived,
+/// from where, and why it was or was not accepted — otherwise a network firing
+/// a malformed postback is invisible until an affiliate complains.
+///
+/// Deliberately NOT unique on (publisherId, transactionId): a repeat delivery
+/// has to be storable precisely so it can be seen, so duplicates are detected
+/// in code against the accepted rows and then logged as DUPLICATE.
+model PostbackHit {
+  id String @id @default(cuid())
+
+  publisherId String?
+  publisher   Publisher? @relation(fields: [publisherId], references: [id], onDelete: SetNull)
+
+  status        PostbackStatus
+  sub3          String?
+  amount        Decimal?       @db.Decimal(12, 2)
+  transactionId String?
+  offerName     String?
+
+  /// The query string exactly as received, so a malformed call can be
+  /// diagnosed without asking the network to fire another one.
+  rawQuery String
+  ip       String?
+  message  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([publisherId, createdAt])
+  @@index([status, createdAt])
+  @@index([publisherId, transactionId])
 }

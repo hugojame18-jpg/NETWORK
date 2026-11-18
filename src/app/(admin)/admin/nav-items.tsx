@@ -13,6 +13,7 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  Webhook,
 } from "lucide-react";
 import type { NavSection } from "@/components/dashboard/sidebar-nav";
 
@@ -53,6 +54,12 @@ export const adminNavSections: NavSection[] = [
         label: "Demandes de sites",
         icon: <MonitorSmartphone />,
       },
+    ],
+  },
+  {
+    title: "Tracking",
+    items: [
+      { href: "/admin/postback", label: "Global postback", icon: <Webhook /> },
     ],
   },
   {
