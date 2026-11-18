@@ -119,6 +119,14 @@ export default async function AdminPostbackPage() {
           <CardTitle>Le sub3 de chaque affilié</CardTitle>
         </CardHeader>
         <CardContent className="px-0">
+          <p className="px-6 pb-4 text-sm text-muted-foreground">
+            Tu n&apos;as rien à ajouter à la main : le lien que tu délivres à un
+            affilié repart vers lui avec{" "}
+            <code className="rounded bg-muted px-1 py-0.5 text-xs">
+              &amp;sub3=
+            </code>
+            son jeton déjà en place. Colle l&apos;URL du réseau telle quelle.
+          </p>
           {publishers.length === 0 ? (
             <EmptyState
               icon={<Webhook />}

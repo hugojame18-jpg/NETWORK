@@ -14,6 +14,7 @@ import {
   getPublisherByUserId,
   getExistingLink,
 } from "@/lib/data/publisher";
+import { publisherPostbackToken, withSub3 } from "@/lib/postback";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GenerateLinkButton } from "@/components/dashboard/generate-link-button";
@@ -43,7 +44,10 @@ export default async function OfferDetailPage({
   ]);
   if (!offer || offer.status !== "ACTIVE") notFound();
 
-  const existingLink = await getExistingLink(publisher.id, offer.id);
+  const [existingLink, sub3] = await Promise.all([
+    getExistingLink(publisher.id, offer.id),
+    publisherPostbackToken(publisher.id, publisher.postbackToken),
+  ]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -136,7 +140,9 @@ export default async function OfferDetailPage({
                 existingLink
                   ? {
                       status: existingLink.status,
-                      targetUrl: existingLink.targetUrl,
+                      targetUrl: existingLink.targetUrl
+                        ? withSub3(existingLink.targetUrl, sub3)
+                        : null,
                       token: existingLink.token,
                     }
                   : null

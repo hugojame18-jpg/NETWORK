@@ -7,6 +7,7 @@ import {
   getPublisherByUserId,
   getPublisherLinks,
 } from "@/lib/data/publisher";
+import { publisherPostbackToken, withSub3 } from "@/lib/postback";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { GenerateLinkButton } from "@/components/dashboard/generate-link-button";
@@ -59,9 +60,10 @@ export default async function OffersPage({ searchParams }: OffersPageProps) {
   const publisher = await getPublisherByUserId(user.id);
   const { category } = await searchParams;
 
-  const [offers, links] = await Promise.all([
+  const [offers, links, sub3] = await Promise.all([
     getAvailableOffers({ category }),
     getPublisherLinks(publisher.id),
+    publisherPostbackToken(publisher.id, publisher.postbackToken),
   ]);
 
   const linkByOffer = new Map(links.map((link) => [link.offerId, link]));
@@ -184,7 +186,9 @@ export default async function OffersPage({ searchParams }: OffersPageProps) {
                         existingLink
                           ? {
                               status: existingLink.status,
-                              targetUrl: existingLink.targetUrl,
+                              targetUrl: existingLink.targetUrl
+                                ? withSub3(existingLink.targetUrl, sub3)
+                                : null,
                               token: existingLink.token,
                             }
                           : null

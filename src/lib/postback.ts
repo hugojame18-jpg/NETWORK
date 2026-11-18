@@ -151,3 +151,55 @@ export function todayUtc(): Date {
   const now = new Date();
   return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 }
+
+/**
+ * This affiliate's sub3, creating it if the account never got one.
+ *
+ * `ensurePostbackTokens()` fills the gaps when the admin opens the postback
+ * page, but an affiliate can reach their offers first — and a link handed out
+ * without a sub3 produces conversions nobody can be paid for.
+ */
+export async function publisherPostbackToken(
+  publisherId: string,
+  known?: string | null,
+): Promise<string | null> {
+  if (known) return known;
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      const updated = await prisma.publisher.update({
+        where: { id: publisherId },
+        data: { postbackToken: newToken() },
+        select: { postbackToken: true },
+      });
+      return updated.postbackToken;
+    } catch {
+      // Unique collision, or the row vanished — retry with a fresh token.
+    }
+  }
+  return null;
+}
+
+/**
+ * The link an affiliate actually shares.
+ *
+ * The advertiser URL the admin delivered, carrying this affiliate's sub3 so
+ * the network echoes it back on conversion. Without it every postback arrives
+ * anonymous and no conversion can be attributed.
+ */
+export function withSub3(
+  targetUrl: string,
+  token: string | null | undefined,
+): string {
+  if (!token) return targetUrl;
+  try {
+    const url = new URL(targetUrl);
+    // An admin who already wrote a sub3 by hand knows something we don't.
+    if (url.searchParams.has("sub3")) return targetUrl;
+    url.searchParams.set("sub3", token);
+    return url.toString();
+  } catch {
+    // Not a URL we can parse: hand it back untouched rather than corrupt it.
+    return targetUrl;
+  }
+}

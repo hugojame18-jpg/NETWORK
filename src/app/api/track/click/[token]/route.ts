@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { UAParser } from "ua-parser-js";
 import { prisma } from "@/lib/prisma";
+import { withSub3 } from "@/lib/postback";
 import { getClientIp, getClientCountry, hashIp } from "@/lib/ip";
 import {
   isBotUserAgent,
@@ -33,7 +34,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 
   const link = await prisma.affiliateLink.findUnique({
     where: { token },
-    include: { offer: true },
+    include: { offer: true, publisher: { select: { postbackToken: true } } },
   });
 
   if (!link || link.offer.status !== "ACTIVE") {
@@ -89,10 +90,17 @@ export async function GET(request: Request, { params }: RouteParams) {
     return created;
   });
 
-  const destination = new URL(link.offer.landingUrl);
-  destination.searchParams.set("click_id", click.id);
+  // The advertiser echoes both back on conversion: click_id to our own
+  // /api/track/conversion, sub3 to the global postback. A visitor who reaches
+  // the landing page without sub3 can convert without anyone being paid.
+  const destination = withSub3(
+    link.offer.landingUrl,
+    link.publisher.postbackToken,
+  );
+  const target = new URL(destination);
+  target.searchParams.set("click_id", click.id);
 
-  const response = NextResponse.redirect(destination, { status: 302 });
+  const response = NextResponse.redirect(target, { status: 302 });
   response.cookies.set(`ccs_click_${link.offerId}`, click.id, {
     maxAge: link.offer.cookieDays * 24 * 60 * 60,
     httpOnly: true,
