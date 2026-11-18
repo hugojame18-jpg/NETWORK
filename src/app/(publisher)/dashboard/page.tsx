@@ -113,7 +113,6 @@ export default async function PublisherHomePage() {
         today={revenue.today}
         total={revenue.total}
         balance={ledger.balance}
-        rate={revenue.rate}
         formatValue={formatCurrency}
       />
 

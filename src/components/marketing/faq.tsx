@@ -10,10 +10,11 @@ import { SUPPORT_TELEGRAM } from "@/lib/contact";
 import { SectionHeading } from "./section-heading";
 
 /**
- * Answers checked against what the product does, including the one that is
- * less flattering: a referred affiliate keeps 40 %, not 50 %. Saying "50 %"
- * on the page and showing 40 % in the dashboard is the kind of surprise that
- * costs more than the sentence that prevents it.
+ * Answers checked against what the product does.
+ *
+ * No commission percentage appears here, on purpose: the split between the
+ * network and an affiliate is not public. What someone earns is answered the
+ * way the dashboard answers it — in dollars, per conversion.
  */
 const FAQS = [
   {
@@ -24,7 +25,7 @@ const FAQS = [
   {
     question: "Combien est-ce que je touche ?",
     answer:
-      "50 % de ce que l'annonceur verse pour chaque conversion validée. Le montant affiché dans ton dashboard est déjà ta part. Une exception : si tu t'inscris avec le code d'un parrain, 10 points reviennent à ce parrain et tu gardes 40 %.",
+      "Tu es payé pour chaque conversion validée. Le montant dépend de l'offre, et ton dashboard affiche directement ce qui te revient, conversion par conversion.",
   },
   {
     question: "Quand une conversion apparaît-elle ?",
@@ -39,7 +40,7 @@ const FAQS = [
   {
     question: "Comment fonctionne le parrainage ?",
     answer:
-      "Ton code de parrainage est dans l'onglet Récompenses. Chaque affilié qui s'inscrit avec te rapporte 10 % du chiffre d'affaires qu'il génère. Cette part est prise sur sa commission à lui, pas ajoutée par le réseau.",
+      "Ton code de parrainage est dans l'onglet Récompenses. Chaque affilié qui s'inscrit avec te rapporte 10 % du chiffre d'affaires qu'il génère, aussi longtemps qu'il tourne.",
   },
   {
     question: "Est-ce que je dois créer mes liens moi-même ?",

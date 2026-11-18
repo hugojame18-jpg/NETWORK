@@ -16,7 +16,7 @@ const POINTS = [
   },
   {
     title: "Ce que tu touches",
-    body: "50 % du montant que l'annonceur verse pour chaque conversion. Le chiffre affiché dans ton dashboard est déjà ta part, pas le brut.",
+    body: "Un montant pour chaque conversion validée, qui dépend de l'offre. Ton dashboard affiche directement ce qui te revient, conversion par conversion.",
   },
   {
     title: "D'où vient le trafic",

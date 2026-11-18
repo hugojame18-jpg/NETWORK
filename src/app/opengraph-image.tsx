@@ -7,7 +7,7 @@ import { ImageResponse } from "next/og";
  * the hero, and a picture that has to be redrawn by hand every time the copy
  * changes is a picture that ends up out of date.
  */
-export const alt = "RevNetwork — Ton trafic rapporte, tu en gardes la moitié";
+export const alt = "RevNetwork — Ton trafic rapporte, on te le paie";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -60,7 +60,7 @@ export default function OpenGraphImage() {
               color: "#8f94ff",
             }}
           >
-            Tu en gardes la moitié.
+            On te le paie.
           </div>
         </div>
 
@@ -72,7 +72,7 @@ export default function OpenGraphImage() {
             color: "#a9adc4",
           }}
         >
-          <div style={{ display: "flex" }}>50 % de chaque conversion</div>
+          <div style={{ display: "flex" }}>Payé à la conversion</div>
           <div style={{ display: "flex" }}>Conversions en direct</div>
           <div style={{ display: "flex" }}>Parrainage 10 %</div>
         </div>

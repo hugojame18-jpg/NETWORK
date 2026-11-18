@@ -7,7 +7,7 @@ import { Check } from "lucide-react";
    earlier copy promised round-the-clock support, same-day payouts and
    worldwide coverage — none of which anything here could back up. */
 const DIAGONAL_WORDS = [
-  "50 % pour toi",
+  "Payé à la conversion",
   "Conversions en direct",
   "Parrainage 10 %",
   "Formation incluse",
@@ -15,7 +15,7 @@ const DIAGONAL_WORDS = [
 ];
 
 const POINTS = [
-  "Tu touches 50 % de ce que rapporte chaque conversion, affiché au dollar près.",
+  "Tu es payé à chaque conversion validée, et ce qu'elle te rapporte est affiché au dollar près.",
   "Une conversion validée apparaît dans ton dashboard sans attendre la fin de journée.",
   "Clics, conversions, taux et gains : tes chiffres jour par jour, et ton solde à tout moment.",
   "Des vidéos de formation pour lancer ton trafic, accessibles dès l'inscription.",

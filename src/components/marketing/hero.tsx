@@ -8,12 +8,12 @@ import { DashboardMockup } from "./dashboard-mockup";
 import { Particles } from "./particles";
 
 /**
- * Three figures, each one a rule the product actually enforces — the
- * commission rate, the referral share, and how fast a conversion shows up.
- * Nothing here is a promise about volume or earnings.
+ * Three facts, each one something the product actually does. The commission
+ * split is deliberately not among them: what an affiliate is paid is shown to
+ * them in their dashboard, in dollars, and is not advertised as a percentage.
  */
 const FACTS = [
-  { value: "50 %", label: "de chaque conversion, pour toi" },
+  { value: "Gratuit", label: "inscription et accès immédiats" },
   { value: "10 %", label: "du chiffre de chaque affilié que tu parraines" },
   { value: "En direct", label: "une conversion validée s'affiche aussitôt" },
 ];
@@ -49,7 +49,7 @@ export function Hero() {
         >
           Ton trafic rapporte.
           <br />
-          <span className="text-gradient-brand">Tu en gardes la moitié.</span>
+          <span className="text-gradient-brand">On te le paie.</span>
         </motion.h1>
 
         <motion.p
@@ -59,9 +59,8 @@ export function Hero() {
           className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground"
         >
           RevNetwork te donne ton lien, compte chaque conversion dès
-          qu&apos;elle est validée et te reverse 50 % de ce qu&apos;elle
-          rapporte. L&apos;inscription est gratuite et ton dashboard est ouvert
-          tout de suite.
+          qu&apos;elle est validée et te paie pour chacune. L&apos;inscription
+          est gratuite et ton dashboard est ouvert tout de suite.
         </motion.p>
 
         <motion.div

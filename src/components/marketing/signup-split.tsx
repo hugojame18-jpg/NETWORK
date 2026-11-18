@@ -43,7 +43,7 @@ export function SignupSplit() {
             Prêt à envoyer ton premier clic ?
           </h2>
           <p className="max-w-md text-sm text-muted-foreground">
-            Compte gratuit, dashboard ouvert tout de suite, 50 % de chaque
+            Compte gratuit, dashboard ouvert tout de suite, payé à chaque
             conversion.
           </p>
           <Button

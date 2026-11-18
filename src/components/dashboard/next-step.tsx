@@ -3,15 +3,17 @@ import { ArrowRight } from "lucide-react";
 
 /**
  * The headline block of the affiliate home: what they earned, stated plainly,
- * with the split spelled out so nobody has to ask why the figure differs from
- * the gross they saw on the offer.
+ * in dollars.
+ *
+ * The commission split is not shown. Every figure on an affiliate's screens is
+ * already their share; the percentage it was computed with is the network's
+ * business and stays on the admin side.
  */
 export function EarningsHero({
   month,
   today,
   total,
   balance,
-  rate,
   formatValue,
 }: {
   month: number;
@@ -19,23 +21,15 @@ export function EarningsHero({
   total: number;
   /** What is still to be paid out: earned so far, less what was already sent. */
   balance: number;
-  rate: number;
   formatValue: (value: number) => string;
 }) {
   return (
     <div className="surface-brand relative overflow-hidden p-6 sm:p-7">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="eyebrow">Tes gains ce mois-ci</p>
-          <p className="num mt-2.5 text-[42px] leading-none font-semibold sm:text-[48px]">
-            {formatValue(month)}
-          </p>
-        </div>
-
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-          {Math.round(rate * 100)} % de chaque conversion
-        </span>
+      <div className="min-w-0">
+        <p className="eyebrow">Tes gains ce mois-ci</p>
+        <p className="num mt-2.5 text-[42px] leading-none font-semibold sm:text-[48px]">
+          {formatValue(month)}
+        </p>
       </div>
 
       <div className="rule-fade my-6" />

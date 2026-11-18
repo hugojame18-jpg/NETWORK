@@ -18,12 +18,12 @@ const geistMono = Geist_Mono({
 });
 
 const DESCRIPTION =
-  "Réseau d'affiliation CC Submit. Tu envoies ton trafic, chaque conversion validée s'affiche en direct et tu en gardes 50 %. Inscription gratuite.";
+  "Réseau d'affiliation CC Submit. Tu envoies ton trafic, chaque conversion validée s'affiche en direct et t'est payée. Inscription gratuite.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
   title: {
-    default: "RevNetwork — Ton trafic rapporte, tu en gardes la moitié",
+    default: "RevNetwork — Ton trafic rapporte, on te le paie",
     template: "%s · RevNetwork",
   },
   description: DESCRIPTION,
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "RevNetwork",
     locale: "fr_FR",
-    title: "RevNetwork — Ton trafic rapporte, tu en gardes la moitié",
+    title: "RevNetwork — Ton trafic rapporte, on te le paie",
     description: DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },
