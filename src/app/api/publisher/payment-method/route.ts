@@ -24,7 +24,10 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/publisher/payment-method]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

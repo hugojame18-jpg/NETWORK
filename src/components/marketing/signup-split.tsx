@@ -30,7 +30,9 @@ export function SignupSplit() {
             transition={{ duration: 0.5, delay: i * 0.1 }}
             className={`${block.className} flex flex-col items-center justify-center px-6 py-20 text-center text-white`}
           >
-            <h3 className="text-2xl font-bold tracking-tight uppercase">{block.role}</h3>
+            <h3 className="text-2xl font-bold tracking-tight uppercase">
+              {block.role}
+            </h3>
             <p className="mt-3 text-sm text-white/90">{block.tagline}</p>
             <Button
               size="lg"
@@ -50,19 +52,29 @@ export function SignupSplit() {
             <div
               key={row}
               className="animate-marquee flex w-max"
-              style={{ animationDuration: `${26 + row * 8}s`, animationDirection: row % 2 === 1 ? "reverse" : "normal" }}
+              style={{
+                animationDuration: `${26 + row * 8}s`,
+                animationDirection: row % 2 === 1 ? "reverse" : "normal",
+              }}
             >
               <span className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl">
                 {"S'inscrire · ".repeat(10)}
               </span>
-              <span aria-hidden className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl">
+              <span
+                aria-hidden
+                className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl"
+              >
                 {"S'inscrire · ".repeat(10)}
               </span>
             </div>
           ))}
         </div>
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <Button size="lg" className="pointer-events-auto h-12 px-8 text-base" render={<Link href="/sign-up" />}>
+          <Button
+            size="lg"
+            className="pointer-events-auto h-12 px-8 text-base"
+            render={<Link href="/sign-up" />}
+          >
             Rejoindre RevNetwork
           </Button>
         </div>

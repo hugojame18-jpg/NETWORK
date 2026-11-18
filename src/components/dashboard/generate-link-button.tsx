@@ -17,7 +17,10 @@ interface GenerateLinkButtonProps {
   initialLink?: LinkState | null;
 }
 
-export function GenerateLinkButton({ offerId, initialLink }: GenerateLinkButtonProps) {
+export function GenerateLinkButton({
+  offerId,
+  initialLink,
+}: GenerateLinkButtonProps) {
   const [link, setLink] = useState<LinkState | null>(initialLink ?? null);
   const [copied, setCopied] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -26,7 +29,9 @@ export function GenerateLinkButton({ offerId, initialLink }: GenerateLinkButtonP
   // Prefer the real advertiser URL the admin delivered; fall back to the
   // internal tracking URL for legacy links created before the request flow.
   const deliveredUrl =
-    link?.status === "DELIVERED" ? link.targetUrl || `${origin}/api/track/click/${link.token}` : null;
+    link?.status === "DELIVERED"
+      ? link.targetUrl || `${origin}/api/track/click/${link.token}`
+      : null;
 
   function request() {
     startTransition(async () => {
@@ -67,8 +72,17 @@ export function GenerateLinkButton({ offerId, initialLink }: GenerateLinkButtonP
         <code className="max-w-[220px] truncate rounded-md border border-border bg-muted px-2 py-1.5 text-xs">
           {deliveredUrl}
         </code>
-        <Button size="icon-sm" variant="outline" onClick={copy} aria-label="Copier le lien">
-          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+        <Button
+          size="icon-sm"
+          variant="outline"
+          onClick={copy}
+          aria-label="Copier le lien"
+        >
+          {copied ? (
+            <Check className="h-3.5 w-3.5" />
+          ) : (
+            <Copy className="h-3.5 w-3.5" />
+          )}
         </Button>
       </div>
     );
@@ -86,7 +100,11 @@ export function GenerateLinkButton({ offerId, initialLink }: GenerateLinkButtonP
 
   return (
     <Button size="sm" onClick={request} disabled={isPending}>
-      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Link2 className="h-4 w-4" />}
+      {isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <Link2 className="h-4 w-4" />
+      )}
       Demander mon lien
     </Button>
   );

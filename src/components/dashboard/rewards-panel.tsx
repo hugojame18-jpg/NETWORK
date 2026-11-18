@@ -26,7 +26,14 @@ import { REFERRAL_RATE } from "@/lib/loyalty";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatDate, formatNumber } from "@/lib/format";
 
@@ -56,10 +63,21 @@ export interface RewardsPanelProps {
   referralEarnings: number;
 }
 
-function TierMedallion({ gradient, label }: { gradient: string; label: string }) {
+function TierMedallion({
+  gradient,
+  label,
+}: {
+  gradient: string;
+  label: string;
+}) {
   return (
     <div className="relative">
-      <div className={cn("flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg", gradient)}>
+      <div
+        className={cn(
+          "flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg",
+          gradient,
+        )}
+      >
         <Crown className="h-8 w-8 text-white/90 drop-shadow" />
       </div>
       <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-background px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide shadow">
@@ -69,26 +87,42 @@ function TierMedallion({ gradient, label }: { gradient: string; label: string })
   );
 }
 
-function TierCard({ tier, bonusLifetime, bonusThisMonth }: Pick<RewardsPanelProps, "tier" | "bonusLifetime" | "bonusThisMonth">) {
+function TierCard({
+  tier,
+  bonusLifetime,
+  bonusThisMonth,
+}: Pick<RewardsPanelProps, "tier" | "bonusLifetime" | "bonusThisMonth">) {
   const { current, next, progress, remaining } = tier;
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-      <Card className="shadow-premium overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <Card className="overflow-hidden">
         <CardContent className="p-6">
           <div className="flex items-center gap-5">
             <TierMedallion gradient={current.gradient} label={current.label} />
             <div className="min-w-0 flex-1">
               <p className="text-sm text-muted-foreground">Votre palier</p>
-              <p className={cn("text-2xl font-bold", current.accent)}>{current.label}</p>
+              <p className={cn("text-2xl font-bold", current.accent)}>
+                {current.label}
+              </p>
               <p className="mt-0.5 text-sm text-muted-foreground">
                 Bonus de payout&nbsp;
-                <span className="font-semibold text-foreground">+{(current.bonusRate * 100).toFixed(0)}%</span>
+                <span className="font-semibold text-foreground">
+                  +{(current.bonusRate * 100).toFixed(0)}%
+                </span>
               </p>
             </div>
             <div className="hidden text-right sm:block">
               <p className="text-xs text-muted-foreground">Bonus cumulé</p>
-              <p className="text-xl font-semibold text-success">{formatCurrency(bonusLifetime)}</p>
-              <p className="text-xs text-muted-foreground">dont {formatCurrency(bonusThisMonth)} ce mois</p>
+              <p className="text-xl font-semibold text-success">
+                {formatCurrency(bonusLifetime)}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                dont {formatCurrency(bonusThisMonth)} ce mois
+              </p>
             </div>
           </div>
 
@@ -96,10 +130,16 @@ function TierCard({ tier, bonusLifetime, bonusThisMonth }: Pick<RewardsPanelProp
             <div className="mt-6">
               <div className="mb-1.5 flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">
-                  Prochain palier&nbsp;: <span className="font-medium text-foreground">{next.label}</span> (+
+                  Prochain palier&nbsp;:{" "}
+                  <span className="font-medium text-foreground">
+                    {next.label}
+                  </span>{" "}
+                  (+
                   {(next.bonusRate * 100).toFixed(0)}%)
                 </span>
-                <span className="font-medium">{formatCurrency(remaining)} restants</span>
+                <span className="font-medium">
+                  {formatCurrency(remaining)} restants
+                </span>
               </div>
               <Progress value={progress} className="h-2" />
             </div>
@@ -124,17 +164,25 @@ function BadgeTile({ badge, index }: { badge: BadgeData; index: number }) {
       transition={{ duration: 0.3, delay: index * 0.04 }}
       className={cn(
         "hover-lift relative flex flex-col items-center rounded-xl border p-4 text-center",
-        badge.achieved ? "border-primary/40 bg-primary/5" : "border-border bg-card",
+        badge.achieved
+          ? "border-primary/40 bg-primary/5"
+          : "border-border bg-card",
       )}
       title={badge.description}
     >
       <div
         className={cn(
           "flex h-11 w-11 items-center justify-center rounded-full",
-          badge.achieved ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground",
+          badge.achieved
+            ? "bg-primary/15 text-primary"
+            : "bg-muted text-muted-foreground",
         )}
       >
-        {badge.achieved ? <Icon className="h-5 w-5" /> : <Lock className="h-4 w-4" />}
+        {badge.achieved ? (
+          <Icon className="h-5 w-5" />
+        ) : (
+          <Lock className="h-4 w-4" />
+        )}
       </div>
       <p className="mt-2 text-xs font-semibold leading-tight">{badge.label}</p>
       {badge.achieved ? (
@@ -156,7 +204,10 @@ function ReferralCard({
   referrals,
   referralCount,
   referralEarnings,
-}: Pick<RewardsPanelProps, "appUrl" | "referralCode" | "referrals" | "referralCount" | "referralEarnings">) {
+}: Pick<
+  RewardsPanelProps,
+  "appUrl" | "referralCode" | "referrals" | "referralCount" | "referralEarnings"
+>) {
   const [copied, setCopied] = useState(false);
   const link = `${appUrl}/sign-up?ref=${referralCode}`;
 
@@ -167,7 +218,7 @@ function ReferralCard({
   }
 
   return (
-    <Card className="shadow-premium">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -176,31 +227,46 @@ function ReferralCard({
           Parrainage
         </CardTitle>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gagnez {(REFERRAL_RATE * 100).toFixed(0)}% des revenus de chaque affilié que vous parrainez, à vie.
+          Gagnez {(REFERRAL_RATE * 100).toFixed(0)}% des revenus de chaque
+          affilié que vous parrainez, à vie.
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-border bg-muted/40 p-3">
             <p className="text-xs text-muted-foreground">Filleuls</p>
-            <p className="text-xl font-semibold">{formatNumber(referralCount)}</p>
+            <p className="text-xl font-semibold">
+              {formatNumber(referralCount)}
+            </p>
           </div>
           <div className="rounded-xl border border-border bg-muted/40 p-3">
             <p className="text-xs text-muted-foreground">Gains de parrainage</p>
-            <p className="text-xl font-semibold text-success">{formatCurrency(referralEarnings)}</p>
+            <p className="text-xl font-semibold text-success">
+              {formatCurrency(referralEarnings)}
+            </p>
           </div>
           <div className="rounded-xl border border-border bg-muted/40 p-3">
             <p className="text-xs text-muted-foreground">Votre code</p>
-            <p className="text-xl font-semibold tracking-widest">{referralCode}</p>
+            <p className="text-xl font-semibold tracking-widest">
+              {referralCode}
+            </p>
           </div>
         </div>
 
         <div>
-          <p className="mb-1.5 text-xs font-medium text-muted-foreground">Votre lien de parrainage</p>
+          <p className="mb-1.5 text-xs font-medium text-muted-foreground">
+            Votre lien de parrainage
+          </p>
           <div className="flex items-center gap-2">
-            <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-muted px-3 py-2 text-xs">{link}</code>
+            <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-muted px-3 py-2 text-xs">
+              {link}
+            </code>
             <Button size="sm" variant="outline" onClick={copy}>
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? (
+                <Check className="h-3.5 w-3.5" />
+              ) : (
+                <Copy className="h-3.5 w-3.5" />
+              )}
               {copied ? "Copié" : "Copier"}
             </Button>
           </div>
@@ -220,10 +286,18 @@ function ReferralCard({
               <TableBody>
                 {referrals.map((ref, i) => (
                   <TableRow key={i}>
-                    <TableCell className="font-medium">{ref.displayName}</TableCell>
-                    <TableCell className="text-muted-foreground">{formatDate(ref.joinedAt)}</TableCell>
-                    <TableCell className="text-right">{formatNumber(ref.conversions)}</TableCell>
-                    <TableCell className="text-right font-medium text-success">{formatCurrency(ref.reward)}</TableCell>
+                    <TableCell className="font-medium">
+                      {ref.displayName}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(ref.joinedAt)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatNumber(ref.conversions)}
+                    </TableCell>
+                    <TableCell className="text-right font-medium text-success">
+                      {formatCurrency(ref.reward)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -232,9 +306,12 @@ function ReferralCard({
         ) : (
           <div className="rounded-xl border border-dashed border-border py-8 text-center">
             <Users className="mx-auto h-7 w-7 text-muted-foreground/40" />
-            <p className="mt-2 text-sm font-medium">Aucun filleul pour l&apos;instant</p>
+            <p className="mt-2 text-sm font-medium">
+              Aucun filleul pour l&apos;instant
+            </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Partagez votre lien pour recruter des affiliés et toucher des commissions récurrentes.
+              Partagez votre lien pour recruter des affiliés et toucher des
+              commissions récurrentes.
             </p>
           </div>
         )}
@@ -248,9 +325,13 @@ export function RewardsPanel(props: RewardsPanelProps) {
   const unlocked = props.badges.filter((b) => b.achieved).length;
   return (
     <div className="space-y-6">
-      <TierCard tier={props.tier} bonusLifetime={props.bonusLifetime} bonusThisMonth={props.bonusThisMonth} />
+      <TierCard
+        tier={props.tier}
+        bonusLifetime={props.bonusLifetime}
+        bonusThisMonth={props.bonusThisMonth}
+      />
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle className="flex items-center gap-2">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400/15 text-amber-500">

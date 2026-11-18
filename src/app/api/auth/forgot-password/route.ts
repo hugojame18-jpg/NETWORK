@@ -7,18 +7,29 @@ import { forgotPasswordSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
   const ip = getClientIp(request.headers);
-  const limit = await rateLimit(`auth:forgot-password:${ip}`, { limit: 5, windowSeconds: 60 * 15 });
+  const limit = await rateLimit(`auth:forgot-password:${ip}`, {
+    limit: 5,
+    windowSeconds: 60 * 15,
+  });
   if (!limit.success) {
-    return NextResponse.json({ error: "Trop de tentatives. Réessayez plus tard." }, { status: 429 });
+    return NextResponse.json(
+      { error: "Trop de tentatives. Réessayez plus tard." },
+      { status: 429 },
+    );
   }
 
   const body = await request.json().catch(() => null);
   const parsed = forgotPasswordSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Adresse email invalide" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Adresse email invalide" },
+      { status: 400 },
+    );
   }
 
-  const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
+  const user = await prisma.user.findUnique({
+    where: { email: parsed.data.email },
+  });
 
   // Always respond with success, whether or not the account exists — this
   // prevents leaking which email addresses are registered on the platform.

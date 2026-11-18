@@ -15,7 +15,10 @@ export async function POST() {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/publisher/onboarding]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -35,7 +38,10 @@ export async function DELETE() {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[DELETE /api/publisher/onboarding]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

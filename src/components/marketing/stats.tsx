@@ -6,7 +6,13 @@ import { AnimatedCounter } from "./animated-counter";
 const STATS = [
   { value: 4200, suffix: "+", label: "Publishers actifs" },
   { value: 380, suffix: "+", label: "Annonceurs" },
-  { value: 9.4, prefix: "", suffix: "M $", decimals: 1, label: "Commissions versées" },
+  {
+    value: 9.4,
+    prefix: "",
+    suffix: "M $",
+    decimals: 1,
+    label: "Commissions versées",
+  },
   { value: 99.9, suffix: "%", decimals: 1, label: "Disponibilité du tracking" },
 ];
 
@@ -24,7 +30,11 @@ export function Stats() {
             className="text-center"
           >
             <p className="text-gradient-brand text-4xl font-semibold tracking-tight sm:text-5xl">
-              <AnimatedCounter value={stat.value} suffix={stat.suffix} decimals={stat.decimals ?? 0} />
+              <AnimatedCounter
+                value={stat.value}
+                suffix={stat.suffix}
+                decimals={stat.decimals ?? 0}
+              />
             </p>
             <p className="mt-2 text-sm text-muted-foreground">{stat.label}</p>
           </motion.div>

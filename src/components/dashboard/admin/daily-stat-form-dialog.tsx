@@ -6,7 +6,13 @@ import { Loader2, Plus, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -52,7 +58,10 @@ const EMPTY: DailyStatFormValues = {
   revenue: "",
 };
 
-export function DailyStatFormDialog({ publishers, stat }: DailyStatFormDialogProps) {
+export function DailyStatFormDialog({
+  publishers,
+  stat,
+}: DailyStatFormDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -77,18 +86,31 @@ export function DailyStatFormDialog({ publishers, stat }: DailyStatFormDialogPro
         revenue: Number(form.revenue || 0),
       };
 
-      const url = isEdit ? `/api/admin/daily-stats/${stat!.id}` : "/api/admin/daily-stats";
+      const url = isEdit
+        ? `/api/admin/daily-stats/${stat!.id}`
+        : "/api/admin/daily-stats";
       const res = await fetch(url, {
         method: isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(isEdit ? { clicks: payload.clicks, hosts: payload.hosts, conversions: payload.conversions, revenue: payload.revenue } : payload),
+        body: JSON.stringify(
+          isEdit
+            ? {
+                clicks: payload.clicks,
+                hosts: payload.hosts,
+                conversions: payload.conversions,
+                revenue: payload.revenue,
+              }
+            : payload,
+        ),
       });
       const json = await res.json();
       if (!res.ok) {
         toast.error(json.error ?? "Erreur lors de l'enregistrement.");
         return;
       }
-      toast.success(isEdit ? "Statistiques mises à jour." : "Journée enregistrée.");
+      toast.success(
+        isEdit ? "Statistiques mises à jour." : "Journée enregistrée.",
+      );
       setOpen(false);
       if (!isEdit) setForm(EMPTY);
       router.refresh();
@@ -113,9 +135,12 @@ export function DailyStatFormDialog({ publishers, stat }: DailyStatFormDialogPro
       />
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Modifier la journée" : "Saisir les statistiques du jour"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Modifier la journée" : "Saisir les statistiques du jour"}
+          </DialogTitle>
           <DialogDescription>
-            Ces chiffres deviennent immédiatement les statistiques officielles affichées au publisher.
+            Ces chiffres deviennent immédiatement les statistiques officielles
+            affichées au publisher.
           </DialogDescription>
         </DialogHeader>
 
@@ -184,7 +209,9 @@ export function DailyStatFormDialog({ publishers, stat }: DailyStatFormDialogPro
                 min={0}
                 required
                 value={form.conversions}
-                onChange={(e) => setForm({ ...form, conversions: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, conversions: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">

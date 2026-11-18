@@ -4,6 +4,8 @@ import { requireRole } from "@/lib/rbac";
 import { getTrainingVideos } from "@/lib/data/publisher";
 import { Card, CardContent } from "@/components/ui/card";
 import { videoThumbnail, videoHost } from "@/lib/video";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { EmptyState } from "@/components/dashboard/empty-state";
 
 export const metadata: Metadata = { title: "Formation" };
 
@@ -13,12 +15,10 @@ export default async function TrainingPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold">Formation</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Les vidéos du réseau pour apprendre à générer du trafic et convertir. Regarde-les dans l&apos;ordre.
-        </p>
-      </div>
+      <PageHeader
+        title="Formation"
+        description="Les vidéos du réseau pour apprendre à générer du trafic et à convertir. Regarde-les dans l'ordre."
+      />
 
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {videos.map((video, index) => {
@@ -29,7 +29,7 @@ export default async function TrainingPage() {
               href={video.url}
               target="_blank"
               rel="noreferrer"
-              className="group hover-lift shadow-premium flex flex-col overflow-hidden rounded-xl border border-border bg-card"
+              className="group hover-lift flex flex-col overflow-hidden rounded-xl border border-border bg-card"
             >
               <div className="relative flex h-40 items-center justify-center overflow-hidden bg-muted">
                 {thumbnail ? (
@@ -54,11 +54,17 @@ export default async function TrainingPage() {
               </div>
 
               <div className="flex flex-1 flex-col gap-1.5 p-4">
-                <p className="font-semibold group-hover:underline">{video.title}</p>
+                <p className="font-semibold group-hover:underline">
+                  {video.title}
+                </p>
                 {video.description && (
-                  <p className="line-clamp-3 text-sm text-muted-foreground">{video.description}</p>
+                  <p className="line-clamp-3 text-sm text-muted-foreground">
+                    {video.description}
+                  </p>
                 )}
-                <p className="mt-auto pt-2 text-xs text-muted-foreground">{videoHost(video.url)}</p>
+                <p className="mt-auto pt-2 text-xs text-muted-foreground">
+                  {videoHost(video.url)}
+                </p>
               </div>
             </a>
           );
@@ -66,9 +72,13 @@ export default async function TrainingPage() {
       </div>
 
       {videos.length === 0 && (
-        <Card className="shadow-premium">
-          <CardContent className="py-16 text-center text-sm text-muted-foreground">
-            Les premières vidéos de formation arrivent très bientôt.
+        <Card>
+          <CardContent className="px-0">
+            <EmptyState
+              icon={<GraduationCap />}
+              title="La formation arrive"
+              description="Les premières vidéos sont en préparation. En attendant, tu peux déjà demander ton premier lien."
+            />
           </CardContent>
         </Card>
       )}

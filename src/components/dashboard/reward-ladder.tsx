@@ -19,12 +19,13 @@ export function RewardLadder({ prizes, lifetimeRevenue }: RewardLadderProps) {
   const unlockedCount = prizes.filter((prize) => prize.unlocked).length;
 
   return (
-    <Card className="shadow-premium">
+    <Card>
       <CardHeader>
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <CardTitle>Récompenses à débloquer</CardTitle>
           <p className="text-xs text-muted-foreground">
-            {unlockedCount} / {prizes.length} débloquée{unlockedCount > 1 ? "s" : ""}
+            {unlockedCount} / {prizes.length} débloquée
+            {unlockedCount > 1 ? "s" : ""}
           </p>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -60,14 +61,20 @@ export function RewardLadder({ prizes, lifetimeRevenue }: RewardLadderProps) {
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <p className={`font-semibold ${prize.unlocked ? "" : "text-muted-foreground"}`}>{prize.label}</p>
+                    <p
+                      className={`font-semibold ${prize.unlocked ? "" : "text-muted-foreground"}`}
+                    >
+                      {prize.label}
+                    </p>
                     {prize.unlocked ? (
                       <Check className="h-3.5 w-3.5 shrink-0 text-primary" />
                     ) : (
                       <Lock className="h-3 w-3 shrink-0 text-muted-foreground" />
                     )}
                   </div>
-                  <p className="mt-0.5 text-xs text-muted-foreground">{prize.description}</p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    {prize.description}
+                  </p>
                 </div>
               </div>
 

@@ -13,10 +13,21 @@ import {
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { OnboardingTour } from "@/components/dashboard/onboarding-tour";
 import { NextStep, EarningsHero } from "@/components/dashboard/next-step";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { TopPerformers } from "@/components/dashboard/top-performers";
-import { PerformanceChart, type ChartSeriesConfig } from "@/components/dashboard/performance-chart";
+import {
+  PerformanceChart,
+  type ChartSeriesConfig,
+} from "@/components/dashboard/performance-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatCurrency, formatCalendarDate, formatNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Accueil" };
@@ -25,21 +36,22 @@ export const metadata: Metadata = { title: "Accueil" };
 // home chart shows the two the affiliate steers on. The full breakdown is one
 // click away in Statistiques.
 const HOME_SERIES: ChartSeriesConfig[] = [
-  { key: "conversions", label: "Conversions", color: "#34d399" },
-  { key: "revenue", label: "Gains ($)", color: "#fbbf24" },
+  { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
+  { key: "revenue", label: "Gains ($)", color: "var(--chart-5)" },
 ];
 
 export default async function PublisherHomePage() {
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
 
-  const [revenue, series, leaderboard, announcements, snapshot] = await Promise.all([
-    getRevenueSummary(publisher.id),
-    getPerformanceSeries(publisher.id, 30),
-    getMonthlyLeaderboard(publisher.id),
-    getActiveAnnouncements(),
-    getPublisherSnapshot(publisher.id),
-  ]);
+  const [revenue, series, leaderboard, announcements, snapshot] =
+    await Promise.all([
+      getRevenueSummary(publisher.id),
+      getPerformanceSeries(publisher.id, 30),
+      getMonthlyLeaderboard(publisher.id),
+      getActiveAnnouncements(),
+      getPublisherSnapshot(publisher.id),
+    ]);
 
   const recentDays = [...series]
     .reverse()
@@ -52,12 +64,19 @@ export default async function PublisherHomePage() {
     <div className="space-y-6">
       {publisher.onboardingSeenAt === null && <OnboardingTour />}
 
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">
-          Salut {firstName || "👋"}
-        </h1>
-        <p className="text-sm text-muted-foreground">Voici où tu en es aujourd&apos;hui.</p>
-      </div>
+      <PageHeader
+        title={firstName ? `Salut ${firstName}` : "Salut 👋"}
+        description="Voici où tu en es aujourd'hui."
+        action={
+          <Link
+            href="/dashboard/offers"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-2 text-sm font-medium transition hover:bg-muted"
+          >
+            Parcourir les offres
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        }
+      />
 
       <AnnouncementBanner announcements={announcements} />
 
@@ -78,9 +97,9 @@ export default async function PublisherHomePage() {
       {/* Charts and tables only earn their place once there is data to show. */}
       {snapshot.statDays > 0 && (
         <>
-          <Card className="shadow-premium">
+          <Card>
             <CardHeader>
-              <CardTitle>30 derniers jours</CardTitle>
+              <CardTitle>Ton activité</CardTitle>
             </CardHeader>
             <CardContent>
               <PerformanceChart data={series} series={HOME_SERIES} />
@@ -88,20 +107,20 @@ export default async function PublisherHomePage() {
           </Card>
 
           <div className="grid gap-6 lg:grid-cols-5">
-            <Card className="shadow-premium lg:col-span-3">
+            <Card className="lg:col-span-3">
               <CardHeader>
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle>Tes dernières journées</CardTitle>
                   <Link
                     href="/dashboard/stats"
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
                   >
                     Tout voir
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="px-0">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -115,9 +134,15 @@ export default async function PublisherHomePage() {
                     {recentDays.map((day) => (
                       <TableRow key={day.date}>
                         <TableCell>{formatCalendarDate(day.date)}</TableCell>
-                        <TableCell className="text-right">{formatNumber(day.clicks)}</TableCell>
-                        <TableCell className="text-right">{formatNumber(day.conversions)}</TableCell>
-                        <TableCell className="text-right font-medium">{formatCurrency(day.revenue)}</TableCell>
+                        <TableCell className="num text-right">
+                          {formatNumber(day.clicks)}
+                        </TableCell>
+                        <TableCell className="num text-right">
+                          {formatNumber(day.conversions)}
+                        </TableCell>
+                        <TableCell className="num text-right font-medium">
+                          {formatCurrency(day.revenue)}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

@@ -3,7 +3,13 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
-const DIAGONAL_WORDS = ["Support 24/7", "Paiements rapides", "Taux élevés", "Couverture mondiale", "Offres exclusives"];
+const DIAGONAL_WORDS = [
+  "Support 24/7",
+  "Paiements rapides",
+  "Taux élevés",
+  "Couverture mondiale",
+  "Offres exclusives",
+];
 
 const POINTS = [
   "Un support réactif et disponible 24h/24, 7j/7.",
@@ -15,7 +21,10 @@ const POINTS = [
 
 export function WhyUs() {
   return (
-    <section id="why" className="theme-light bg-background text-foreground py-28">
+    <section
+      id="why"
+      className="theme-light bg-background text-foreground py-28"
+    >
       <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 lg:grid-cols-2">
         {/* Diagonal stacked benefit words */}
         <div className="relative flex min-h-[300px] items-center justify-center overflow-hidden">
@@ -47,12 +56,15 @@ export function WhyUs() {
           </motion.h2>
 
           <p className="mt-6 text-muted-foreground">
-            RevNetwork est un réseau d&apos;affiliation à la performance qui réunit les meilleurs
-            acteurs du secteur. Nous aidons les marketeurs à booster leurs résultats et à développer
-            leurs revenus grâce à nos technologies, nos outils et une équipe expérimentée et réactive.
+            RevNetwork est un réseau d&apos;affiliation à la performance qui
+            réunit les meilleurs acteurs du secteur. Nous aidons les marketeurs
+            à booster leurs résultats et à développer leurs revenus grâce à nos
+            technologies, nos outils et une équipe expérimentée et réactive.
           </p>
 
-          <p className="mt-6 font-medium">En devenant notre partenaire, vous obtenez&nbsp;:</p>
+          <p className="mt-6 font-medium">
+            En devenant notre partenaire, vous obtenez&nbsp;:
+          </p>
           <ul className="mt-4 space-y-3">
             {POINTS.map((point, i) => (
               <motion.li

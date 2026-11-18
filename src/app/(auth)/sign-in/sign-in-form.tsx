@@ -14,14 +14,16 @@ import { Label } from "@/components/ui/label";
 import { signInSchema, type SignInInput } from "@/lib/validations/auth";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  account_suspended: "Votre compte a été suspendu. Contactez le support pour plus d'informations.",
+  account_suspended:
+    "Votre compte a été suspendu. Contactez le support pour plus d'informations.",
   account_banned: "Votre compte a été banni de la plateforme.",
   CredentialsSignin: "Email ou mot de passe incorrect.",
 };
 
 const NOTICE_MESSAGES: Record<string, string> = {
   success: "Adresse email confirmée. Vous pouvez vous connecter.",
-  expired: "Ce lien de confirmation a expiré. Reconnectez-vous puis redemandez un email.",
+  expired:
+    "Ce lien de confirmation a expiré. Reconnectez-vous puis redemandez un email.",
   missing: "Lien de confirmation invalide.",
 };
 
@@ -31,11 +33,17 @@ interface SignInFormProps {
   verifiedNotice?: string;
 }
 
-export function SignInForm({ callbackUrl, errorCode, verifiedNotice }: SignInFormProps) {
+export function SignInForm({
+  callbackUrl,
+  errorCode,
+  verifiedNotice,
+}: SignInFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(
-    errorCode ? (ERROR_MESSAGES[errorCode] ?? "Une erreur est survenue.") : null,
+    errorCode
+      ? (ERROR_MESSAGES[errorCode] ?? "Une erreur est survenue.")
+      : null,
   );
 
   const {
@@ -85,19 +93,37 @@ export function SignInForm({ callbackUrl, errorCode, verifiedNotice }: SignInFor
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" placeholder="vous@exemple.com" {...register("email")} />
-        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="vous@exemple.com"
+          {...register("email")}
+        />
+        {errors.email && (
+          <p className="text-xs text-destructive">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label htmlFor="password">Mot de passe</Label>
-          <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-foreground">
+          <Link
+            href="/forgot-password"
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
             Mot de passe oublié ?
           </Link>
         </div>
-        <Input id="password" type="password" autoComplete="current-password" {...register("password")} />
-        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+        <Input
+          id="password"
+          type="password"
+          autoComplete="current-password"
+          {...register("password")}
+        />
+        {errors.password && (
+          <p className="text-xs text-destructive">{errors.password.message}</p>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
@@ -107,7 +133,10 @@ export function SignInForm({ callbackUrl, errorCode, verifiedNotice }: SignInFor
 
       <p className="text-center text-sm text-muted-foreground">
         Pas encore de compte ?{" "}
-        <Link href="/sign-up" className="font-medium text-foreground hover:underline">
+        <Link
+          href="/sign-up"
+          className="font-medium text-foreground hover:underline"
+        >
           Créer un compte
         </Link>
       </p>

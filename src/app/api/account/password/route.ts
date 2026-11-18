@@ -10,9 +10,15 @@ export async function PATCH(request: Request) {
     const user = await requireApiRole("PUBLISHER", "ADVERTISER", "ADMIN");
 
     const ip = getClientIp(request.headers);
-    const limit = await rateLimit(`account:password:${user.id}:${ip}`, { limit: 5, windowSeconds: 60 * 15 });
+    const limit = await rateLimit(`account:password:${user.id}:${ip}`, {
+      limit: 5,
+      windowSeconds: 60 * 15,
+    });
     if (!limit.success) {
-      return NextResponse.json({ error: "Trop de tentatives. Réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de tentatives. Réessayez plus tard." },
+        { status: 429 },
+      );
     }
 
     const body = await request.json().catch(() => null);
@@ -21,19 +27,33 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Données invalides" }, { status: 400 });
     }
 
-    const dbUser = await prisma.user.findUniqueOrThrow({ where: { id: user.id } });
-    const validCurrent = await bcrypt.compare(parsed.data.currentPassword, dbUser.passwordHash);
+    const dbUser = await prisma.user.findUniqueOrThrow({
+      where: { id: user.id },
+    });
+    const validCurrent = await bcrypt.compare(
+      parsed.data.currentPassword,
+      dbUser.passwordHash,
+    );
     if (!validCurrent) {
-      return NextResponse.json({ error: "Mot de passe actuel incorrect." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Mot de passe actuel incorrect." },
+        { status: 400 },
+      );
     }
 
     const passwordHash = await bcrypt.hash(parsed.data.newPassword, 12);
-    await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { passwordHash },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/account/password]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

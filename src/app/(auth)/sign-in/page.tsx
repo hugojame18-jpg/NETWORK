@@ -5,7 +5,12 @@ import { SignInForm } from "./sign-in-form";
 export const metadata: Metadata = { title: "Connexion" };
 
 interface SignInPageProps {
-  searchParams: Promise<{ callbackUrl?: string; error?: string; code?: string; verified?: string }>;
+  searchParams: Promise<{
+    callbackUrl?: string;
+    error?: string;
+    code?: string;
+    verified?: string;
+  }>;
 }
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
@@ -13,7 +18,10 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
   return (
     <div>
-      <AuthHeader title="Bon retour" description="Connectez-vous pour accéder à votre espace." />
+      <AuthHeader
+        title="Bon retour"
+        description="Connectez-vous pour accéder à votre espace."
+      />
       <SignInForm
         callbackUrl={params.callbackUrl ?? "/dashboard"}
         errorCode={params.code ?? params.error}

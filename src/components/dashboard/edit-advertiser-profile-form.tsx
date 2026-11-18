@@ -14,7 +14,11 @@ interface EditAdvertiserProfileFormProps {
   website: string;
 }
 
-export function EditAdvertiserProfileForm({ name, companyName, website }: EditAdvertiserProfileFormProps) {
+export function EditAdvertiserProfileForm({
+  name,
+  companyName,
+  website,
+}: EditAdvertiserProfileFormProps) {
   const router = useRouter();
   const [form, setForm] = useState({ name, companyName, website });
   const [isPending, startTransition] = useTransition();
@@ -41,7 +45,11 @@ export function EditAdvertiserProfileForm({ name, companyName, website }: EditAd
     <form onSubmit={submit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="name">Nom complet</Label>
-        <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        <Input
+          id="name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
       </div>
       <div className="space-y-2">
         <Label htmlFor="companyName">Entreprise</Label>

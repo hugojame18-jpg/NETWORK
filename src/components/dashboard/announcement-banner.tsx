@@ -24,9 +24,13 @@ export function AnnouncementBanner({ announcements }: AnnouncementBannerProps) {
           <div className="min-w-0">
             <div className="flex flex-wrap items-baseline gap-x-2">
               <p className="font-semibold">{announcement.title}</p>
-              <span className="text-xs text-muted-foreground">{formatDate(announcement.createdAt)}</span>
+              <span className="text-xs text-muted-foreground">
+                {formatDate(announcement.createdAt)}
+              </span>
             </div>
-            <p className="mt-1 text-sm whitespace-pre-wrap text-muted-foreground">{announcement.body}</p>
+            <p className="mt-1 text-sm whitespace-pre-wrap text-muted-foreground">
+              {announcement.body}
+            </p>
           </div>
         </div>
       ))}

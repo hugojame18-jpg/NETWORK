@@ -6,8 +6,22 @@ import { Loader2, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { toast } from "sonner";
 
 interface RequestPaymentFormProps {
@@ -23,7 +37,11 @@ const METHODS = [
   { value: "PAYONEER", label: "Payoneer" },
 ];
 
-export function RequestPaymentForm({ available, minPayout, defaultMethod }: RequestPaymentFormProps) {
+export function RequestPaymentForm({
+  available,
+  minPayout,
+  defaultMethod,
+}: RequestPaymentFormProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(available.toFixed(2));
@@ -64,7 +82,8 @@ export function RequestPaymentForm({ available, minPayout, defaultMethod }: Requ
         <DialogHeader>
           <DialogTitle>Demander un paiement</DialogTitle>
           <DialogDescription>
-            Solde disponible : {available.toFixed(2)} $ · minimum {minPayout.toFixed(2)} $
+            Solde disponible : {available.toFixed(2)} $ · minimum{" "}
+            {minPayout.toFixed(2)} $
           </DialogDescription>
         </DialogHeader>
 
@@ -83,7 +102,10 @@ export function RequestPaymentForm({ available, minPayout, defaultMethod }: Requ
           </div>
           <div className="space-y-2">
             <Label>Méthode de paiement</Label>
-            <Select value={method} onValueChange={(value) => value && setMethod(value)}>
+            <Select
+              value={method}
+              onValueChange={(value) => value && setMethod(value)}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>

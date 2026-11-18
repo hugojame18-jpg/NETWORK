@@ -15,7 +15,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
@@ -31,7 +34,14 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         status: parsed.data.status,
         handledAt: parsed.data.status === "PENDING" ? null : new Date(),
       },
-      include: { publisher: { select: { userId: true, user: { select: { name: true, email: true } } } } },
+      include: {
+        publisher: {
+          select: {
+            userId: true,
+            user: { select: { name: true, email: true } },
+          },
+        },
+      },
     });
 
     const siteName = promoSiteName(siteRequest.siteSlug);
@@ -69,7 +79,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/admin/site-requests/:id]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

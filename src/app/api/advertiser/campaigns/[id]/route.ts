@@ -10,7 +10,9 @@ interface RouteParams {
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const user = await requireApiRole("ADVERTISER");
-    const advertiser = await prisma.advertiser.findUniqueOrThrow({ where: { userId: user.id } });
+    const advertiser = await prisma.advertiser.findUniqueOrThrow({
+      where: { userId: user.id },
+    });
     const { id } = await params;
 
     const body = await request.json().catch(() => null);
@@ -30,13 +32,19 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     });
 
     if (result.count === 0) {
-      return NextResponse.json({ error: "Campagne introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Campagne introuvable" },
+        { status: 404 },
+      );
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/advertiser/campaigns/:id]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

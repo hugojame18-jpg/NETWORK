@@ -1,5 +1,11 @@
 import "server-only";
-import { eachDayOfInterval, format, startOfDay, startOfMonth, subDays } from "date-fns";
+import {
+  eachDayOfInterval,
+  format,
+  startOfDay,
+  startOfMonth,
+  subDays,
+} from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
 
@@ -12,24 +18,42 @@ export async function getSpendSummary(advertiserId: string) {
   const startToday = startOfDay(now);
   const startMonth = startOfMonth(now);
 
-  const offerIds = (await prisma.offer.findMany({ where: { advertiserId }, select: { id: true } })).map((o) => o.id);
+  const offerIds = (
+    await prisma.offer.findMany({
+      where: { advertiserId },
+      select: { id: true },
+    })
+  ).map((o) => o.id);
 
-  const [todayAgg, monthAgg, totalAgg, activeOffers, publisherCount] = await Promise.all([
-    prisma.conversion.aggregate({
-      where: { offerId: { in: offerIds }, createdAt: { gte: startToday }, status: { not: "REJECTED" } },
-      _sum: { payout: true },
-    }),
-    prisma.conversion.aggregate({
-      where: { offerId: { in: offerIds }, createdAt: { gte: startMonth }, status: { not: "REJECTED" } },
-      _sum: { payout: true },
-    }),
-    prisma.conversion.aggregate({
-      where: { offerId: { in: offerIds }, status: { not: "REJECTED" } },
-      _sum: { payout: true },
-    }),
-    prisma.offer.count({ where: { advertiserId, status: "ACTIVE" } }),
-    prisma.affiliateLink.findMany({ where: { offerId: { in: offerIds } }, select: { publisherId: true }, distinct: ["publisherId"] }),
-  ]);
+  const [todayAgg, monthAgg, totalAgg, activeOffers, publisherCount] =
+    await Promise.all([
+      prisma.conversion.aggregate({
+        where: {
+          offerId: { in: offerIds },
+          createdAt: { gte: startToday },
+          status: { not: "REJECTED" },
+        },
+        _sum: { payout: true },
+      }),
+      prisma.conversion.aggregate({
+        where: {
+          offerId: { in: offerIds },
+          createdAt: { gte: startMonth },
+          status: { not: "REJECTED" },
+        },
+        _sum: { payout: true },
+      }),
+      prisma.conversion.aggregate({
+        where: { offerId: { in: offerIds }, status: { not: "REJECTED" } },
+        _sum: { payout: true },
+      }),
+      prisma.offer.count({ where: { advertiserId, status: "ACTIVE" } }),
+      prisma.affiliateLink.findMany({
+        where: { offerId: { in: offerIds } },
+        select: { publisherId: true },
+        distinct: ["publisherId"],
+      }),
+    ]);
 
   return {
     today: toNumber(todayAgg._sum.payout),
@@ -42,20 +66,43 @@ export async function getSpendSummary(advertiserId: string) {
 
 export async function getSpendSeries(advertiserId: string, days = 90) {
   const since = startOfDay(subDays(new Date(), days - 1));
-  const offerIds = (await prisma.offer.findMany({ where: { advertiserId }, select: { id: true } })).map((o) => o.id);
+  const offerIds = (
+    await prisma.offer.findMany({
+      where: { advertiserId },
+      select: { id: true },
+    })
+  ).map((o) => o.id);
 
   const [clicks, conversions] = await Promise.all([
-    prisma.click.findMany({ where: { offerId: { in: offerIds }, createdAt: { gte: since } }, select: { createdAt: true } }),
+    prisma.click.findMany({
+      where: { offerId: { in: offerIds }, createdAt: { gte: since } },
+      select: { createdAt: true },
+    }),
     prisma.conversion.findMany({
       where: { offerId: { in: offerIds }, createdAt: { gte: since } },
       select: { createdAt: true, payout: true },
     }),
   ]);
 
-  const buckets = new Map<string, { date: string; clicks: number; leads: number; conversions: number; commissions: number }>();
+  const buckets = new Map<
+    string,
+    {
+      date: string;
+      clicks: number;
+      leads: number;
+      conversions: number;
+      commissions: number;
+    }
+  >();
   for (const day of eachDayOfInterval({ start: since, end: new Date() })) {
     const key = format(day, "yyyy-MM-dd");
-    buckets.set(key, { date: key, clicks: 0, leads: 0, conversions: 0, commissions: 0 });
+    buckets.set(key, {
+      date: key,
+      clicks: 0,
+      leads: 0,
+      conversions: 0,
+      commissions: 0,
+    });
   }
 
   clicks.forEach((c) => {
@@ -91,7 +138,10 @@ export async function getCampaignById(advertiserId: string, id: string) {
 export async function getAdvertiserOffers(advertiserId: string) {
   return prisma.offer.findMany({
     where: { advertiserId },
-    include: { campaign: { select: { name: true } }, _count: { select: { affiliateLinks: true, conversions: true } } },
+    include: {
+      campaign: { select: { name: true } },
+      _count: { select: { affiliateLinks: true, conversions: true } },
+    },
     orderBy: { createdAt: "desc" },
   });
 }
@@ -104,7 +154,10 @@ export async function getSpendByOffer(advertiserId: string) {
   const offers = await prisma.offer.findMany({
     where: { advertiserId },
     include: {
-      conversions: { where: { status: { not: "REJECTED" } }, select: { payout: true } },
+      conversions: {
+        where: { status: { not: "REJECTED" } },
+        select: { payout: true },
+      },
       _count: { select: { clicks: true, conversions: true } },
     },
   });
@@ -119,14 +172,26 @@ export async function getSpendByOffer(advertiserId: string) {
 }
 
 export async function getTopPublishers(advertiserId: string) {
-  const offerIds = (await prisma.offer.findMany({ where: { advertiserId }, select: { id: true } })).map((o) => o.id);
+  const offerIds = (
+    await prisma.offer.findMany({
+      where: { advertiserId },
+      select: { id: true },
+    })
+  ).map((o) => o.id);
 
   const conversions = await prisma.conversion.findMany({
     where: { offerId: { in: offerIds }, status: { not: "REJECTED" } },
-    include: { publisher: { select: { companyName: true, user: { select: { name: true } } } } },
+    include: {
+      publisher: {
+        select: { companyName: true, user: { select: { name: true } } },
+      },
+    },
   });
 
-  const byPublisher = new Map<string, { publisherId: string; name: string; conversions: number; spend: number }>();
+  const byPublisher = new Map<
+    string,
+    { publisherId: string; name: string; conversions: number; spend: number }
+  >();
   for (const conversion of conversions) {
     const key = conversion.publisherId;
     const existing = byPublisher.get(key) ?? {
@@ -140,5 +205,7 @@ export async function getTopPublishers(advertiserId: string) {
     byPublisher.set(key, existing);
   }
 
-  return Array.from(byPublisher.values()).sort((a, b) => b.spend - a.spend).slice(0, 10);
+  return Array.from(byPublisher.values())
+    .sort((a, b) => b.spend - a.spend)
+    .slice(0, 10);
 }

@@ -20,7 +20,9 @@ export function CustomRangeForm({ from, to }: { from?: string; to?: string }) {
     const params = new URLSearchParams();
     if (start) params.set("from", start);
     if (end) params.set("to", end);
-    router.push(params.toString() ? `/admin/revenue?${params}` : "/admin/revenue");
+    router.push(
+      params.toString() ? `/admin/revenue?${params}` : "/admin/revenue",
+    );
   }
 
   return (

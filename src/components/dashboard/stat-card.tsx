@@ -18,7 +18,16 @@ interface StatCardProps {
   index?: number;
 }
 
-export function StatCard({ label, value, prefix, suffix, decimals = 0, icon, delta, index = 0 }: StatCardProps) {
+export function StatCard({
+  label,
+  value,
+  prefix,
+  suffix,
+  decimals = 0,
+  icon,
+  delta,
+  index = 0,
+}: StatCardProps) {
   const isPositive = (delta ?? 0) >= 0;
 
   return (
@@ -26,7 +35,7 @@ export function StatCard({ label, value, prefix, suffix, decimals = 0, icon, del
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06 }}
-      className="hover-lift shadow-premium rounded-2xl border border-border bg-card p-5"
+      className="hover-lift rounded-2xl border border-border bg-card p-5"
     >
       <div className="flex items-center justify-between">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary [&_svg]:h-4 [&_svg]:w-4">
@@ -39,13 +48,23 @@ export function StatCard({ label, value, prefix, suffix, decimals = 0, icon, del
               isPositive ? "text-success" : "text-destructive",
             )}
           >
-            {isPositive ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+            {isPositive ? (
+              <ArrowUpRight className="h-3 w-3" />
+            ) : (
+              <ArrowDownRight className="h-3 w-3" />
+            )}
             {Math.abs(delta).toFixed(1)}%
           </span>
         )}
       </div>
       <p className="mt-4 text-2xl font-semibold tracking-tight">
-        <AnimatedCounter value={value} prefix={prefix} suffix={suffix} decimals={decimals} immediate />
+        <AnimatedCounter
+          value={value}
+          prefix={prefix}
+          suffix={suffix}
+          decimals={decimals}
+          immediate
+        />
       </p>
       <p className="mt-1 text-sm text-muted-foreground">{label}</p>
     </motion.div>

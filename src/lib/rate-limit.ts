@@ -36,8 +36,16 @@ export async function rateLimit(
       resetMs: (ttl > 0 ? ttl : windowSeconds) * 1000,
     };
   } catch (error) {
-    console.error(`[rate-limit] Redis unavailable, failing open for "${key}":`, error);
-    return { success: true, remaining: limit, limit, resetMs: windowSeconds * 1000 };
+    console.error(
+      `[rate-limit] Redis unavailable, failing open for "${key}":`,
+      error,
+    );
+    return {
+      success: true,
+      remaining: limit,
+      limit,
+      resetMs: windowSeconds * 1000,
+    };
   }
 }
 
@@ -45,6 +53,9 @@ export { getClientIp } from "./ip";
 
 /** Generic guard for authenticated mutation routes: 30 writes/minute per user. */
 export async function checkMutationRateLimit(userId: string) {
-  const result = await rateLimit(`mutation:${userId}`, { limit: 30, windowSeconds: 60 });
+  const result = await rateLimit(`mutation:${userId}`, {
+    limit: 30,
+    windowSeconds: 60,
+  });
   return result.success;
 }

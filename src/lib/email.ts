@@ -146,7 +146,10 @@ function sendViaConsole(to: string, message: EmailMessage) {
  * Sends a message, never throwing. Returns whether it actually left the
  * building, so a caller can tell the user "check your inbox" only when true.
  */
-export async function sendEmail(to: string, message: EmailMessage): Promise<boolean> {
+export async function sendEmail(
+  to: string,
+  message: EmailMessage,
+): Promise<boolean> {
   if (!process.env.RESEND_API_KEY) {
     sendViaConsole(to, message);
     return false;
@@ -158,7 +161,10 @@ export async function sendEmail(to: string, message: EmailMessage): Promise<bool
   } catch (error) {
     // Logged, not thrown: the action that triggered this email already
     // succeeded, and failing it now would be a lie to the user.
-    console.error(`[email] envoi échoué vers ${to} — "${message.subject}"`, error);
+    console.error(
+      `[email] envoi échoué vers ${to} — "${message.subject}"`,
+      error,
+    );
     return false;
   }
 }
@@ -219,7 +225,10 @@ export function applicationRejectedEmail(name: string): EmailMessage {
   });
 }
 
-export function linkDeliveredEmail(name: string, offerName: string): EmailMessage {
+export function linkDeliveredEmail(
+  name: string,
+  offerName: string,
+): EmailMessage {
   return buildMessage(`Ton lien pour « ${offerName} » est prêt — ${BRAND}`, {
     title: "Ton lien d'affiliation est prêt 🔗",
     lines: [
@@ -230,7 +239,10 @@ export function linkDeliveredEmail(name: string, offerName: string): EmailMessag
   });
 }
 
-export function siteRequestApprovedEmail(name: string, siteName: string): EmailMessage {
+export function siteRequestApprovedEmail(
+  name: string,
+  siteName: string,
+): EmailMessage {
   return buildMessage(`Tu peux promouvoir « ${siteName} » — ${BRAND}`, {
     title: "Demande acceptée ✅",
     lines: [
@@ -264,6 +276,9 @@ export function paymentStatusEmail(
   return buildMessage(`${copy.title} — ${BRAND}`, {
     title: copy.title,
     lines: [`Bonjour ${name},`, copy.line],
-    action: { label: "Voir mes paiements", url: `${appUrl()}/dashboard/payments` },
+    action: {
+      label: "Voir mes paiements",
+      url: `${appUrl()}/dashboard/payments`,
+    },
   });
 }

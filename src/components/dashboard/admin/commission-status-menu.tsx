@@ -12,7 +12,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
-export function CommissionStatusMenu({ commissionId, currentStatus }: { commissionId: string; currentStatus: string }) {
+export function CommissionStatusMenu({
+  commissionId,
+  currentStatus,
+}: {
+  commissionId: string;
+  currentStatus: string;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -37,8 +43,17 @@ export function CommissionStatusMenu({ commissionId, currentStatus }: { commissi
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-sm" aria-label="Actions" disabled={isPending}>
-            {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreHorizontal className="h-3.5 w-3.5" />}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Actions"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <MoreHorizontal className="h-3.5 w-3.5" />
+            )}
           </Button>
         }
       />
@@ -50,7 +65,10 @@ export function CommissionStatusMenu({ commissionId, currentStatus }: { commissi
           </DropdownMenuItem>
         )}
         {currentStatus !== "REJECTED" && (
-          <DropdownMenuItem onClick={() => setStatus("REJECTED")} variant="destructive">
+          <DropdownMenuItem
+            onClick={() => setStatus("REJECTED")}
+            variant="destructive"
+          >
             <XCircle className="h-4 w-4" />
             Refuser
           </DropdownMenuItem>

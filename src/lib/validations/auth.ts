@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const emailSchema = z.string().trim().toLowerCase().email("Adresse email invalide");
+export const emailSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .email("Adresse email invalide");
 
 export const passwordSchema = z
   .string()
@@ -28,7 +32,12 @@ export const signUpSchema = z
     // depends on it: publishers register straight away.
     workedWithNetworks: z.boolean().optional(),
     previousNetworks: z.string().trim().max(500).optional().or(z.literal("")),
-    affiliateExperience: z.string().trim().max(2000).optional().or(z.literal("")),
+    affiliateExperience: z
+      .string()
+      .trim()
+      .max(2000)
+      .optional()
+      .or(z.literal("")),
     tiktokLinks: z.string().trim().max(2000).optional().or(z.literal("")),
   })
   .refine((data) => data.password === data.confirmPassword, {

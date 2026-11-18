@@ -23,7 +23,10 @@ export default async function AccountRestrictedPage() {
         <h1 className="text-xl font-semibold">Accès restreint</h1>
         <p className="text-sm text-muted-foreground">{message}</p>
         <p className="text-sm">
-          <a href="mailto:support@ccsubmit.io" className="font-medium hover:underline">
+          <a
+            href="mailto:support@ccsubmit.io"
+            className="font-medium hover:underline"
+          >
             support@ccsubmit.io
           </a>
         </p>

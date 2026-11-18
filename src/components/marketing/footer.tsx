@@ -20,12 +20,19 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link href="/" className="text-2xl font-extrabold tracking-tight lowercase">
+            <Link
+              href="/"
+              className="text-2xl font-extrabold tracking-tight lowercase"
+            >
               rev<span className="text-primary">.</span>
             </Link>
             <nav className="mt-5 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground sm:justify-start">
               {LINKS.map((link) => (
-                <Link key={link.href} href={link.href} className="transition-colors hover:text-foreground">
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="transition-colors hover:text-foreground"
+                >
                   {link.label}
                 </Link>
               ))}

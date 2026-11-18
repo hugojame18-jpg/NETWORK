@@ -2,7 +2,13 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Banknote, CheckCircle2, Loader2, MoreHorizontal, XCircle } from "lucide-react";
+import {
+  Banknote,
+  CheckCircle2,
+  Loader2,
+  MoreHorizontal,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +18,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
-export function PaymentStatusMenu({ paymentId, currentStatus }: { paymentId: string; currentStatus: string }) {
+export function PaymentStatusMenu({
+  paymentId,
+  currentStatus,
+}: {
+  paymentId: string;
+  currentStatus: string;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -37,8 +49,17 @@ export function PaymentStatusMenu({ paymentId, currentStatus }: { paymentId: str
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon-sm" aria-label="Actions" disabled={isPending}>
-            {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreHorizontal className="h-3.5 w-3.5" />}
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Actions"
+            disabled={isPending}
+          >
+            {isPending ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <MoreHorizontal className="h-3.5 w-3.5" />
+            )}
           </Button>
         }
       />
@@ -56,7 +77,10 @@ export function PaymentStatusMenu({ paymentId, currentStatus }: { paymentId: str
           </DropdownMenuItem>
         )}
         {currentStatus !== "REJECTED" && (
-          <DropdownMenuItem onClick={() => setStatus("REJECTED")} variant="destructive">
+          <DropdownMenuItem
+            onClick={() => setStatus("REJECTED")}
+            variant="destructive"
+          >
             <XCircle className="h-4 w-4" />
             Refuser
           </DropdownMenuItem>

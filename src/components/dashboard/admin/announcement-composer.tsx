@@ -65,12 +65,17 @@ export function AnnouncementComposer() {
           onChange={(e) => setBody(e.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          Il s&apos;affichera en haut du dashboard de tous tes affiliés, et chacun recevra une notification.
+          Il s&apos;affichera en haut du dashboard de tous tes affiliés, et
+          chacun recevra une notification.
         </p>
       </div>
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Send className="h-4 w-4" />
+        )}
         Publier le message
       </Button>
     </form>

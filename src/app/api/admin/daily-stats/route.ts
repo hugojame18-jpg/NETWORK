@@ -16,21 +16,36 @@ export async function POST(request: Request) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
 
     const body = await request.json().catch(() => null);
     const parsed = dailyStatSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Données invalides", issues: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: "Données invalides", issues: parsed.error.flatten() },
+        { status: 400 },
+      );
     }
 
-    const { publisherId, date, clicks, hosts, conversions, revenue } = parsed.data;
+    const { publisherId, date, clicks, hosts, conversions, revenue } =
+      parsed.data;
     const day = new Date(`${date}T00:00:00.000Z`);
 
     const stat = await prisma.publisherDailyStat.upsert({
       where: { publisherId_date: { publisherId, date: day } },
-      create: { publisherId, date: day, clicks, hosts, conversions, revenue, enteredById: admin.id },
+      create: {
+        publisherId,
+        date: day,
+        clicks,
+        hosts,
+        conversions,
+        revenue,
+        enteredById: admin.id,
+      },
       update: { clicks, hosts, conversions, revenue, enteredById: admin.id },
     });
 
@@ -45,7 +60,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, stat });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/admin/daily-stats]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

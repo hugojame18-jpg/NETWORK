@@ -5,35 +5,51 @@ const HIGHLIGHTS = [
   {
     icon: Zap,
     title: "Tracking en temps réel",
-    description: "Clics, leads et conversions remontent en quelques millisecondes.",
+    description:
+      "Clics, leads et conversions remontent en quelques millisecondes.",
   },
   {
     icon: BarChart3,
     title: "Revenus transparents",
-    description: "Commissions calculées automatiquement, sans surprise en fin de mois.",
+    description:
+      "Commissions calculées automatiquement, sans surprise en fin de mois.",
   },
   {
     icon: ShieldCheck,
     title: "Paiements fiables",
-    description: "Un suivi précis de chaque paiement, du statut en attente au virement.",
+    description:
+      "Un suivi précis de chaque paiement, du statut en attente au virement.",
   },
 ];
 
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
+export default function AuthLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="relative flex min-h-screen w-full">
       <div className="relative hidden w-1/2 overflow-hidden border-r border-border bg-[oklch(0.16_0.015_275)] lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="bg-grid pointer-events-none absolute inset-0 opacity-40" />
         <div
           className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full opacity-30 blur-3xl"
-          style={{ background: "radial-gradient(circle, var(--primary), transparent 70%)" }}
+          style={{
+            background:
+              "radial-gradient(circle, var(--primary), transparent 70%)",
+          }}
         />
         <div
           className="pointer-events-none absolute -bottom-40 -right-20 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{ background: "radial-gradient(circle, var(--chart-3), transparent 70%)" }}
+          style={{
+            background:
+              "radial-gradient(circle, var(--chart-3), transparent 70%)",
+          }}
         />
 
-        <Link href="/" className="relative z-10 flex items-center gap-2 text-lg font-semibold text-white">
+        <Link
+          href="/"
+          className="relative z-10 flex items-center gap-2 text-lg font-semibold text-white"
+        >
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold">
             CC
           </span>

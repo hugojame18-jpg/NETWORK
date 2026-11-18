@@ -2,7 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Ban, CheckCircle2, Loader2, MoreHorizontal, PauseCircle, Trash2 } from "lucide-react";
+import {
+  Ban,
+  CheckCircle2,
+  Loader2,
+  MoreHorizontal,
+  PauseCircle,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,7 +34,11 @@ interface UserStatusMenuProps {
   userLabel: string;
 }
 
-export function UserStatusMenu({ userId, currentStatus, userLabel }: UserStatusMenuProps) {
+export function UserStatusMenu({
+  userId,
+  currentStatus,
+  userLabel,
+}: UserStatusMenuProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -51,7 +62,9 @@ export function UserStatusMenu({ userId, currentStatus, userLabel }: UserStatusM
 
   function deleteUser() {
     startTransition(async () => {
-      const res = await fetch(`/api/admin/users/${userId}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: "DELETE",
+      });
       const json = await res.json();
       if (!res.ok) {
         toast.error(json.error ?? "Action impossible.");
@@ -68,8 +81,17 @@ export function UserStatusMenu({ userId, currentStatus, userLabel }: UserStatusM
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
-            <Button variant="ghost" size="icon-sm" aria-label="Actions" disabled={isPending}>
-              {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <MoreHorizontal className="h-3.5 w-3.5" />}
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Actions"
+              disabled={isPending}
+            >
+              {isPending ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <MoreHorizontal className="h-3.5 w-3.5" />
+              )}
             </Button>
           }
         />
@@ -87,13 +109,19 @@ export function UserStatusMenu({ userId, currentStatus, userLabel }: UserStatusM
             </DropdownMenuItem>
           )}
           {currentStatus !== "BANNED" && (
-            <DropdownMenuItem onClick={() => setStatus("BANNED")} variant="destructive">
+            <DropdownMenuItem
+              onClick={() => setStatus("BANNED")}
+              variant="destructive"
+            >
               <Ban className="h-4 w-4" />
               Bannir
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setConfirmDelete(true)} variant="destructive">
+          <DropdownMenuItem
+            onClick={() => setConfirmDelete(true)}
+            variant="destructive"
+          >
             <Trash2 className="h-4 w-4" />
             Supprimer
           </DropdownMenuItem>
@@ -105,11 +133,16 @@ export function UserStatusMenu({ userId, currentStatus, userLabel }: UserStatusM
           <DialogHeader>
             <DialogTitle>Supprimer {userLabel} ?</DialogTitle>
             <DialogDescription>
-              Cette action est irréversible : le compte, ses liens, clics et commissions seront définitivement supprimés.
+              Cette action est irréversible : le compte, ses liens, clics et
+              commissions seront définitivement supprimés.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="destructive" onClick={deleteUser} disabled={isPending}>
+            <Button
+              variant="destructive"
+              onClick={deleteUser}
+              disabled={isPending}
+            >
               {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               Confirmer la suppression
             </Button>

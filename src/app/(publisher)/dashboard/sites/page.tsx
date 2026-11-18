@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { MonitorSmartphone } from "lucide-react";
 import { requireRole } from "@/lib/rbac";
 import { getPublisherByUserId } from "@/lib/data/publisher";
 import { prisma } from "@/lib/prisma";
 import { PROMO_SITES } from "@/lib/promo-sites";
 import { PromoSiteCard } from "@/components/dashboard/promo-site-card";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { EmptyState } from "@/components/dashboard/empty-state";
 
 export const metadata: Metadata = { title: "Sites à promouvoir" };
 
@@ -19,22 +22,29 @@ export default async function SitesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-lg font-semibold">Sites à promouvoir</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Choisis le site que tu veux promouvoir. Clique sur l&apos;aperçu pour l&apos;ouvrir en grand, puis
-          demande-le&nbsp;: on te répond et on te transmet ton lien.
-        </p>
-      </div>
+      <PageHeader
+        title="Sites à promouvoir"
+        description="Clique sur un aperçu pour l'ouvrir en grand, puis demande le site : on te répond et on te transmet ton lien."
+      />
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {PROMO_SITES.map((site) => (
-          <PromoSiteCard key={site.slug} site={site} initialStatus={statusBySlug.get(site.slug) ?? null} />
-        ))}
-      </div>
-
-      {PROMO_SITES.length === 0 && (
-        <p className="py-16 text-center text-sm text-muted-foreground">Aucun site disponible pour le moment.</p>
+      {PROMO_SITES.length === 0 ? (
+        <div className="surface">
+          <EmptyState
+            icon={<MonitorSmartphone />}
+            title="Aucun site disponible"
+            description="De nouveaux sites sont ajoutés régulièrement. Reviens voir d'ici peu."
+          />
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {PROMO_SITES.map((site) => (
+            <PromoSiteCard
+              key={site.slug}
+              site={site}
+              initialStatus={statusBySlug.get(site.slug) ?? null}
+            />
+          ))}
+        </div>
       )}
     </div>
   );

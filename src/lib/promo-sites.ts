@@ -28,14 +28,16 @@ export const PROMO_SITES: PromoSite[] = [
     name: "Flatlay",
     url: "https://flatlay.site/#/",
     category: "CPA",
-    description: "Boutique lifestyle au design épuré, orientée mobile et réseaux sociaux.",
+    description:
+      "Boutique lifestyle au design épuré, orientée mobile et réseaux sociaux.",
   },
   {
     slug: "studioneige",
     name: "Studio Neige",
     url: "https://studioneige.site/",
     category: "CPA",
-    description: "Vitrine produit haut de gamme, idéale pour du trafic social et natif.",
+    description:
+      "Vitrine produit haut de gamme, idéale pour du trafic social et natif.",
   },
 ];
 

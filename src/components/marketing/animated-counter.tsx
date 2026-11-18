@@ -18,7 +18,13 @@ interface AnimatedCounterProps {
   immediate?: boolean;
 }
 
-export function AnimatedCounter({ value, suffix = "", prefix = "", decimals = 0, immediate = false }: AnimatedCounterProps) {
+export function AnimatedCounter({
+  value,
+  suffix = "",
+  prefix = "",
+  decimals = 0,
+  immediate = false,
+}: AnimatedCounterProps) {
   const ref = useRef<HTMLSpanElement>(null);
   // Inset only the bottom edge: the counter starts once it clears the bottom
   // of the viewport. A four-sided inset would prevent small spans near the
@@ -42,5 +48,9 @@ export function AnimatedCounter({ value, suffix = "", prefix = "", decimals = 0,
     });
   }, [spring, prefix, suffix, decimals]);
 
-  return <span ref={ref}>{prefix}0{suffix}</span>;
+  return (
+    <span ref={ref}>
+      {prefix}0{suffix}
+    </span>
+  );
 }

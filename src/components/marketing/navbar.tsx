@@ -15,7 +15,10 @@ const NAV_LINKS = [
 
 function Wordmark() {
   return (
-    <Link href="/" className="flex items-center text-2xl font-extrabold tracking-tight lowercase">
+    <Link
+      href="/"
+      className="flex items-center text-2xl font-extrabold tracking-tight lowercase"
+    >
       rev
       <span className="text-primary">.</span>
     </Link>
@@ -48,17 +51,27 @@ export function Navbar() {
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
           {NAV_LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="transition-colors hover:text-foreground">
+            <a
+              key={link.href}
+              href={link.href}
+              className="transition-colors hover:text-foreground"
+            >
               {link.label}
             </a>
           ))}
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <Link href="/sign-in" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+          <Link
+            href="/sign-in"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
             Connexion
           </Link>
-          <Button className="bg-blue-600 text-white hover:bg-blue-700" render={<Link href="/sign-up" />}>
+          <Button
+            className="bg-blue-600 text-white hover:bg-blue-700"
+            render={<Link href="/sign-up" />}
+          >
             S&apos;inscrire
           </Button>
         </div>
@@ -68,7 +81,11 @@ export function Navbar() {
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Ouvrir le menu"
         >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {mobileOpen ? (
+            <X className="h-5 w-5" />
+          ) : (
+            <Menu className="h-5 w-5" />
+          )}
         </button>
       </div>
 
@@ -80,7 +97,11 @@ export function Navbar() {
         >
           <nav className="flex flex-col gap-4 text-sm">
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}>
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+              >
                 {link.label}
               </a>
             ))}
@@ -88,7 +109,10 @@ export function Navbar() {
               <Button variant="outline" render={<Link href="/sign-in" />}>
                 Connexion
               </Button>
-              <Button className="bg-blue-600 text-white hover:bg-blue-700" render={<Link href="/sign-up" />}>
+              <Button
+                className="bg-blue-600 text-white hover:bg-blue-700"
+                render={<Link href="/sign-up" />}
+              >
                 S&apos;inscrire
               </Button>
             </div>

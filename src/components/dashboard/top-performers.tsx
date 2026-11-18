@@ -15,7 +15,10 @@ interface TopPerformersProps {
   totalRanked: number;
 }
 
-const RANK_STYLES: Record<number, { ring: string; badge: string; icon: React.ReactNode }> = {
+const RANK_STYLES: Record<
+  number,
+  { ring: string; badge: string; icon: React.ReactNode }
+> = {
   1: {
     ring: "ring-amber-400/40",
     badge: "bg-gradient-to-br from-amber-300 to-amber-500 text-amber-950",
@@ -37,7 +40,12 @@ function RankBadge({ rank }: { rank: number }) {
   const style = RANK_STYLES[rank];
   if (style) {
     return (
-      <span className={cn("flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-sm", style.badge)}>
+      <span
+        className={cn(
+          "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-sm",
+          style.badge,
+        )}
+      >
         {style.icon}
       </span>
     );
@@ -67,7 +75,12 @@ function Row({ entry, index }: { entry: LeaderboardEntry; index: number }) {
     >
       <RankBadge rank={entry.rank} />
       <div className="min-w-0 flex-1">
-        <p className={cn("truncate text-sm font-medium", entry.isCurrent && "text-primary")}>
+        <p
+          className={cn(
+            "truncate text-sm font-medium",
+            entry.isCurrent && "text-primary",
+          )}
+        >
           {entry.displayName}
           {entry.isCurrent && (
             <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
@@ -75,10 +88,14 @@ function Row({ entry, index }: { entry: LeaderboardEntry; index: number }) {
             </span>
           )}
         </p>
-        <p className="text-xs text-muted-foreground">{formatCurrency(entry.revenue)} générés</p>
+        <p className="text-xs text-muted-foreground">
+          {formatCurrency(entry.revenue)} générés
+        </p>
       </div>
       <div className="text-right">
-        <p className="text-sm font-semibold tabular-nums">{formatNumber(entry.conversions)}</p>
+        <p className="text-sm font-semibold tabular-nums">
+          {formatNumber(entry.conversions)}
+        </p>
         <p className="text-[11px] text-muted-foreground">conversions</p>
       </div>
     </motion.li>
@@ -91,9 +108,14 @@ function Row({ entry, index }: { entry: LeaderboardEntry; index: number }) {
  * is highlighted, and pinned at the bottom with their real rank when they fall
  * outside the visible top slice.
  */
-export function TopPerformers({ periodLabel, top, me, totalRanked }: TopPerformersProps) {
+export function TopPerformers({
+  periodLabel,
+  top,
+  me,
+  totalRanked,
+}: TopPerformersProps) {
   return (
-    <Card className="shadow-premium">
+    <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-2">
         <div>
           <CardTitle className="flex items-center gap-2">
@@ -102,7 +124,9 @@ export function TopPerformers({ periodLabel, top, me, totalRanked }: TopPerforme
             </span>
             Top performers
           </CardTitle>
-          <p className="mt-1 text-sm text-muted-foreground capitalize">{periodLabel}</p>
+          <p className="mt-1 text-sm text-muted-foreground capitalize">
+            {periodLabel}
+          </p>
         </div>
         {top.length > 0 && (
           <span className="flex items-center gap-1 rounded-full bg-orange-500/10 px-2.5 py-1 text-xs font-medium text-orange-500">
@@ -115,7 +139,9 @@ export function TopPerformers({ periodLabel, top, me, totalRanked }: TopPerforme
         {top.length === 0 ? (
           <div className="py-10 text-center">
             <Trophy className="mx-auto h-8 w-8 text-muted-foreground/40" />
-            <p className="mt-3 text-sm font-medium">Le classement du mois est encore vierge</p>
+            <p className="mt-3 text-sm font-medium">
+              Le classement du mois est encore vierge
+            </p>
             <p className="mt-1 text-xs text-muted-foreground">
               Générez vos premières conversions ce mois-ci pour apparaître ici.
             </p>

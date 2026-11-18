@@ -26,14 +26,22 @@ interface NotificationsBellProps {
   notificationsHref?: string;
 }
 
-export function NotificationsBell({ notifications, notificationsHref = "/dashboard/notifications" }: NotificationsBellProps) {
+export function NotificationsBell({
+  notifications,
+  notificationsHref = "/dashboard/notifications",
+}: NotificationsBellProps) {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon" className="relative" aria-label="Notifications">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative"
+            aria-label="Notifications"
+          >
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
               <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
@@ -47,16 +55,25 @@ export function NotificationsBell({ notifications, notificationsHref = "/dashboa
         <DropdownMenuLabel>Notifications</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {notifications.length === 0 && (
-          <p className="px-2 py-4 text-center text-sm text-muted-foreground">Rien de nouveau pour le moment.</p>
+          <p className="px-2 py-4 text-center text-sm text-muted-foreground">
+            Rien de nouveau pour le moment.
+          </p>
         )}
         {notifications.slice(0, 6).map((notification) => (
-          <DropdownMenuItem key={notification.id} className="flex flex-col items-start gap-0.5 whitespace-normal">
+          <DropdownMenuItem
+            key={notification.id}
+            className="flex flex-col items-start gap-0.5 whitespace-normal"
+          >
             <div className="flex w-full items-center gap-2">
-              {!notification.read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />}
+              {!notification.read && (
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              )}
               <p className="text-sm font-medium">{notification.title}</p>
             </div>
             <p className="text-xs text-muted-foreground">{notification.body}</p>
-            <p className="text-[10px] text-muted-foreground/70">{formatDateTime(notification.createdAt)}</p>
+            <p className="text-[10px] text-muted-foreground/70">
+              {formatDateTime(notification.createdAt)}
+            </p>
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />

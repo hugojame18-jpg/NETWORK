@@ -12,5 +12,7 @@ const DEVELOPMENT_URL = "http://localhost:3000";
 export function appUrl(): string {
   const configured = process.env.NEXT_PUBLIC_APP_URL?.trim();
   if (configured) return configured.replace(/\/+$/, "");
-  return process.env.NODE_ENV === "development" ? DEVELOPMENT_URL : PRODUCTION_URL;
+  return process.env.NODE_ENV === "development"
+    ? DEVELOPMENT_URL
+    : PRODUCTION_URL;
 }

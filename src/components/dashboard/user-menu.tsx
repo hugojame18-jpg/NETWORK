@@ -30,7 +30,13 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function UserMenu({ name, email, image, profileHref = "/dashboard/profile", settingsHref = "/dashboard/settings" }: UserMenuProps) {
+export function UserMenu({
+  name,
+  email,
+  image,
+  profileHref = "/dashboard/profile",
+  settingsHref = "/dashboard/settings",
+}: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -46,7 +52,9 @@ export function UserMenu({ name, email, image, profileHref = "/dashboard/profile
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="flex flex-col">
           <span className="font-medium">{name}</span>
-          <span className="text-xs font-normal text-muted-foreground">{email}</span>
+          <span className="text-xs font-normal text-muted-foreground">
+            {email}
+          </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem render={<Link href={profileHref} />}>
@@ -58,7 +66,10 @@ export function UserMenu({ name, email, image, profileHref = "/dashboard/profile
           Paramètres
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={() => signOut({ redirectTo: "/" })}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => signOut({ redirectTo: "/" })}
+        >
           <LogOut className="h-4 w-4" />
           Se déconnecter
         </DropdownMenuItem>

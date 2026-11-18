@@ -13,7 +13,9 @@ export default auth((req) => {
   const session = req.auth;
   const pathname = nextUrl.pathname;
 
-  const matchedPrefix = Object.keys(ROLE_PREFIXES).find((prefix) => pathname.startsWith(prefix));
+  const matchedPrefix = Object.keys(ROLE_PREFIXES).find((prefix) =>
+    pathname.startsWith(prefix),
+  );
   if (!matchedPrefix) return NextResponse.next();
 
   if (!session?.user) {
@@ -28,7 +30,9 @@ export default auth((req) => {
 
   const requiredRole = ROLE_PREFIXES[matchedPrefix];
   if (session.user.role !== requiredRole) {
-    return NextResponse.redirect(new URL(homeForRole(session.user.role), nextUrl));
+    return NextResponse.redirect(
+      new URL(homeForRole(session.user.role), nextUrl),
+    );
   }
 
   return NextResponse.next();

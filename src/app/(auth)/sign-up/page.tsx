@@ -13,7 +13,10 @@ export default async function SignUpPage({ searchParams }: PageProps) {
 
   return (
     <div>
-      <AuthHeader title="Rejoindre RevNetwork" description="Créez votre compte en moins de deux minutes." />
+      <AuthHeader
+        title="Rejoindre RevNetwork"
+        description="Créez votre compte en moins de deux minutes."
+      />
       <SignUpForm referralCode={ref?.trim().toUpperCase() || undefined} />
     </div>
   );

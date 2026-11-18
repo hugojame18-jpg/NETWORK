@@ -13,7 +13,9 @@ async function uniqueSlug(name: string) {
   const base = slugify(name) || "offre";
   let slug = base;
   let suffix = 1;
-  while (await prisma.offer.findUnique({ where: { slug }, select: { id: true } })) {
+  while (
+    await prisma.offer.findUnique({ where: { slug }, select: { id: true } })
+  ) {
     suffix += 1;
     slug = `${base}-${suffix}`;
   }
@@ -39,13 +41,19 @@ export async function POST(request: Request) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
 
     const body = await request.json().catch(() => null);
     const parsed = adminOfferSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 400 });
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Données invalides" },
+        { status: 400 },
+      );
     }
 
     const offer = await prisma.offer.create({
@@ -75,7 +83,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ offer });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/admin/offers]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

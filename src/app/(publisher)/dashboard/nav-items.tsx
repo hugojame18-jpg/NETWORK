@@ -21,13 +21,24 @@ import type { NavSection } from "@/components/dashboard/sidebar-nav";
  */
 export const publisherNavSections: NavSection[] = [
   {
-    items: [{ href: "/dashboard", label: "Accueil", icon: <LayoutDashboard />, exact: true }],
+    items: [
+      {
+        href: "/dashboard",
+        label: "Accueil",
+        icon: <LayoutDashboard />,
+        exact: true,
+      },
+    ],
   },
   {
     title: "Gagner",
     items: [
       { href: "/dashboard/offers", label: "Offres", icon: <Layers /> },
-      { href: "/dashboard/sites", label: "Sites à promouvoir", icon: <MonitorSmartphone /> },
+      {
+        href: "/dashboard/sites",
+        label: "Sites à promouvoir",
+        icon: <MonitorSmartphone />,
+      },
       { href: "/dashboard/links", label: "Mes liens", icon: <Link2 /> },
     ],
   },
@@ -41,7 +52,11 @@ export const publisherNavSections: NavSection[] = [
   {
     title: "Progresser",
     items: [
-      { href: "/dashboard/training", label: "Formation", icon: <GraduationCap /> },
+      {
+        href: "/dashboard/training",
+        label: "Formation",
+        icon: <GraduationCap />,
+      },
       { href: "/dashboard/rewards", label: "Récompenses", icon: <Gift /> },
     ],
   },

@@ -9,14 +9,22 @@ interface ResetPasswordPageProps {
   searchParams: Promise<{ token?: string }>;
 }
 
-export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
+export default async function ResetPasswordPage({
+  searchParams,
+}: ResetPasswordPageProps) {
   const { token } = await searchParams;
 
   if (!token) {
     return (
       <div>
-        <AuthHeader title="Lien invalide" description="Ce lien de réinitialisation est manquant ou incomplet." />
-        <Link href="/forgot-password" className="text-sm font-medium hover:underline">
+        <AuthHeader
+          title="Lien invalide"
+          description="Ce lien de réinitialisation est manquant ou incomplet."
+        />
+        <Link
+          href="/forgot-password"
+          className="text-sm font-medium hover:underline"
+        >
           Redemander un lien
         </Link>
       </div>
@@ -25,7 +33,10 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
 
   return (
     <div>
-      <AuthHeader title="Nouveau mot de passe" description="Choisissez un mot de passe robuste." />
+      <AuthHeader
+        title="Nouveau mot de passe"
+        description="Choisissez un mot de passe robuste."
+      />
       <ResetPasswordForm token={token} />
     </div>
   );

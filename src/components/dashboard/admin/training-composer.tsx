@@ -62,7 +62,8 @@ export function TrainingComposer() {
           onChange={(e) => setUrl(e.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          YouTube, Loom, Drive… La miniature YouTube est récupérée automatiquement.
+          YouTube, Loom, Drive… La miniature YouTube est récupérée
+          automatiquement.
         </p>
       </div>
 
@@ -78,7 +79,11 @@ export function TrainingComposer() {
       </div>
 
       <Button type="submit" disabled={isPending}>
-        {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Plus className="h-4 w-4" />
+        )}
         Ajouter la vidéo
       </Button>
     </form>

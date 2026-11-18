@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChangePasswordForm } from "@/components/dashboard/change-password-form";
 import { PaymentMethodForm } from "@/components/dashboard/payment-method-form";
 import { ReplayTourButton } from "@/components/dashboard/replay-tour-button";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export const metadata: Metadata = { title: "Paramètres" };
 
@@ -14,7 +15,12 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Card className="shadow-premium">
+      <PageHeader
+        title="Paramètres"
+        description="Paiement, sécurité et prise en main de ton espace."
+      />
+
+      <Card>
         <CardHeader>
           <CardTitle>Méthode de paiement</CardTitle>
         </CardHeader>
@@ -26,7 +32,7 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Sécurité</CardTitle>
         </CardHeader>
@@ -35,13 +41,14 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Prise en main</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            Rejoue le guide pas-à-pas qui explique comment demander un lien, suivre tes statistiques et être payé.
+            Rejoue le guide pas-à-pas qui explique comment demander un lien,
+            suivre tes statistiques et être payé.
           </p>
           <ReplayTourButton />
         </CardContent>

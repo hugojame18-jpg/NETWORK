@@ -36,8 +36,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return token;
       }
 
-      const refreshedAt = typeof token.refreshedAt === "number" ? token.refreshedAt : 0;
-      if (!token.id || Date.now() - refreshedAt < TOKEN_REFRESH_MS) return token;
+      const refreshedAt =
+        typeof token.refreshedAt === "number" ? token.refreshedAt : 0;
+      if (!token.id || Date.now() - refreshedAt < TOKEN_REFRESH_MS)
+        return token;
 
       const fresh = await prisma.user.findUnique({
         where: { id: token.id as string },
@@ -67,7 +69,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
         if (!user) return null;
 
-        const isValid = await bcrypt.compare(parsed.data.password, user.passwordHash);
+        const isValid = await bcrypt.compare(
+          parsed.data.password,
+          user.passwordHash,
+        );
         if (!isValid) return null;
 
         if (user.status === "BANNED") throw new AccountBannedError();

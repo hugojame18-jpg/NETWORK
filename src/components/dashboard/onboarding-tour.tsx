@@ -79,7 +79,9 @@ export function OnboardingTour() {
     startTransition(async () => {
       // Best effort: if this fails the tour simply shows again next time,
       // which is far better than blocking the dashboard behind an error.
-      await fetch("/api/publisher/onboarding", { method: "POST" }).catch(() => {});
+      await fetch("/api/publisher/onboarding", { method: "POST" }).catch(
+        () => {},
+      );
       router.refresh();
     });
   }
@@ -112,7 +114,9 @@ export function OnboardingTour() {
         </div>
 
         <div className="p-5">
-          <p className="text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {step.body}
+          </p>
         </div>
 
         <div className="flex items-center justify-between gap-4 border-t border-border p-4">
@@ -121,7 +125,11 @@ export function OnboardingTour() {
               <span
                 key={s.title}
                 className={`h-1.5 rounded-full transition-all ${
-                  i === index ? "w-5 bg-primary" : i < index ? "w-1.5 bg-primary/50" : "w-1.5 bg-border"
+                  i === index
+                    ? "w-5 bg-primary"
+                    : i < index
+                      ? "w-1.5 bg-primary/50"
+                      : "w-1.5 bg-border"
                 }`}
               />
             ))}
@@ -129,14 +137,22 @@ export function OnboardingTour() {
 
           <div className="flex gap-2">
             {index > 0 && (
-              <Button variant="outline" size="sm" onClick={() => setIndex((i) => i - 1)}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIndex((i) => i - 1)}
+              >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Retour
               </Button>
             )}
             {isLast ? (
               <Button size="sm" onClick={finish} disabled={isPending}>
-                {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+                {isPending ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Check className="h-3.5 w-3.5" />
+                )}
                 C&apos;est parti
               </Button>
             ) : (

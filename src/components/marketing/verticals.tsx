@@ -21,7 +21,12 @@ const VERTICALS: Vertical[] = [
   },
   {
     name: "VOD",
-    items: ["Sport streaming", "Films & séries", "Fitness", "E-books & téléchargement"],
+    items: [
+      "Sport streaming",
+      "Films & séries",
+      "Fitness",
+      "E-books & téléchargement",
+    ],
     description:
       "Les services de Vidéo à la Demande sont des plateformes sur lesquelles les utilisateurs s'abonnent au mois pour accéder à différents contenus en streaming.",
     categories: "Sport, films & TV, fitness, e-books, téléchargement",
@@ -29,7 +34,13 @@ const VERTICALS: Vertical[] = [
   },
 ];
 
-function VerticalBlock({ vertical, index }: { vertical: Vertical; index: number }) {
+function VerticalBlock({
+  vertical,
+  index,
+}: {
+  vertical: Vertical;
+  index: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -39,13 +50,21 @@ function VerticalBlock({ vertical, index }: { vertical: Vertical; index: number 
       className="grid gap-8 lg:grid-cols-2"
     >
       <div>
-        <h3 className="text-2xl font-bold tracking-tight uppercase">{vertical.name}</h3>
+        <h3 className="text-2xl font-bold tracking-tight uppercase">
+          {vertical.name}
+        </h3>
         <div className="mt-6 border-t border-primary/40 pt-6">
           <ol className="relative space-y-6 pl-6">
-            <span className="absolute top-1 bottom-1 left-[3px] w-px bg-border" aria-hidden />
+            <span
+              className="absolute top-1 bottom-1 left-[3px] w-px bg-border"
+              aria-hidden
+            />
             {vertical.items.map((item) => (
               <li key={item} className="relative text-sm text-muted-foreground">
-                <span className="absolute top-1.5 -left-6 h-2 w-2 rounded-full bg-primary" aria-hidden />
+                <span
+                  className="absolute top-1.5 -left-6 h-2 w-2 rounded-full bg-primary"
+                  aria-hidden
+                />
                 <span className="text-foreground">{item}</span>
               </li>
             ))}

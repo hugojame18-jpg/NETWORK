@@ -18,7 +18,9 @@ export function Particles({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
     const isMobile = window.matchMedia("(max-width: 640px)").matches;
     const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
     const linkDist = isMobile ? 96 : 135;
@@ -26,7 +28,14 @@ export function Particles({ className }: { className?: string }) {
     let height = 0;
     let raf = 0;
 
-    type P = { x: number; y: number; vx: number; vy: number; r: number; a: number };
+    type P = {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      r: number;
+      a: number;
+    };
     let particles: P[] = [];
 
     const resize = () => {
@@ -44,7 +53,10 @@ export function Particles({ className }: { className?: string }) {
       const cap = isMobile ? 34 : 90;
       const floor = isMobile ? 16 : 36;
       const density = isMobile ? 17000 : 11000;
-      const count = Math.min(cap, Math.max(floor, Math.floor((width * height) / density)));
+      const count = Math.min(
+        cap,
+        Math.max(floor, Math.floor((width * height) / density)),
+      );
       particles = Array.from({ length: count }, () => ({
         x: Math.random() * width,
         y: Math.random() * height,

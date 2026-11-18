@@ -8,7 +8,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 export function ChangePasswordForm() {
-  const [form, setForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [form, setForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [isPending, startTransition] = useTransition();
 
   function submit(e: React.FormEvent) {
@@ -37,7 +41,9 @@ export function ChangePasswordForm() {
           id="currentPassword"
           type="password"
           value={form.currentPassword}
-          onChange={(e) => setForm({ ...form, currentPassword: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, currentPassword: e.target.value })
+          }
         />
       </div>
       <div className="grid grid-cols-2 gap-4">
@@ -56,7 +62,9 @@ export function ChangePasswordForm() {
             id="confirmPassword"
             type="password"
             value={form.confirmPassword}
-            onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+            onChange={(e) =>
+              setForm({ ...form, confirmPassword: e.target.value })
+            }
           />
         </div>
       </div>

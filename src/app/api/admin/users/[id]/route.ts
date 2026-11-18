@@ -17,7 +17,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
@@ -27,13 +30,25 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Données invalides" }, { status: 400 });
     }
 
-    await prisma.user.update({ where: { id }, data: { name: parsed.data.name } });
-    await logAction({ actorId: admin.id, action: "user.update", targetType: "User", targetId: id, metadata: parsed.data });
+    await prisma.user.update({
+      where: { id },
+      data: { name: parsed.data.name },
+    });
+    await logAction({
+      actorId: admin.id,
+      action: "user.update",
+      targetType: "User",
+      targetId: id,
+      metadata: parsed.data,
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/admin/users/:id]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -44,17 +59,26 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
     if (id === admin.id) {
-      return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte." }, { status: 400 });
+      return NextResponse.json(
+        { error: "Vous ne pouvez pas supprimer votre propre compte." },
+        { status: 400 },
+      );
     }
 
     const target = await prisma.user.findUnique({ where: { id } });
     if (!target) {
-      return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Utilisateur introuvable" },
+        { status: 404 },
+      );
     }
 
     await logAction({
@@ -70,7 +94,10 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[DELETE /api/admin/users/:id]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

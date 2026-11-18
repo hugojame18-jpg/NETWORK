@@ -26,16 +26,33 @@ import type { NavSection } from "@/components/dashboard/sidebar-nav";
 export const adminNavSections: NavSection[] = [
   {
     items: [
-      { href: "/admin", label: "Pilotage", icon: <LayoutDashboard />, exact: true },
-      { href: "/admin/revenue", label: "Chiffre d'affaires", icon: <TrendingUp /> },
+      {
+        href: "/admin",
+        label: "Pilotage",
+        icon: <LayoutDashboard />,
+        exact: true,
+      },
+      {
+        href: "/admin/revenue",
+        label: "Chiffre d'affaires",
+        icon: <TrendingUp />,
+      },
     ],
   },
   {
     title: "Au quotidien",
     items: [
       { href: "/admin/stats", label: "Saisie des stats", icon: <BarChart3 /> },
-      { href: "/admin/link-requests", label: "Demandes de liens", icon: <Link2 /> },
-      { href: "/admin/site-requests", label: "Demandes de sites", icon: <MonitorSmartphone /> },
+      {
+        href: "/admin/link-requests",
+        label: "Demandes de liens",
+        icon: <Link2 />,
+      },
+      {
+        href: "/admin/site-requests",
+        label: "Demandes de sites",
+        icon: <MonitorSmartphone />,
+      },
     ],
   },
   {
@@ -57,7 +74,11 @@ export const adminNavSections: NavSection[] = [
   {
     title: "Système",
     items: [
-      { href: "/admin/users", label: "Utilisateurs & rôles", icon: <ShieldCheck /> },
+      {
+        href: "/admin/users",
+        label: "Utilisateurs & rôles",
+        icon: <ShieldCheck />,
+      },
       { href: "/admin/logs", label: "Logs", icon: <ScrollText /> },
       { href: "/admin/settings", label: "Paramètres", icon: <Settings /> },
     ],

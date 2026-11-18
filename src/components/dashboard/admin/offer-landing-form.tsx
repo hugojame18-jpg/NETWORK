@@ -14,7 +14,11 @@ interface OfferLandingFormProps {
   placeholder: boolean;
 }
 
-export function OfferLandingForm({ offerId, currentUrl, placeholder }: OfferLandingFormProps) {
+export function OfferLandingForm({
+  offerId,
+  currentUrl,
+  placeholder,
+}: OfferLandingFormProps) {
   const router = useRouter();
   const [url, setUrl] = useState(placeholder ? "" : currentUrl);
   const [editing, setEditing] = useState(placeholder);
@@ -50,7 +54,12 @@ export function OfferLandingForm({ offerId, currentUrl, placeholder }: OfferLand
         >
           {currentUrl}
         </a>
-        <Button size="icon-sm" variant="ghost" onClick={() => setEditing(true)} aria-label="Modifier le lien">
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          onClick={() => setEditing(true)}
+          aria-label="Modifier le lien"
+        >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -67,8 +76,17 @@ export function OfferLandingForm({ offerId, currentUrl, placeholder }: OfferLand
         onChange={(e) => setUrl(e.target.value)}
         className="h-8 w-[230px] text-xs"
       />
-      <Button type="submit" size="icon-sm" disabled={isPending} aria-label="Enregistrer le lien">
-        {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+      <Button
+        type="submit"
+        size="icon-sm"
+        disabled={isPending}
+        aria-label="Enregistrer le lien"
+      >
+        {isPending ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <Check className="h-3.5 w-3.5" />
+        )}
       </Button>
     </form>
   );

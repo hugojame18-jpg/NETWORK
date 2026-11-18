@@ -31,7 +31,10 @@ function verifySignature(clickId: string, signature: string): boolean {
  */
 export async function POST(request: Request) {
   const ip = getClientIp(request.headers);
-  const limit = await rateLimit(`track:conversion:${ip}`, { limit: 120, windowSeconds: 60 });
+  const limit = await rateLimit(`track:conversion:${ip}`, {
+    limit: 120,
+    windowSeconds: 60,
+  });
   if (!limit.success) {
     return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
   }
@@ -47,7 +50,10 @@ export async function POST(request: Request) {
 
   const parsed = postbackSchema.safeParse(merged);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Paramètres invalides" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Paramètres invalides" },
+      { status: 400 },
+    );
   }
 
   if (!verifySignature(parsed.data.click_id, parsed.data.signature)) {
@@ -62,14 +68,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Clic introuvable" }, { status: 404 });
   }
 
-  const cookieExpiry = new Date(click.createdAt.getTime() + click.offer.cookieDays * 24 * 60 * 60 * 1000);
+  const cookieExpiry = new Date(
+    click.createdAt.getTime() + click.offer.cookieDays * 24 * 60 * 60 * 1000,
+  );
   if (cookieExpiry < new Date()) {
-    return NextResponse.json({ error: "Fenêtre d'attribution expirée" }, { status: 410 });
+    return NextResponse.json(
+      { error: "Fenêtre d'attribution expirée" },
+      { status: 410 },
+    );
   }
 
-  const existingLead = await prisma.lead.findUnique({ where: { clickId: click.id } });
+  const existingLead = await prisma.lead.findUnique({
+    where: { clickId: click.id },
+  });
   if (existingLead) {
-    return NextResponse.json({ error: "Conversion déjà enregistrée pour ce clic" }, { status: 409 });
+    return NextResponse.json(
+      { error: "Conversion déjà enregistrée pour ce clic" },
+      { status: 409 },
+    );
   }
 
   const status = parsed.data.status ?? "APPROVED";
@@ -108,12 +124,19 @@ export async function POST(request: Request) {
 
       await tx.publisher.update({
         where: { id: click.publisherId },
-        data: { balance: { increment: payout }, totalEarned: { increment: payout } },
+        data: {
+          balance: { increment: payout },
+          totalEarned: { increment: payout },
+        },
       });
 
       await tx.notification.create({
         data: {
-          userId: (await tx.publisher.findUniqueOrThrow({ where: { id: click.publisherId } })).userId,
+          userId: (
+            await tx.publisher.findUniqueOrThrow({
+              where: { id: click.publisherId },
+            })
+          ).userId,
           type: "CONVERSION",
           title: "Nouvelle conversion approuvée",
           body: `Votre conversion sur "${click.offer.name}" a été approuvée (+${payout.toFixed(2)} $).`,

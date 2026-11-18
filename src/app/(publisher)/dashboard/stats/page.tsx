@@ -1,11 +1,32 @@
 import type { Metadata } from "next";
-import { MousePointerClick, Globe, Target, Percent, Wallet } from "lucide-react";
+import {
+  BarChart3,
+  MousePointerClick,
+  Globe,
+  Target,
+  Percent,
+  Wallet,
+} from "lucide-react";
 import { requireRole } from "@/lib/rbac";
-import { getPublisherByUserId, getStatsForPeriod, resolveStatsPeriod, type StatsPeriodPreset } from "@/lib/data/publisher";
+import {
+  getPublisherByUserId,
+  getStatsForPeriod,
+  resolveStatsPeriod,
+  type StatsPeriodPreset,
+} from "@/lib/data/publisher";
 import { StatsPeriodSelector } from "@/components/dashboard/stats-period-selector";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { Metric } from "@/components/dashboard/metric-card";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { EmptyState } from "@/components/dashboard/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatCurrency, formatCalendarDate, formatNumber } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Statistiques" };
@@ -32,7 +53,11 @@ export default async function PublisherStatsPage({ searchParams }: PageProps) {
   const publisher = await getPublisherByUserId(user.id);
   const params = await searchParams;
 
-  const period = (VALID_PRESETS.includes(params.period as StatsPeriodPreset) ? params.period : "last_30_days") as StatsPeriodPreset;
+  const period = (
+    VALID_PRESETS.includes(params.period as StatsPeriodPreset)
+      ? params.period
+      : "last_30_days"
+  ) as StatsPeriodPreset;
   const from = params.from ?? "";
   const to = params.to ?? "";
 
@@ -41,51 +66,91 @@ export default async function PublisherStatsPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Statistiques"
+        description="Le détail de ton trafic, jour par jour. Les revenus affichés sont déjà ta part."
+      />
+
       <StatsPeriodSelector period={period} from={from} to={to} />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard label="Clics" value={totals.clicks} icon={<MousePointerClick />} index={0} />
-        <StatCard label="Hosts" value={totals.hosts} icon={<Globe />} index={1} />
-        <StatCard label="Conversions" value={totals.conversions} icon={<Target />} index={2} />
-        <StatCard label="Taux de conversion" value={totals.conversionRate} suffix="%" decimals={2} icon={<Percent />} index={3} />
-        <StatCard label="Revenus" value={totals.revenue} prefix="$" decimals={2} icon={<Wallet />} index={4} />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <Metric
+          label="Revenus"
+          value={formatCurrency(totals.revenue)}
+          icon={<Wallet />}
+          accent
+          hint="ta part, déjà calculée"
+        />
+        <Metric
+          label="Clics"
+          value={formatNumber(totals.clicks)}
+          icon={<MousePointerClick />}
+        />
+        <Metric
+          label="Hosts"
+          value={formatNumber(totals.hosts)}
+          icon={<Globe />}
+        />
+        <Metric
+          label="Conversions"
+          value={formatNumber(totals.conversions)}
+          icon={<Target />}
+        />
+        <Metric
+          label="Taux de conversion"
+          value={`${totals.conversionRate.toFixed(2)} %`}
+          icon={<Percent />}
+        />
       </div>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Détail par jour</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Clics</TableHead>
-                <TableHead className="text-right">Hosts</TableHead>
-                <TableHead className="text-right">Conversions</TableHead>
-                <TableHead className="text-right">Taux</TableHead>
-                <TableHead className="text-right">Revenus</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{formatCalendarDate(row.date)}</TableCell>
-                  <TableCell className="text-right">{formatNumber(row.clicks)}</TableCell>
-                  <TableCell className="text-right">{formatNumber(row.hosts)}</TableCell>
-                  <TableCell className="text-right">{formatNumber(row.conversions)}</TableCell>
-                  <TableCell className="text-right">
-                    {row.clicks > 0 ? `${((row.conversions / row.clicks) * 100).toFixed(2)}%` : "—"}
-                  </TableCell>
-                  <TableCell className="text-right font-medium">{formatCurrency(row.revenue)}</TableCell>
+        <CardContent className="px-0">
+          {rows.length === 0 ? (
+            <EmptyState
+              icon={<BarChart3 />}
+              title="Rien sur cette période"
+              description="Aucune statistique n'a été renseignée entre ces deux dates. Essaie une période plus large."
+            />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Clics</TableHead>
+                  <TableHead className="text-right">Hosts</TableHead>
+                  <TableHead className="text-right">Conversions</TableHead>
+                  <TableHead className="text-right">Taux</TableHead>
+                  <TableHead className="text-right">Revenus</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {rows.length === 0 && (
-            <p className="py-16 text-center text-sm text-muted-foreground">
-              Aucune statistique renseignée pour cette période.
-            </p>
+              </TableHeader>
+              <TableBody>
+                {rows.map((row) => (
+                  <TableRow key={row.id}>
+                    <TableCell>{formatCalendarDate(row.date)}</TableCell>
+                    <TableCell className="num text-right">
+                      {formatNumber(row.clicks)}
+                    </TableCell>
+                    <TableCell className="num text-right">
+                      {formatNumber(row.hosts)}
+                    </TableCell>
+                    <TableCell className="num text-right">
+                      {formatNumber(row.conversions)}
+                    </TableCell>
+                    <TableCell className="num text-right text-muted-foreground">
+                      {row.clicks > 0
+                        ? `${((row.conversions / row.clicks) * 100).toFixed(2)} %`
+                        : "—"}
+                    </TableCell>
+                    <TableCell className="num text-right font-medium">
+                      {formatCurrency(row.revenue)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

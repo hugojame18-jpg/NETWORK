@@ -13,14 +13,20 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
     const body = await request.json().catch(() => null);
     const parsed = dailyStatUpdateSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Données invalides", issues: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: "Données invalides", issues: parsed.error.flatten() },
+        { status: 400 },
+      );
     }
 
     const stat = await prisma.publisherDailyStat.update({
@@ -39,7 +45,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true, stat });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/admin/daily-stats/:id]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -50,7 +59,10 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
@@ -66,7 +78,10 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[DELETE /api/admin/daily-stats/:id]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

@@ -1,22 +1,37 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/rbac";
-import { getAdvertiserByUserId, getAdvertiserOffers, getCampaigns } from "@/lib/data/advertiser";
+import {
+  getAdvertiserByUserId,
+  getAdvertiserOffers,
+  getCampaigns,
+} from "@/lib/data/advertiser";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { OfferFormDialog, type OfferFormValues } from "@/components/dashboard/offer-form-dialog";
+import {
+  OfferFormDialog,
+  type OfferFormValues,
+} from "@/components/dashboard/offer-form-dialog";
 import { formatCurrency, toNumber } from "@/lib/format";
 import { verticalIcon, verticalLabel } from "@/lib/verticals";
 
 export const metadata: Metadata = { title: "Offres" };
 
-const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive"> = {
-  ACTIVE: "default",
-  PENDING: "secondary",
-  DRAFT: "secondary",
-  PAUSED: "secondary",
-  ARCHIVED: "destructive",
-};
+const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive"> =
+  {
+    ACTIVE: "default",
+    PENDING: "secondary",
+    DRAFT: "secondary",
+    PAUSED: "secondary",
+    ARCHIVED: "destructive",
+  };
 
 export default async function AdvertiserOffersPage() {
   const user = await requireRole("ADVERTISER");
@@ -34,7 +49,7 @@ export default async function AdvertiserOffersPage() {
         <OfferFormDialog campaigns={campaignOptions} />
       </div>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardContent className="p-0">
           <Table>
             <TableHeader>
@@ -71,15 +86,27 @@ export default async function AdvertiserOffersPage() {
                 return (
                   <TableRow key={offer.id}>
                     <TableCell className="font-medium">{offer.name}</TableCell>
-                    <TableCell>{verticalIcon(offer.category)} {verticalLabel(offer.category)}</TableCell>
-                    <TableCell>{formatCurrency(offer.payout)}</TableCell>
-                    <TableCell className="text-right">{offer._count.affiliateLinks}</TableCell>
-                    <TableCell className="text-right">{offer._count.conversions}</TableCell>
                     <TableCell>
-                      <Badge variant={STATUS_VARIANT[offer.status]}>{offer.status}</Badge>
+                      {verticalIcon(offer.category)}{" "}
+                      {verticalLabel(offer.category)}
+                    </TableCell>
+                    <TableCell>{formatCurrency(offer.payout)}</TableCell>
+                    <TableCell className="text-right">
+                      {offer._count.affiliateLinks}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {offer._count.conversions}
                     </TableCell>
                     <TableCell>
-                      <OfferFormDialog offer={formValues} campaigns={campaignOptions} />
+                      <Badge variant={STATUS_VARIANT[offer.status]}>
+                        {offer.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <OfferFormDialog
+                        offer={formValues}
+                        campaigns={campaignOptions}
+                      />
                     </TableCell>
                   </TableRow>
                 );
@@ -88,7 +115,9 @@ export default async function AdvertiserOffersPage() {
           </Table>
 
           {offers.length === 0 && (
-            <p className="py-16 text-center text-sm text-muted-foreground">Vous n&apos;avez pas encore créé d&apos;offre.</p>
+            <p className="py-16 text-center text-sm text-muted-foreground">
+              Vous n&apos;avez pas encore créé d&apos;offre.
+            </p>
           )}
         </CardContent>
       </Card>

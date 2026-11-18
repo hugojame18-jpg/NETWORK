@@ -6,7 +6,13 @@ import { Eye, EyeOff, Loader2, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-export function TrainingActions({ id, active }: { id: string; active: boolean }) {
+export function TrainingActions({
+  id,
+  active,
+}: {
+  id: string;
+  active: boolean;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -29,7 +35,9 @@ export function TrainingActions({ id, active }: { id: string; active: boolean })
   function remove() {
     if (!confirm("Supprimer définitivement cette vidéo ?")) return;
     startTransition(async () => {
-      const res = await fetch(`/api/admin/training/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/training/${id}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         toast.error("Suppression impossible.");
         return;
@@ -56,7 +64,13 @@ export function TrainingActions({ id, active }: { id: string; active: boolean })
           <Eye className="h-3.5 w-3.5" />
         )}
       </Button>
-      <Button size="icon-sm" variant="outline" onClick={remove} disabled={isPending} aria-label="Supprimer la vidéo">
+      <Button
+        size="icon-sm"
+        variant="outline"
+        onClick={remove}
+        disabled={isPending}
+        aria-label="Supprimer la vidéo"
+      >
         <Trash2 className="h-3.5 w-3.5" />
       </Button>
     </div>

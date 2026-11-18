@@ -46,7 +46,11 @@ export function PlatformSettingsForm(initial: PlatformSettingsFormProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="siteName">Nom de la plateforme</Label>
-          <Input id="siteName" value={form.siteName} onChange={(e) => setForm({ ...form, siteName: e.target.value })} />
+          <Input
+            id="siteName"
+            value={form.siteName}
+            onChange={(e) => setForm({ ...form, siteName: e.target.value })}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="supportEmail">Email support</Label>
@@ -66,7 +70,9 @@ export function PlatformSettingsForm(initial: PlatformSettingsFormProps) {
             type="number"
             min={1}
             value={form.defaultCookieDays}
-            onChange={(e) => setForm({ ...form, defaultCookieDays: Number(e.target.value) })}
+            onChange={(e) =>
+              setForm({ ...form, defaultCookieDays: Number(e.target.value) })
+            }
           />
         </div>
         <div className="space-y-2">
@@ -76,18 +82,24 @@ export function PlatformSettingsForm(initial: PlatformSettingsFormProps) {
             type="number"
             min={0}
             value={form.minPayout}
-            onChange={(e) => setForm({ ...form, minPayout: Number(e.target.value) })}
+            onChange={(e) =>
+              setForm({ ...form, minPayout: Number(e.target.value) })
+            }
           />
         </div>
       </div>
       <div className="flex items-center justify-between rounded-lg border border-border p-3">
         <div>
           <p className="text-sm font-medium">Mode maintenance</p>
-          <p className="text-xs text-muted-foreground">Désactive temporairement l&apos;accès public à la plateforme.</p>
+          <p className="text-xs text-muted-foreground">
+            Désactive temporairement l&apos;accès public à la plateforme.
+          </p>
         </div>
         <Switch
           checked={form.maintenanceMode}
-          onCheckedChange={(checked) => setForm({ ...form, maintenanceMode: checked })}
+          onCheckedChange={(checked) =>
+            setForm({ ...form, maintenanceMode: checked })
+          }
         />
       </div>
       <Button type="submit" disabled={isPending}>

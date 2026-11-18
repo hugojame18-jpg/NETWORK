@@ -24,5 +24,10 @@ export function getClientIp(headers: Headers): string {
  * incorrectly blocking everyone.
  */
 export function getClientCountry(headers: Headers): string | null {
-  return headers.get("x-vercel-ip-country") ?? headers.get("cf-ipcountry") ?? headers.get("x-geo-country") ?? null;
+  return (
+    headers.get("x-vercel-ip-country") ??
+    headers.get("cf-ipcountry") ??
+    headers.get("x-geo-country") ??
+    null
+  );
 }

@@ -1,13 +1,29 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
-import { ArrowUpRight, TrendingUp, Users, MousePointerClick, Wallet } from "lucide-react";
+import {
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
+import {
+  ArrowUpRight,
+  TrendingUp,
+  Users,
+  MousePointerClick,
+  Wallet,
+} from "lucide-react";
 
 const BARS = [38, 52, 44, 61, 58, 70, 64, 78, 72, 88, 82, 95];
 
 const STATS = [
-  { label: "Revenus aujourd'hui", value: "1 284 $", delta: "+12,4%", icon: Wallet },
+  {
+    label: "Revenus aujourd'hui",
+    value: "1 284 $",
+    delta: "+12,4%",
+    icon: Wallet,
+  },
   { label: "Clics", value: "8 942", delta: "+4,1%", icon: MousePointerClick },
   { label: "Conversions", value: "312", delta: "+8,7%", icon: TrendingUp },
   { label: "Nouveaux publishers", value: "24", delta: "+2", icon: Users },
@@ -50,7 +66,9 @@ export function DashboardMockup() {
         <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
         <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
         <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
-        <span className="ml-3 text-xs text-muted-foreground">app.revnetwork.io/dashboard</span>
+        <span className="ml-3 text-xs text-muted-foreground">
+          app.revnetwork.io/dashboard
+        </span>
       </div>
 
       <div className="grid grid-cols-[180px_1fr] gap-3 rounded-xl bg-background/60 p-3">
@@ -61,14 +79,13 @@ export function DashboardMockup() {
             </span>
             <span className="text-xs font-medium">RevNetwork</span>
           </div>
-          {["Overview", "Offres", "Liens", "Paiements", "Profil"].map((item, i) => (
-            <div
-              key={item}
-              className={cnItem(i === 0)}
-            >
-              {item}
-            </div>
-          ))}
+          {["Overview", "Offres", "Liens", "Paiements", "Profil"].map(
+            (item, i) => (
+              <div key={item} className={cnItem(i === 0)}>
+                {item}
+              </div>
+            ),
+          )}
         </div>
 
         <div className="space-y-3">
@@ -89,14 +106,18 @@ export function DashboardMockup() {
                   </span>
                 </div>
                 <p className="mt-2 text-base font-semibold">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground">{stat.label}</p>
+                <p className="text-[10px] text-muted-foreground">
+                  {stat.label}
+                </p>
               </motion.div>
             ))}
           </div>
 
           <div className="rounded-lg border border-border/60 bg-card/80 p-4">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs font-medium">Revenus des 12 dernières semaines</p>
+              <p className="text-xs font-medium">
+                Revenus des 12 dernières semaines
+              </p>
               <span className="text-[10px] text-muted-foreground">USD</span>
             </div>
             <div className="flex h-28 items-end gap-1.5">
@@ -105,7 +126,11 @@ export function DashboardMockup() {
                   key={i}
                   initial={{ height: 0 }}
                   animate={{ height: `${h}%` }}
-                  transition={{ delay: 0.6 + i * 0.04, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{
+                    delay: 0.6 + i * 0.04,
+                    duration: 0.5,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                   className="flex-1 rounded-t-sm bg-gradient-to-t from-primary/40 to-primary"
                 />
               ))}

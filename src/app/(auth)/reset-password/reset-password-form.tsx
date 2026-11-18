@@ -10,7 +10,10 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { resetPasswordSchema, type ResetPasswordInput } from "@/lib/validations/auth";
+import {
+  resetPasswordSchema,
+  type ResetPasswordInput,
+} from "@/lib/validations/auth";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
@@ -47,7 +50,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   if (done) {
     return (
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-4 text-center"
+      >
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-success/10 text-success">
           <CheckCircle2 className="h-6 w-6" />
         </div>
@@ -76,14 +83,30 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
       <div className="space-y-2">
         <Label htmlFor="password">Nouveau mot de passe</Label>
-        <Input id="password" type="password" autoComplete="new-password" {...register("password")} />
-        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+        <Input
+          id="password"
+          type="password"
+          autoComplete="new-password"
+          {...register("password")}
+        />
+        {errors.password && (
+          <p className="text-xs text-destructive">{errors.password.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword">Confirmation</Label>
-        <Input id="confirmPassword" type="password" autoComplete="new-password" {...register("confirmPassword")} />
-        {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+        <Input
+          id="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          {...register("confirmPassword")}
+        />
+        {errors.confirmPassword && (
+          <p className="text-xs text-destructive">
+            {errors.confirmPassword.message}
+          </p>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
@@ -92,7 +115,10 @@ export function ResetPasswordForm({ token }: { token: string }) {
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        <Link href="/sign-in" className="font-medium text-foreground hover:underline">
+        <Link
+          href="/sign-in"
+          className="font-medium text-foreground hover:underline"
+        >
           Retour à la connexion
         </Link>
       </p>

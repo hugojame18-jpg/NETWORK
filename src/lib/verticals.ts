@@ -21,7 +21,8 @@ export const VERTICALS: Vertical[] = [
     value: "CC Submit",
     label: "CC Submit",
     icon: "💳",
-    description: "L'utilisateur renseigne sa carte pour un essai. Le cœur du réseau.",
+    description:
+      "L'utilisateur renseigne sa carte pour un essai. Le cœur du réseau.",
   },
   {
     value: "Trial",

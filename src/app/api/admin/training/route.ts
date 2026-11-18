@@ -9,19 +9,26 @@ export async function POST(request: Request) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
 
     const body = await request.json().catch(() => null);
     const parsed = trainingVideoSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 400 });
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Données invalides" },
+        { status: 400 },
+      );
     }
 
     // Default to the end of the list so a new lesson doesn't jump the queue.
     const position =
       parsed.data.position ??
-      ((await prisma.trainingVideo.aggregate({ _max: { position: true } }))._max.position ?? 0) + 1;
+      ((await prisma.trainingVideo.aggregate({ _max: { position: true } }))._max
+        .position ?? 0) + 1;
 
     const video = await prisma.trainingVideo.create({
       data: {
@@ -43,7 +50,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ video });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/admin/training]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

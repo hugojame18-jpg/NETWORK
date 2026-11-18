@@ -25,7 +25,9 @@ export function isTransientConnectionError(error: unknown): boolean {
   const code = (error as { code?: unknown })?.code;
   if (typeof code === "string" && TRANSIENT_PRISMA_CODES.has(code)) return true;
   const message = error instanceof Error ? error.message : String(error);
-  return TRANSIENT_CONNECTION_MESSAGES.some((needle) => message.includes(needle));
+  return TRANSIENT_CONNECTION_MESSAGES.some((needle) =>
+    message.includes(needle),
+  );
 }
 
 function createPrismaClient() {
@@ -37,10 +39,16 @@ function createPrismaClient() {
   // So for any non-local host we strip `sslmode` from the URL and pass the
   // `ssl` option ourselves; the local `prisma dev` proxy (localhost) stays plain
   // TCP with no SSL.
-  const isLocal = !rawConnectionString || /@(localhost|127\.0\.0\.1|\[::1\])/.test(rawConnectionString);
+  const isLocal =
+    !rawConnectionString ||
+    /@(localhost|127\.0\.0\.1|\[::1\])/.test(rawConnectionString);
   const connectionString =
     rawConnectionString && !isLocal
-      ? rawConnectionString.replace(/([?&])sslmode=[^&]*(&|$)/, (_m, p1, p2) => (p2 === "&" ? p1 : "")).replace(/[?&]$/, "")
+      ? rawConnectionString
+          .replace(/([?&])sslmode=[^&]*(&|$)/, (_m, p1, p2) =>
+            p2 === "&" ? p1 : "",
+          )
+          .replace(/[?&]$/, "")
       : rawConnectionString;
   const adapter = new PrismaPg({
     connectionString,
@@ -79,8 +87,11 @@ function createPrismaClient() {
             try {
               return await query(args);
             } catch (error) {
-              if (!isTransientConnectionError(error) || attempt === maxAttempts) throw error;
-              await new Promise((resolve) => setTimeout(resolve, attempt * 100));
+              if (!isTransientConnectionError(error) || attempt === maxAttempts)
+                throw error;
+              await new Promise((resolve) =>
+                setTimeout(resolve, attempt * 100),
+              );
             }
           }
           throw new Error("unreachable");

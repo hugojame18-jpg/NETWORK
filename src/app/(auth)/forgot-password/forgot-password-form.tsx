@@ -9,7 +9,10 @@ import { Loader2, MailCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/validations/auth";
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordInput,
+} from "@/lib/validations/auth";
 
 export function ForgotPasswordForm() {
   const [isPending, startTransition] = useTransition();
@@ -19,7 +22,9 @@ export function ForgotPasswordForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ForgotPasswordInput>({ resolver: zodResolver(forgotPasswordSchema) });
+  } = useForm<ForgotPasswordInput>({
+    resolver: zodResolver(forgotPasswordSchema),
+  });
 
   const onSubmit = (data: ForgotPasswordInput) => {
     startTransition(async () => {
@@ -43,7 +48,8 @@ export function ForgotPasswordForm() {
           <MailCheck className="h-6 w-6" />
         </div>
         <p className="text-sm text-muted-foreground">
-          Si un compte existe avec cette adresse, un email de réinitialisation vient d&apos;être envoyé.
+          Si un compte existe avec cette adresse, un email de réinitialisation
+          vient d&apos;être envoyé.
         </p>
         <Link href="/sign-in" className="text-sm font-medium hover:underline">
           Retour à la connexion
@@ -63,8 +69,16 @@ export function ForgotPasswordForm() {
     >
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" placeholder="vous@exemple.com" {...register("email")} />
-        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="vous@exemple.com"
+          {...register("email")}
+        />
+        {errors.email && (
+          <p className="text-xs text-destructive">{errors.email.message}</p>
+        )}
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
@@ -73,7 +87,10 @@ export function ForgotPasswordForm() {
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
-        <Link href="/sign-in" className="font-medium text-foreground hover:underline">
+        <Link
+          href="/sign-in"
+          className="font-medium text-foreground hover:underline"
+        >
           Retour à la connexion
         </Link>
       </p>

@@ -8,7 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -73,7 +79,9 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
   function toggleDevice(device: string) {
     setForm((f) => ({
       ...f,
-      devices: f.devices.includes(device) ? f.devices.filter((d) => d !== device) : [...f.devices, device],
+      devices: f.devices.includes(device)
+        ? f.devices.filter((d) => d !== device)
+        : [...f.devices, device],
     }));
   }
 
@@ -100,7 +108,9 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
         campaignId: form.campaignId,
       };
 
-      const url = offer?.id ? `/api/advertiser/offers/${offer.id}` : "/api/advertiser/offers";
+      const url = offer?.id
+        ? `/api/advertiser/offers/${offer.id}`
+        : "/api/advertiser/offers";
       const res = await fetch(url, {
         method: offer?.id ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,7 +121,11 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
         toast.error(json.error ?? "Erreur lors de l'enregistrement.");
         return;
       }
-      toast.success(offer?.id ? "Offre mise à jour, en attente de validation." : "Offre créée, en attente de validation.");
+      toast.success(
+        offer?.id
+          ? "Offre mise à jour, en attente de validation."
+          : "Offre créée, en attente de validation.",
+      );
       setOpen(false);
       router.refresh();
     });
@@ -135,19 +149,32 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
       />
       <DialogContent className="max-h-[85vh] max-w-xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{offer ? "Modifier l'offre" : "Nouvelle offre"}</DialogTitle>
-          <DialogDescription>Chaque offre créée ou modifiée passe par une validation admin avant de redevenir active.</DialogDescription>
+          <DialogTitle>
+            {offer ? "Modifier l'offre" : "Nouvelle offre"}
+          </DialogTitle>
+          <DialogDescription>
+            Chaque offre créée ou modifiée passe par une validation admin avant
+            de redevenir active.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={submit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nom</Label>
-              <Input id="name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <Input
+                id="name"
+                required
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
             </div>
             <div className="space-y-2">
               <Label>Catégorie / Vertical</Label>
-              <Select value={form.category || undefined} onValueChange={(v) => v && setForm({ ...form, category: v })}>
+              <Select
+                value={form.category || undefined}
+                onValueChange={(v) => v && setForm({ ...form, category: v })}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Choisir un vertical" />
                 </SelectTrigger>
@@ -168,7 +195,9 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
               id="description"
               required
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
           </div>
 
@@ -187,7 +216,16 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
             </div>
             <div className="space-y-2">
               <Label>Type</Label>
-              <Select value={form.payoutType} onValueChange={(v) => v && setForm({ ...form, payoutType: v as OfferFormValues["payoutType"] })}>
+              <Select
+                value={form.payoutType}
+                onValueChange={(v) =>
+                  v &&
+                  setForm({
+                    ...form,
+                    payoutType: v as OfferFormValues["payoutType"],
+                  })
+                }
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -208,13 +246,17 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
                 min={1}
                 required
                 value={form.cookieDays}
-                onChange={(e) => setForm({ ...form, cookieDays: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, cookieDays: e.target.value })
+                }
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="countries">Pays (codes ISO séparés par une virgule, vide = monde entier)</Label>
+            <Label htmlFor="countries">
+              Pays (codes ISO séparés par une virgule, vide = monde entier)
+            </Label>
             <Input
               id="countries"
               placeholder="US, CA, FR"
@@ -228,7 +270,10 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
             <div className="flex flex-wrap gap-4">
               {DEVICE_OPTIONS.map((device) => (
                 <label key={device} className="flex items-center gap-2 text-sm">
-                  <Checkbox checked={form.devices.includes(device)} onCheckedChange={() => toggleDevice(device)} />
+                  <Checkbox
+                    checked={form.devices.includes(device)}
+                    onCheckedChange={() => toggleDevice(device)}
+                  />
                   {device}
                 </label>
               ))}
@@ -255,7 +300,9 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
                 type="url"
                 placeholder="https://"
                 value={form.previewUrl}
-                onChange={(e) => setForm({ ...form, previewUrl: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, previewUrl: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -273,7 +320,15 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
           {campaigns.length > 0 && (
             <div className="space-y-2">
               <Label>Campagne (optionnel)</Label>
-              <Select value={form.campaignId || "none"} onValueChange={(v) => setForm({ ...form, campaignId: v === "none" ? "" : v ?? "" })}>
+              <Select
+                value={form.campaignId || "none"}
+                onValueChange={(v) =>
+                  setForm({
+                    ...form,
+                    campaignId: v === "none" ? "" : (v ?? ""),
+                  })
+                }
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
@@ -294,7 +349,9 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
             <Textarea
               id="restrictions"
               value={form.restrictions}
-              onChange={(e) => setForm({ ...form, restrictions: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, restrictions: e.target.value })
+              }
             />
           </div>
 

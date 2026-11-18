@@ -9,17 +9,27 @@ export async function POST(request: Request) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
 
     const body = await request.json().catch(() => null);
     const parsed = announcementSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Données invalides" }, { status: 400 });
+      return NextResponse.json(
+        { error: parsed.error.issues[0]?.message ?? "Données invalides" },
+        { status: 400 },
+      );
     }
 
     const announcement = await prisma.announcement.create({
-      data: { title: parsed.data.title, body: parsed.data.body, authorId: admin.id },
+      data: {
+        title: parsed.data.title,
+        body: parsed.data.body,
+        authorId: admin.id,
+      },
     });
 
     // The banner only shows to publishers who open their dashboard, so also
@@ -49,7 +59,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ announcement, recipients: publishers.length });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/admin/announcements]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

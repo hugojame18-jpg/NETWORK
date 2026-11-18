@@ -7,22 +7,26 @@ const STEPS = [
   {
     number: "01",
     title: "Créez votre compte",
-    description: "Inscrivez-vous en tant que publisher ou annonceur en moins de deux minutes, sans paperasse.",
+    description:
+      "Inscrivez-vous en tant que publisher ou annonceur en moins de deux minutes, sans paperasse.",
   },
   {
     number: "02",
     title: "Choisissez vos offres",
-    description: "Parcourez le catalogue d'offres filtrées par pays, device et catégorie, ou publiez les vôtres.",
+    description:
+      "Parcourez le catalogue d'offres filtrées par pays, device et catégorie, ou publiez les vôtres.",
   },
   {
     number: "03",
     title: "Générez vos liens",
-    description: "Récupérez un lien de tracking unique par offre, prêt à être diffusé sur vos canaux.",
+    description:
+      "Récupérez un lien de tracking unique par offre, prêt à être diffusé sur vos canaux.",
   },
   {
     number: "04",
     title: "Suivez et encaissez",
-    description: "Visualisez vos clics, conversions et commissions en direct, puis demandez votre paiement.",
+    description:
+      "Visualisez vos clics, conversions et commissions en direct, puis demandez votre paiement.",
   },
 ];
 
@@ -51,7 +55,9 @@ export function HowItWorks() {
                 {step.number}
               </div>
               <h3 className="text-base font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{step.description}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {step.description}
+              </p>
             </motion.div>
           ))}
         </div>

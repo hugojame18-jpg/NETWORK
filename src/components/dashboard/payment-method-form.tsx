@@ -6,14 +6,40 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 
 const METHODS = [
-  { value: "PAYPAL", label: "PayPal", field: "email", fieldLabel: "Email PayPal" },
-  { value: "BANK_WIRE", label: "Virement bancaire", field: "iban", fieldLabel: "IBAN" },
-  { value: "CRYPTO", label: "Crypto-monnaie", field: "wallet", fieldLabel: "Adresse de wallet (USDT)" },
-  { value: "PAYONEER", label: "Payoneer", field: "email", fieldLabel: "Email Payoneer" },
+  {
+    value: "PAYPAL",
+    label: "PayPal",
+    field: "email",
+    fieldLabel: "Email PayPal",
+  },
+  {
+    value: "BANK_WIRE",
+    label: "Virement bancaire",
+    field: "iban",
+    fieldLabel: "IBAN",
+  },
+  {
+    value: "CRYPTO",
+    label: "Crypto-monnaie",
+    field: "wallet",
+    fieldLabel: "Adresse de wallet (USDT)",
+  },
+  {
+    value: "PAYONEER",
+    label: "Payoneer",
+    field: "email",
+    fieldLabel: "Email Payoneer",
+  },
 ];
 
 interface PaymentMethodFormProps {
@@ -34,7 +60,10 @@ export function PaymentMethodForm({ method, details }: PaymentMethodFormProps) {
       const res = await fetch("/api/publisher/payment-method", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ paymentMethod: selected, paymentDetails: { [current.field]: value } }),
+        body: JSON.stringify({
+          paymentMethod: selected,
+          paymentDetails: { [current.field]: value },
+        }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -72,7 +101,11 @@ export function PaymentMethodForm({ method, details }: PaymentMethodFormProps) {
       </div>
       <div className="space-y-2">
         <Label htmlFor="detail">{current.fieldLabel}</Label>
-        <Input id="detail" value={value} onChange={(e) => setValue(e.target.value)} />
+        <Input
+          id="detail"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
       </div>
       <Button type="submit" disabled={isPending}>
         {isPending && <Loader2 className="h-4 w-4 animate-spin" />}

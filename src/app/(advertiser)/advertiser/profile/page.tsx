@@ -11,7 +11,12 @@ import { formatCurrency } from "@/lib/format";
 export const metadata: Metadata = { title: "Profil" };
 
 function initials(name: string) {
-  return name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
 export default async function AdvertiserProfilePage() {
@@ -24,10 +29,12 @@ export default async function AdvertiserProfilePage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Card className="shadow-premium">
+      <Card>
         <CardContent className="flex items-center gap-4 pt-6">
           <Avatar className="h-16 w-16">
-            <AvatarFallback className="text-lg">{initials(user.name)}</AvatarFallback>
+            <AvatarFallback className="text-lg">
+              {initials(user.name)}
+            </AvatarFallback>
           </Avatar>
           <div>
             <p className="text-lg font-semibold">{user.name}</p>
@@ -37,27 +44,35 @@ export default async function AdvertiserProfilePage() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Informations générales</CardTitle>
         </CardHeader>
         <CardContent>
-          <EditAdvertiserProfileForm name={user.name} companyName={advertiser.companyName} website={advertiser.website ?? ""} />
+          <EditAdvertiserProfileForm
+            name={user.name}
+            companyName={advertiser.companyName}
+            website={advertiser.website ?? ""}
+          />
         </CardContent>
       </Card>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Résumé</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-muted-foreground">Dépensé ce mois</p>
-            <p className="text-lg font-semibold">{formatCurrency(summary.month)}</p>
+            <p className="text-lg font-semibold">
+              {formatCurrency(summary.month)}
+            </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Dépensé au total</p>
-            <p className="text-lg font-semibold">{formatCurrency(summary.total)}</p>
+            <p className="text-lg font-semibold">
+              {formatCurrency(summary.total)}
+            </p>
           </div>
         </CardContent>
       </Card>

@@ -38,7 +38,10 @@ export async function requireRole(...roles: UserRole[]) {
  * role check. Every ADMIN gets full access by default; UserPermission rows
  * allow scoping specific admin accounts down to a subset of actions.
  */
-export async function can(userId: string, permissionKey: string): Promise<boolean> {
+export async function can(
+  userId: string,
+  permissionKey: string,
+): Promise<boolean> {
   const grant = await prisma.userPermission.findFirst({
     where: { userId, permission: { key: permissionKey } },
     select: { id: true },
@@ -54,7 +57,10 @@ export async function requirePermission(permissionKey: string) {
 }
 
 export class ApiAuthError extends Error {
-  constructor(public status: 401 | 403, message: string) {
+  constructor(
+    public status: 401 | 403,
+    message: string,
+  ) {
     super(message);
   }
 }
@@ -63,7 +69,8 @@ export class ApiAuthError extends Error {
 export async function requireApiRole(...roles: UserRole[]) {
   const session = await getSession();
   if (!session?.user) throw new ApiAuthError(401, "Non authentifié");
-  if (!roles.includes(session.user.role)) throw new ApiAuthError(403, "Accès refusé");
+  if (!roles.includes(session.user.role))
+    throw new ApiAuthError(403, "Accès refusé");
   if (session.user.status === "SUSPENDED" || session.user.status === "BANNED") {
     throw new ApiAuthError(403, "Compte restreint");
   }

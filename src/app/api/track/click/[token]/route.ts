@@ -2,13 +2,19 @@ import { NextResponse } from "next/server";
 import { UAParser } from "ua-parser-js";
 import { prisma } from "@/lib/prisma";
 import { getClientIp, getClientCountry, hashIp } from "@/lib/ip";
-import { isBotUserAgent, isClickFloodFromIp, isRapidDuplicateClick } from "@/lib/fraud";
+import {
+  isBotUserAgent,
+  isClickFloodFromIp,
+  isRapidDuplicateClick,
+} from "@/lib/fraud";
 
 interface RouteParams {
   params: Promise<{ token: string }>;
 }
 
-function deviceTypeFromUa(userAgent: string): "DESKTOP" | "MOBILE" | "TABLET" | "ALL" {
+function deviceTypeFromUa(
+  userAgent: string,
+): "DESKTOP" | "MOBILE" | "TABLET" | "ALL" {
   const { device } = UAParser(userAgent);
   if (device.type === "mobile") return "MOBILE";
   if (device.type === "tablet") return "TABLET";
@@ -76,7 +82,10 @@ export async function GET(request: Request, { params }: RouteParams) {
         fraudReason,
       },
     });
-    await tx.affiliateLink.update({ where: { id: link.id }, data: { clickCount: { increment: 1 } } });
+    await tx.affiliateLink.update({
+      where: { id: link.id },
+      data: { clickCount: { increment: 1 } },
+    });
     return created;
   });
 

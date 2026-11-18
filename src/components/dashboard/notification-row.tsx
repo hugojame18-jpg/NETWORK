@@ -13,7 +13,13 @@ interface NotificationRowProps {
   createdAt: Date | string;
 }
 
-export function NotificationRow({ id, title, body, read, createdAt }: NotificationRowProps) {
+export function NotificationRow({
+  id,
+  title,
+  body,
+  read,
+  createdAt,
+}: NotificationRowProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -34,12 +40,18 @@ export function NotificationRow({ id, title, body, read, createdAt }: Notificati
         !read && "bg-primary/5",
       )}
     >
-      {!read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />}
-      {read && <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent" />}
+      {!read && (
+        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-primary" />
+      )}
+      {read && (
+        <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-transparent" />
+      )}
       <div className="flex-1">
         <p className="text-sm font-medium">{title}</p>
         <p className="mt-0.5 text-sm text-muted-foreground">{body}</p>
-        <p className="mt-1 text-xs text-muted-foreground/70">{formatDateTime(createdAt)}</p>
+        <p className="mt-1 text-xs text-muted-foreground/70">
+          {formatDateTime(createdAt)}
+        </p>
       </div>
     </button>
   );

@@ -8,13 +8,24 @@ import {
   resolvePeriod,
   type RevenuePeriod,
 } from "@/lib/data/admin";
-import { StatCard } from "@/components/dashboard/stat-card";
-import { PerformanceChart, type ChartSeriesConfig } from "@/components/dashboard/performance-chart";
+import { Metric, MetricRow } from "@/components/dashboard/metric-card";
+import {
+  PerformanceChart,
+  type ChartSeriesConfig,
+} from "@/components/dashboard/performance-chart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { CustomRangeForm } from "@/components/dashboard/admin/custom-range-form";
 import { formatCurrency, formatNumber, formatCalendarDate } from "@/lib/format";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export const metadata: Metadata = { title: "Chiffre d'affaires" };
 
@@ -39,7 +50,9 @@ interface PageProps {
 
 export default async function AdminRevenuePage({ searchParams }: PageProps) {
   const { period, from, to } = await searchParams;
-  const active = (PRESETS.some((p) => p.value === period) ? period : "30d") as RevenuePeriod;
+  const active = (
+    PRESETS.some((p) => p.value === period) ? period : "30d"
+  ) as RevenuePeriod;
   const isCustom = Boolean(from || to);
 
   const range = resolvePeriod(active, from, to);
@@ -54,41 +67,64 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Chiffre d'affaires"
+        description="Ce que le réseau encaisse, ce qui part aux affiliés, et ce qu'il te reste."
+      />
+
       {/* Lifetime figure sits apart: it's the one number that never depends on
           the selected period. */}
-      <Card className="shadow-premium border-primary/30 bg-primary/5">
-        <CardContent className="flex flex-wrap items-end justify-between gap-4 pt-6">
+      <div className="surface-brand p-6">
+        <div className="flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-sm text-muted-foreground">Chiffre d&apos;affaires brut depuis le début</p>
-            <p className="mt-1 text-4xl font-semibold tracking-tight">{formatCurrency(lifetime.revenue)}</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              dont <span className="font-medium text-foreground">{formatCurrency(lifetime.affiliateShare)}</span> aux
-              affiliés — il te reste{" "}
-              <span className="font-medium text-success">{formatCurrency(lifetime.margin)}</span>
+            <p className="eyebrow">CA brut depuis le début</p>
+            <p className="num mt-2.5 text-[38px] leading-none font-semibold">
+              {formatCurrency(lifetime.revenue)}
+            </p>
+            <p className="mt-2.5 text-sm text-muted-foreground">
+              dont{" "}
+              <span className="num font-medium text-foreground">
+                {formatCurrency(lifetime.affiliateShare)}
+              </span>{" "}
+              aux affiliés — il te reste{" "}
+              <span className="num font-medium text-success">
+                {formatCurrency(lifetime.margin)}
+              </span>
             </p>
           </div>
-          <div className="flex flex-wrap gap-6 text-sm">
+          <div className="flex flex-wrap gap-8 text-sm">
             <div>
-              <p className="text-muted-foreground">Conversions</p>
-              <p className="font-semibold">{formatNumber(lifetime.conversions)}</p>
+              <p className="text-xs text-muted-foreground">Conversions</p>
+              <p className="num mt-1 text-lg font-semibold">
+                {formatNumber(lifetime.conversions)}
+              </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Clics</p>
-              <p className="font-semibold">{formatNumber(lifetime.clicks)}</p>
+              <p className="text-xs text-muted-foreground">Clics</p>
+              <p className="num mt-1 text-lg font-semibold">
+                {formatNumber(lifetime.clicks)}
+              </p>
             </div>
             <div>
-              <p className="text-muted-foreground">Jours saisis</p>
-              <p className="font-semibold">{formatNumber(lifetime.daysWithData)}</p>
+              <p className="text-xs text-muted-foreground">Jours saisis</p>
+              <p className="num mt-1 text-lg font-semibold">
+                {formatNumber(lifetime.daysWithData)}
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       <div className="flex flex-wrap items-center gap-2">
         {PRESETS.map((preset) => (
-          <Link key={preset.value} href={`/admin/revenue?period=${preset.value}`}>
+          <Link
+            key={preset.value}
+            href={`/admin/revenue?period=${preset.value}`}
+          >
             <Badge
-              variant={!isCustom && active === preset.value ? "default" : "secondary"}
+              variant={
+                !isCustom && active === preset.value ? "default" : "secondary"
+              }
               className="cursor-pointer px-3 py-1"
             >
               {preset.label}
@@ -98,14 +134,31 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
         <CustomRangeForm from={from} to={to} />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label={`CA brut — ${range.label}`} value={totals.revenue} prefix="$" decimals={2} icon={<TrendingUp />} index={0} />
-        <StatCard label="Part affiliés" value={totals.affiliateShare} prefix="$" decimals={2} icon={<Users />} index={1} />
-        <StatCard label="Ta marge" value={totals.margin} prefix="$" decimals={2} icon={<Wallet />} index={2} />
-        <StatCard label="Conversions" value={totals.conversions} icon={<Target />} index={3} />
-      </div>
+      <MetricRow>
+        <Metric
+          label={`CA brut — ${range.label}`}
+          value={formatCurrency(totals.revenue)}
+          icon={<TrendingUp />}
+        />
+        <Metric
+          label="Part affiliés"
+          value={formatCurrency(totals.affiliateShare)}
+          icon={<Users />}
+        />
+        <Metric
+          label="Ta marge"
+          value={formatCurrency(totals.margin)}
+          icon={<Wallet />}
+          accent
+        />
+        <Metric
+          label="Conversions"
+          value={formatNumber(totals.conversions)}
+          icon={<Target />}
+        />
+      </MetricRow>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Évolution — {range.label}</CardTitle>
         </CardHeader>
@@ -120,7 +173,7 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
         </CardContent>
       </Card>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Par affilié — {range.label}</CardTitle>
         </CardHeader>
@@ -141,17 +194,31 @@ export default async function AdminRevenuePage({ searchParams }: PageProps) {
             <TableBody>
               {byPublisher.map((row) => (
                 <TableRow key={row.publisherId}>
-                  <TableCell className="font-mono text-sm text-muted-foreground">#{row.memberId}</TableCell>
+                  <TableCell className="font-mono text-sm text-muted-foreground">
+                    #{row.memberId}
+                  </TableCell>
                   <TableCell>
                     <p className="font-medium">{row.name}</p>
                     <p className="text-xs text-muted-foreground">{row.email}</p>
                   </TableCell>
-                  <TableCell className="text-right">{formatNumber(row.clicks)}</TableCell>
-                  <TableCell className="text-right">{formatNumber(row.conversions)}</TableCell>
-                  <TableCell className="text-right font-medium">{formatCurrency(row.revenue)}</TableCell>
-                  <TableCell className="text-right text-muted-foreground">{Math.round(row.rate * 100)} %</TableCell>
-                  <TableCell className="text-right">{formatCurrency(row.affiliateShare)}</TableCell>
-                  <TableCell className="text-right font-medium text-success">{formatCurrency(row.margin)}</TableCell>
+                  <TableCell className="text-right">
+                    {formatNumber(row.clicks)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatNumber(row.conversions)}
+                  </TableCell>
+                  <TableCell className="text-right font-medium">
+                    {formatCurrency(row.revenue)}
+                  </TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {Math.round(row.rate * 100)} %
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {formatCurrency(row.affiliateShare)}
+                  </TableCell>
+                  <TableCell className="text-right font-medium text-success">
+                    {formatCurrency(row.margin)}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

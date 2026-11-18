@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 export interface NavItem {
   href: string;
   label: string;
-  /** A pre-rendered icon element, e.g. `<LayoutDashboard className="h-4 w-4" />` — not the component reference. */
+  /** A pre-rendered icon element, e.g. `<LayoutDashboard />` — not the component reference. */
   icon: ReactNode;
   exact?: boolean;
+  /** Small count on the right, for queues that need clearing. */
+  badge?: number;
 }
 
 export interface NavSection {
@@ -24,40 +26,82 @@ export interface NavSection {
  * forces you to read every label to find anything. Sections give the eye an
  * anchor; when the sidebar is collapsed they turn into separators, since a
  * heading would have nowhere to render.
+ *
+ * The active item is marked by a rail against the sidebar's edge rather than a
+ * filled pill alone: it survives collapsing, it never fights the brand colour
+ * used elsewhere on the page, and it tells you where you are from the corner
+ * of your eye.
  */
-export function SidebarNav({ sections, collapsed = false }: { sections: NavSection[]; collapsed?: boolean }) {
+export function SidebarNav({
+  sections,
+  collapsed = false,
+}: {
+  sections: NavSection[];
+  collapsed?: boolean;
+}) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-5">
+    <nav className="flex flex-col gap-6 pt-2">
       {sections.map((section, index) => (
-        <div key={section.title ?? `section-${index}`} className="flex flex-col gap-1">
+        <div
+          key={section.title ?? `section-${index}`}
+          className="flex flex-col gap-0.5"
+        >
           {section.title &&
             (collapsed ? (
-              <span className="mx-auto my-1 h-px w-5 bg-border" aria-hidden />
+              <span
+                className="mx-auto mb-2 h-px w-5 bg-sidebar-border"
+                aria-hidden
+              />
             ) : (
-              <p className="px-3 pb-1 text-[10px] font-semibold tracking-wider text-muted-foreground/70 uppercase">
-                {section.title}
-              </p>
+              <p className="eyebrow px-3 pb-2">{section.title}</p>
             ))}
 
           {section.items.map((item) => {
-            const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
+            const active = item.exact
+              ? pathname === item.href
+              : pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 title={collapsed ? item.label : undefined}
+                aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                  collapsed && "justify-center px-2",
+                  "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                  collapsed && "justify-center px-0",
                   active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    ? "bg-sidebar-accent/70 font-medium text-foreground"
+                    : "font-normal text-muted-foreground hover:bg-sidebar-accent/35 hover:text-foreground",
                 )}
               >
-                <span className="shrink-0 [&_svg]:h-4 [&_svg]:w-4">{item.icon}</span>
-                {!collapsed && <span className="truncate">{item.label}</span>}
+                {active && (
+                  <span
+                    className="absolute top-1/2 -left-3 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary"
+                    aria-hidden
+                  />
+                )}
+                <span
+                  className={cn(
+                    "shrink-0 transition-colors [&_svg]:h-[17px] [&_svg]:w-[17px]",
+                    active
+                      ? "text-primary"
+                      : "text-muted-foreground group-hover:text-foreground",
+                  )}
+                >
+                  {item.icon}
+                </span>
+                {!collapsed && (
+                  <>
+                    <span className="truncate">{item.label}</span>
+                    {item.badge !== undefined && item.badge > 0 && (
+                      <span className="num ml-auto rounded-md bg-primary/15 px-1.5 py-0.5 text-[11px] font-medium text-primary">
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
+                )}
               </Link>
             );
           })}

@@ -14,17 +14,26 @@ export async function PATCH(request: Request) {
     }
 
     await prisma.$transaction([
-      prisma.user.update({ where: { id: user.id }, data: { name: parsed.data.name } }),
+      prisma.user.update({
+        where: { id: user.id },
+        data: { name: parsed.data.name },
+      }),
       prisma.advertiser.update({
         where: { userId: user.id },
-        data: { companyName: parsed.data.companyName, website: parsed.data.website || null },
+        data: {
+          companyName: parsed.data.companyName,
+          website: parsed.data.website || null,
+        },
       }),
     ]);
 
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/advertiser/profile]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

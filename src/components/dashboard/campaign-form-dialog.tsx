@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -50,7 +56,9 @@ export function CampaignFormDialog({ campaign }: CampaignFormDialogProps) {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     startTransition(async () => {
-      const url = campaign ? `/api/advertiser/campaigns/${campaign.id}` : "/api/advertiser/campaigns";
+      const url = campaign
+        ? `/api/advertiser/campaigns/${campaign.id}`
+        : "/api/advertiser/campaigns";
       const res = await fetch(url, {
         method: campaign ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
@@ -90,21 +98,32 @@ export function CampaignFormDialog({ campaign }: CampaignFormDialogProps) {
       />
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{campaign ? "Modifier la campagne" : "Nouvelle campagne"}</DialogTitle>
-          <DialogDescription>Une campagne regroupe une ou plusieurs offres.</DialogDescription>
+          <DialogTitle>
+            {campaign ? "Modifier la campagne" : "Nouvelle campagne"}
+          </DialogTitle>
+          <DialogDescription>
+            Une campagne regroupe une ou plusieurs offres.
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={submit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nom</Label>
-            <Input id="name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Input
+              id="name"
+              required
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -120,7 +139,10 @@ export function CampaignFormDialog({ campaign }: CampaignFormDialogProps) {
             </div>
             <div className="space-y-2">
               <Label>Statut</Label>
-              <Select value={form.status} onValueChange={(v) => v && setForm({ ...form, status: v })}>
+              <Select
+                value={form.status}
+                onValueChange={(v) => v && setForm({ ...form, status: v })}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>

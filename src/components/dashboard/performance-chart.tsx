@@ -5,15 +5,13 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Legend,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { formatCalendarDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 export interface PerformancePoint {
   date: string;
@@ -29,90 +27,189 @@ export interface ChartSeriesConfig {
   color: string;
 }
 
+/* Series colours come from the theme's chart ramp, so the graph belongs to the
+   same room as the rest of the page instead of importing a stock palette. */
 const DEFAULT_SERIES: ChartSeriesConfig[] = [
-  { key: "clicks", label: "Clics", color: "#818cf8" },
-  { key: "leads", label: "Leads", color: "#38bdf8" },
-  { key: "conversions", label: "Conversions", color: "#34d399" },
-  { key: "commissions", label: "Commissions ($)", color: "#fbbf24" },
+  { key: "clicks", label: "Clics", color: "var(--chart-1)" },
+  { key: "leads", label: "Leads", color: "var(--chart-2)" },
+  { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
+  { key: "commissions", label: "Commissions ($)", color: "var(--chart-5)" },
 ];
 
 const RANGES = [
-  { value: "7", label: "7 derniers jours" },
-  { value: "30", label: "30 derniers jours" },
-  { value: "90", label: "90 derniers jours" },
+  { value: "7", label: "7 j" },
+  { value: "30", label: "30 j" },
+  { value: "90", label: "90 j" },
 ];
+
+interface TooltipEntry {
+  name?: string;
+  value?: number | string;
+  color?: string;
+}
+
+/** Recharts' default tooltip is a white box with a border; this one is ours. */
+function ChartTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: TooltipEntry[];
+  label?: string | number;
+}) {
+  if (!active || !payload?.length) return null;
+
+  return (
+    <div className="rounded-xl border border-border bg-popover/95 px-3 py-2 shadow-lg backdrop-blur-sm">
+      <p className="mb-1.5 text-xs font-medium">
+        {typeof label === "string" ? formatCalendarDate(label) : ""}
+      </p>
+      <div className="space-y-1">
+        {payload.map((entry) => (
+          <div key={entry.name} className="flex items-center gap-2 text-xs">
+            <span
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{ background: entry.color }}
+              aria-hidden
+            />
+            <span className="text-muted-foreground">{entry.name}</span>
+            <span className="num ml-auto font-medium">{entry.value}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface PerformanceChartProps {
   data: Record<string, string | number>[];
   series?: ChartSeriesConfig[];
+  /** Hides the 7/30/90 switch when the page already scopes the period. */
+  showRange?: boolean;
+  height?: number;
+  className?: string;
 }
 
-export function PerformanceChart({ data, series = DEFAULT_SERIES }: PerformanceChartProps) {
+/**
+ * Renders only the chart — the surrounding card belongs to the page, which used
+ * to nest a card inside a card wherever this was dropped into a `CardContent`.
+ */
+export function PerformanceChart({
+  data,
+  series = DEFAULT_SERIES,
+  showRange = true,
+  height = 300,
+  className,
+}: PerformanceChartProps) {
   const [range, setRange] = useState("30");
-
-  const filtered = useMemo(() => data.slice(-Number(range)), [data, range]);
+  const filtered = useMemo(
+    () => (showRange ? data.slice(-Number(range)) : data),
+    [data, range, showRange],
+  );
 
   return (
-    <Card className="shadow-premium">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle>Performance</CardTitle>
-        <Select value={range} onValueChange={(value) => value && setRange(value)}>
-          <SelectTrigger className="w-44">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {RANGES.map((r) => (
-              <SelectItem key={r.value} value={r.value}>
-                {r.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={320}>
-          <AreaChart data={filtered} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-            <defs>
-              {series.map((s) => (
-                <linearGradient key={s.key} id={`fill-${s.key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={s.color} stopOpacity={0.35} />
-                  <stop offset="95%" stopColor={s.color} stopOpacity={0} />
-                </linearGradient>
-              ))}
-            </defs>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(value: string) => formatCalendarDate(value).slice(0, 5)}
-              tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
-              axisLine={false}
-              tickLine={false}
-            />
-            <YAxis tick={{ fontSize: 12, fill: "var(--muted-foreground)" }} axisLine={false} tickLine={false} />
-            <Tooltip
-              contentStyle={{
-                background: "var(--popover)",
-                border: "1px solid var(--border)",
-                borderRadius: 12,
-                fontSize: 12,
-              }}
-              labelFormatter={(label) => (typeof label === "string" ? formatCalendarDate(label) : "")}
-            />
-            <Legend wrapperStyle={{ fontSize: 12 }} />
-            {series.map((s) => (
-              <Area
-                key={s.key}
-                type="monotone"
-                dataKey={s.key}
-                name={s.label}
-                stroke={s.color}
-                fill={`url(#fill-${s.key})`}
-                strokeWidth={2}
+    <div className={cn("space-y-4", className)}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {/* A legend we draw ourselves: aligned left, same type scale as the page. */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+          {series.map((s) => (
+            <span
+              key={s.key}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground"
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: s.color }}
+                aria-hidden
               />
+              {s.label}
+            </span>
+          ))}
+        </div>
+
+        {showRange && (
+          <div className="flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
+            {RANGES.map((r) => (
+              <button
+                key={r.value}
+                type="button"
+                onClick={() => setRange(r.value)}
+                className={cn(
+                  "rounded-[6px] px-2.5 py-1 text-xs font-medium transition-colors",
+                  range === r.value
+                    ? "bg-card text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {r.label}
+              </button>
             ))}
-          </AreaChart>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+          </div>
+        )}
+      </div>
+
+      <ResponsiveContainer width="100%" height={height}>
+        <AreaChart
+          data={filtered}
+          margin={{ top: 4, right: 4, left: -18, bottom: 0 }}
+        >
+          <defs>
+            {series.map((s) => (
+              <linearGradient
+                key={s.key}
+                id={`fill-${s.key}`}
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop offset="0%" stopColor={s.color} stopOpacity={0.28} />
+                <stop offset="100%" stopColor={s.color} stopOpacity={0} />
+              </linearGradient>
+            ))}
+          </defs>
+          <CartesianGrid
+            stroke="var(--border)"
+            strokeDasharray="4 4"
+            vertical={false}
+          />
+          <XAxis
+            dataKey="date"
+            tickFormatter={(value: string) =>
+              formatCalendarDate(value).slice(0, 5)
+            }
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+            axisLine={false}
+            tickLine={false}
+            minTickGap={24}
+            dy={6}
+          />
+          <YAxis
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+            axisLine={false}
+            tickLine={false}
+            width={56}
+          />
+          <Tooltip
+            content={<ChartTooltip />}
+            cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+          />
+          {series.map((s) => (
+            <Area
+              key={s.key}
+              type="monotone"
+              dataKey={s.key}
+              name={s.label}
+              stroke={s.color}
+              fill={`url(#fill-${s.key})`}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 3.5, strokeWidth: 2, stroke: "var(--card)" }}
+            />
+          ))}
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 }

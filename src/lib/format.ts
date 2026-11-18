@@ -25,11 +25,17 @@ export function formatNumber(value: Decimalish): string {
 }
 
 const dateFormatter = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" });
-const dateTimeFormatter = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeStyle: "short" });
+const dateTimeFormatter = new Intl.DateTimeFormat("fr-FR", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
 // Renders a calendar date in UTC so a value stored as `@db.Date` (which Prisma
 // reads back as UTC midnight) always displays as the exact day that was saved,
 // regardless of the server/viewer timezone. Use this for daily-stat dates.
-const calendarDateFormatter = new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium", timeZone: "UTC" });
+const calendarDateFormatter = new Intl.DateTimeFormat("fr-FR", {
+  dateStyle: "medium",
+  timeZone: "UTC",
+});
 
 export function formatDate(value: Date | string): string {
   return dateFormatter.format(new Date(value));
@@ -37,7 +43,8 @@ export function formatDate(value: Date | string): string {
 
 /** Format a pure calendar date (a `@db.Date` value or a "YYYY-MM-DD" string) in UTC. */
 export function formatCalendarDate(value: Date | string): string {
-  const date = typeof value === "string" ? new Date(`${value}T00:00:00.000Z`) : value;
+  const date =
+    typeof value === "string" ? new Date(`${value}T00:00:00.000Z`) : value;
   return calendarDateFormatter.format(date);
 }
 

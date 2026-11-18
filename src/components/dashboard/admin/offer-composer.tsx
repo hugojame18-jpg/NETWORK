@@ -18,7 +18,8 @@ export function OfferComposer() {
   const [category, setCategory] = useState(VERTICALS[0]?.value ?? "");
   const [description, setDescription] = useState("");
   const [payout, setPayout] = useState("0");
-  const [payoutType, setPayoutType] = useState<(typeof PAYOUT_TYPES)[number]>("CPA");
+  const [payoutType, setPayoutType] =
+    useState<(typeof PAYOUT_TYPES)[number]>("CPA");
   const [landingUrl, setLandingUrl] = useState("");
   const [isPending, startTransition] = useTransition();
 
@@ -97,7 +98,9 @@ export function OfferComposer() {
         <select
           id="offer-payout-type"
           value={payoutType}
-          onChange={(e) => setPayoutType(e.target.value as (typeof PAYOUT_TYPES)[number])}
+          onChange={(e) =>
+            setPayoutType(e.target.value as (typeof PAYOUT_TYPES)[number])
+          }
           className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
           {PAYOUT_TYPES.map((type) => (
@@ -132,7 +135,11 @@ export function OfferComposer() {
 
       <div className="sm:col-span-2">
         <Button type="submit" disabled={isPending}>
-          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+          {isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Plus className="h-4 w-4" />
+          )}
           Créer l&apos;offre
         </Button>
       </div>

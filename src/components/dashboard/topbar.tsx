@@ -1,10 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { flattenNav, type NavSection } from "./sidebar-nav";
+import { ChevronRight } from "lucide-react";
+import type { NavSection } from "./sidebar-nav";
 import { MobileSidebar } from "./mobile-sidebar";
 import { ThemeToggle } from "./theme-toggle";
-import { NotificationsBell, type NotificationPreview } from "./notifications-bell";
+import {
+  NotificationsBell,
+  type NotificationPreview,
+} from "./notifications-bell";
 import { UserMenu } from "./user-menu";
 
 interface TopbarProps {
@@ -17,6 +21,18 @@ interface TopbarProps {
   user: { name: string; email: string; image?: string | null };
 }
 
+/** Finds the deepest matching nav entry, and the section it belongs to. */
+function locate(sections: NavSection[], pathname: string) {
+  const candidates = sections.flatMap((section) =>
+    section.items.map((item) => ({ item, section: section.title })),
+  );
+  return candidates
+    .sort((a, b) => b.item.href.length - a.item.href.length)
+    .find(({ item }) =>
+      item.exact ? pathname === item.href : pathname.startsWith(item.href),
+    );
+}
+
 export function Topbar({
   navSections,
   brandLabel,
@@ -27,22 +43,45 @@ export function Topbar({
   user,
 }: TopbarProps) {
   const pathname = usePathname();
-  const navItems = flattenNav(navSections);
-  const activeItem = [...navItems].sort((a, b) => b.href.length - a.href.length).find((item) =>
-    item.exact ? pathname === item.href : pathname.startsWith(item.href),
-  );
+  const current = locate(navSections, pathname);
 
   return (
-    <header className="glass sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b border-border px-4 sm:px-6">
-      <div className="flex items-center gap-2">
+    <header className="glass sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border px-4 sm:px-6">
+      <div className="flex min-w-0 items-center gap-2">
         <MobileSidebar sections={navSections} brandLabel={brandLabel} />
-        <h1 className="text-lg font-semibold">{activeItem?.label ?? brandLabel}</h1>
+
+        {/* A breadcrumb rather than a repeat of the page title: the heading
+            belongs to the page itself, this says where that page sits. */}
+        <nav
+          aria-label="Fil d'ariane"
+          className="flex min-w-0 items-center gap-1.5 text-sm"
+        >
+          {current?.section && (
+            <>
+              <span className="hidden truncate text-muted-foreground sm:inline">
+                {current.section}
+              </span>
+              <ChevronRight className="hidden h-3.5 w-3.5 shrink-0 text-muted-foreground/60 sm:inline" />
+            </>
+          )}
+          <span className="truncate font-medium">
+            {current?.item.label ?? brandLabel}
+          </span>
+        </nav>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      <div className="flex shrink-0 items-center gap-1">
         <ThemeToggle />
-        <NotificationsBell notifications={notifications} notificationsHref={notificationsHref} />
-        <UserMenu {...user} profileHref={profileHref} settingsHref={settingsHref} />
+        <NotificationsBell
+          notifications={notifications}
+          notificationsHref={notificationsHref}
+        />
+        <div className="ml-1 h-5 w-px bg-border" aria-hidden />
+        <UserMenu
+          {...user}
+          profileHref={profileHref}
+          settingsHref={settingsHref}
+        />
       </div>
     </header>
   );

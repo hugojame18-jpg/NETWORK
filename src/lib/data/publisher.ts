@@ -2,7 +2,13 @@ import "server-only";
 import { randomInt } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
-import { REFERRAL_RATE, computeBadges, resolveTier, type Badge, type TierProgress } from "@/lib/loyalty";
+import {
+  REFERRAL_RATE,
+  computeBadges,
+  resolveTier,
+  type Badge,
+  type TierProgress,
+} from "@/lib/loyalty";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -26,7 +32,9 @@ export interface DailyStatPoint {
  *  normalize values that are already anchored in UTC (e.g. a "YYYY-MM-DD"
  *  parsed as UTC midnight). */
 function toUtcMidnight(date: Date): Date {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
 }
 
 /**
@@ -86,18 +94,29 @@ async function commissionRate(publisherId: string): Promise<number> {
 export async function getRevenueSummary(publisherId: string) {
   const startToday = startOfTodayLocalAsUtc();
   const startYesterday = new Date(startToday.getTime() - DAY_MS);
-  const startMonth = new Date(Date.UTC(startToday.getUTCFullYear(), startToday.getUTCMonth(), 1));
+  const startMonth = new Date(
+    Date.UTC(startToday.getUTCFullYear(), startToday.getUTCMonth(), 1),
+  );
   const startTomorrow = new Date(startToday.getTime() + DAY_MS);
 
   const [rate, todayAgg, yesterdayAgg, monthAgg, totalAgg] = await Promise.all([
     commissionRate(publisherId),
-    prisma.publisherDailyStat.aggregate({ where: { publisherId, date: dayRange(startToday) }, _sum: { revenue: true } }),
-    prisma.publisherDailyStat.aggregate({ where: { publisherId, date: dayRange(startYesterday) }, _sum: { revenue: true } }),
+    prisma.publisherDailyStat.aggregate({
+      where: { publisherId, date: dayRange(startToday) },
+      _sum: { revenue: true },
+    }),
+    prisma.publisherDailyStat.aggregate({
+      where: { publisherId, date: dayRange(startYesterday) },
+      _sum: { revenue: true },
+    }),
     prisma.publisherDailyStat.aggregate({
       where: { publisherId, date: { gte: startMonth, lt: startTomorrow } },
       _sum: { revenue: true },
     }),
-    prisma.publisherDailyStat.aggregate({ where: { publisherId }, _sum: { revenue: true } }),
+    prisma.publisherDailyStat.aggregate({
+      where: { publisherId },
+      _sum: { revenue: true },
+    }),
   ]);
 
   // Publishers see their own earnings, never the gross the advertiser pays.
@@ -116,7 +135,10 @@ export async function getRevenueSummary(publisherId: string) {
  * bucket keys, and the row keys — so a stored calendar date always lands in
  * the bucket for that exact same calendar date, on any server timezone.
  */
-export async function getPerformanceSeries(publisherId: string, days = 90): Promise<DailyStatPoint[]> {
+export async function getPerformanceSeries(
+  publisherId: string,
+  days = 90,
+): Promise<DailyStatPoint[]> {
   const today = startOfTodayLocalAsUtc();
   const since = new Date(today.getTime() - (days - 1) * DAY_MS);
 
@@ -131,7 +153,13 @@ export async function getPerformanceSeries(publisherId: string, days = 90): Prom
   const buckets = new Map<string, DailyStatPoint>();
   for (let t = since.getTime(); t <= today.getTime(); t += DAY_MS) {
     const key = dayKey(new Date(t));
-    buckets.set(key, { date: key, clicks: 0, hosts: 0, conversions: 0, revenue: 0 });
+    buckets.set(key, {
+      date: key,
+      clicks: 0,
+      hosts: 0,
+      conversions: 0,
+      revenue: 0,
+    });
   }
 
   rows.forEach((row) => {
@@ -183,25 +211,46 @@ export function resolveStatsPeriod(
     case "last_30_days":
       return { start: new Date(now.getTime() - 29 * day), end: now };
     case "this_month":
-      return { start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)), end: now };
+      return {
+        start: new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)),
+        end: now,
+      };
     case "last_month": {
-      const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
-      const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0));
+      const start = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1),
+      );
+      const end = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0),
+      );
       return { start, end };
     }
     case "this_year":
-      return { start: new Date(Date.UTC(now.getUTCFullYear(), 0, 1)), end: now };
+      return {
+        start: new Date(Date.UTC(now.getUTCFullYear(), 0, 1)),
+        end: now,
+      };
     case "full_year":
-      return { start: new Date(Date.UTC(now.getUTCFullYear(), 0, 1)), end: new Date(Date.UTC(now.getUTCFullYear(), 11, 31)) };
+      return {
+        start: new Date(Date.UTC(now.getUTCFullYear(), 0, 1)),
+        end: new Date(Date.UTC(now.getUTCFullYear(), 11, 31)),
+      };
     case "custom": {
-      const start = customFrom ? toUtcMidnight(new Date(`${customFrom}T00:00:00.000Z`)) : now;
-      const end = customTo ? toUtcMidnight(new Date(`${customTo}T00:00:00.000Z`)) : now;
+      const start = customFrom
+        ? toUtcMidnight(new Date(`${customFrom}T00:00:00.000Z`))
+        : now;
+      const end = customTo
+        ? toUtcMidnight(new Date(`${customTo}T00:00:00.000Z`))
+        : now;
       return { start, end };
     }
   }
 }
 
-export async function getStatsForPeriod(publisherId: string, start: Date, end: Date) {
+export async function getStatsForPeriod(
+  publisherId: string,
+  start: Date,
+  end: Date,
+) {
   const [rate, rows, agg] = await Promise.all([
     commissionRate(publisherId),
     prisma.publisherDailyStat.findMany({
@@ -220,7 +269,10 @@ export async function getStatsForPeriod(publisherId: string, start: Date, end: D
   return {
     // Each row's revenue is rewritten to the affiliate's share, so the daily
     // table and the totals below can never disagree.
-    rows: rows.map((row) => ({ ...row, revenue: toNumber(row.revenue) * rate })),
+    rows: rows.map((row) => ({
+      ...row,
+      revenue: toNumber(row.revenue) * rate,
+    })),
     totals: {
       clicks,
       hosts: agg._sum.hosts ?? 0,
@@ -249,7 +301,11 @@ export interface Leaderboard {
   totalRanked: number;
 }
 
-const monthLabelFormatter = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric", timeZone: "UTC" });
+const monthLabelFormatter = new Intl.DateTimeFormat("fr-FR", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
 
 /**
  * Masks an affiliate's identity to a first name + last initial ("Marcus D."),
@@ -257,16 +313,31 @@ const monthLabelFormatter = new Intl.DateTimeFormat("fr-FR", { month: "long", ye
  * affiliates' full identities.
  */
 function maskAffiliateName(
-  publisher: { companyName: string | null; user: { name: string | null; email: string } } | undefined,
+  publisher:
+    | {
+        companyName: string | null;
+        user: { name: string | null; email: string };
+      }
+    | undefined,
 ): string {
-  const base = publisher?.user.name?.trim() || publisher?.companyName?.trim() || publisher?.user.email.split("@")[0] || "Affilié";
+  const base =
+    publisher?.user.name?.trim() ||
+    publisher?.companyName?.trim() ||
+    publisher?.user.email.split("@")[0] ||
+    "Affilié";
   const parts = base.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2 && parts[1][0]) return `${parts[0]} ${parts[1][0].toUpperCase()}.`;
+  if (parts.length >= 2 && parts[1][0])
+    return `${parts[0]} ${parts[1][0].toUpperCase()}.`;
   return parts[0] ?? "Affilié";
 }
 
 function leaderboardName(
-  publisher: { companyName: string | null; user: { name: string | null; email: string } } | undefined,
+  publisher:
+    | {
+        companyName: string | null;
+        user: { name: string | null; email: string };
+      }
+    | undefined,
   isCurrent: boolean,
 ): string {
   return isCurrent ? "Vous" : maskAffiliateName(publisher);
@@ -278,7 +349,8 @@ const REFERRAL_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 export function generateReferralCode(): string {
   let code = "";
-  for (let i = 0; i < 8; i++) code += REFERRAL_ALPHABET[randomInt(REFERRAL_ALPHABET.length)];
+  for (let i = 0; i < 8; i++)
+    code += REFERRAL_ALPHABET[randomInt(REFERRAL_ALPHABET.length)];
   return code;
 }
 
@@ -288,13 +360,19 @@ export function generateReferralCode(): string {
  * additive). Retries on the rare unique-constraint collision.
  */
 export async function ensureReferralCode(publisherId: string): Promise<string> {
-  const existing = await prisma.publisher.findUnique({ where: { id: publisherId }, select: { referralCode: true } });
+  const existing = await prisma.publisher.findUnique({
+    where: { id: publisherId },
+    select: { referralCode: true },
+  });
   if (existing?.referralCode) return existing.referralCode;
 
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateReferralCode();
     try {
-      await prisma.publisher.update({ where: { id: publisherId }, data: { referralCode: code } });
+      await prisma.publisher.update({
+        where: { id: publisherId },
+        data: { referralCode: code },
+      });
       return code;
     } catch {
       // Unique collision — try another code.
@@ -304,10 +382,15 @@ export async function ensureReferralCode(publisherId: string): Promise<string> {
 }
 
 /** Resolve a referral code to the referrer's publisher id (null if unknown). */
-export async function resolveReferrer(referralCode: string): Promise<string | null> {
+export async function resolveReferrer(
+  referralCode: string,
+): Promise<string | null> {
   const code = referralCode.trim().toUpperCase();
   if (!code) return null;
-  const referrer = await prisma.publisher.findUnique({ where: { referralCode: code }, select: { id: true } });
+  const referrer = await prisma.publisher.findUnique({
+    where: { referralCode: code },
+    select: { id: true },
+  });
   return referrer?.id ?? null;
 }
 
@@ -341,29 +424,38 @@ export interface RewardsOverview {
  * derive from `PublisherDailyStat`, so the loyalty numbers always agree with
  * what the publisher sees elsewhere on the dashboard.
  */
-export async function getRewardsOverview(publisherId: string): Promise<RewardsOverview> {
+export async function getRewardsOverview(
+  publisherId: string,
+): Promise<RewardsOverview> {
   const startMonth = (() => {
     const t = startOfTodayLocalAsUtc();
     return new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), 1));
   })();
 
-  const [rate, lifetimeAgg, monthAgg, referralCode, referred] = await Promise.all([
-    commissionRate(publisherId),
-    prisma.publisherDailyStat.aggregate({ where: { publisherId }, _sum: { revenue: true, conversions: true } }),
-    prisma.publisherDailyStat.aggregate({ where: { publisherId, date: { gte: startMonth } }, _sum: { revenue: true } }),
-    ensureReferralCode(publisherId),
-    prisma.publisher.findMany({
-      where: { referredById: publisherId },
-      select: {
-        id: true,
-        createdAt: true,
-        companyName: true,
-        commissionRate: true,
-        user: { select: { name: true, email: true } },
-      },
-      orderBy: { createdAt: "desc" },
-    }),
-  ]);
+  const [rate, lifetimeAgg, monthAgg, referralCode, referred] =
+    await Promise.all([
+      commissionRate(publisherId),
+      prisma.publisherDailyStat.aggregate({
+        where: { publisherId },
+        _sum: { revenue: true, conversions: true },
+      }),
+      prisma.publisherDailyStat.aggregate({
+        where: { publisherId, date: { gte: startMonth } },
+        _sum: { revenue: true },
+      }),
+      ensureReferralCode(publisherId),
+      prisma.publisher.findMany({
+        where: { referredById: publisherId },
+        select: {
+          id: true,
+          createdAt: true,
+          companyName: true,
+          commissionRate: true,
+          user: { select: { name: true, email: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      }),
+    ]);
 
   // Tiers, badges and prizes are earned on what the affiliate actually makes,
   // not on the gross the network bills.
@@ -381,7 +473,13 @@ export async function getRewardsOverview(publisherId: string): Promise<RewardsOv
       })
     : [];
   const statByPublisher = new Map(
-    referredStats.map((g) => [g.publisherId, { revenue: toNumber(g._sum.revenue), conversions: g._sum.conversions ?? 0 }]),
+    referredStats.map((g) => [
+      g.publisherId,
+      {
+        revenue: toNumber(g._sum.revenue),
+        conversions: g._sum.conversions ?? 0,
+      },
+    ]),
   );
 
   const referrals: ReferredAffiliate[] = referred.map((r) => {
@@ -408,7 +506,11 @@ export async function getRewardsOverview(publisherId: string): Promise<RewardsOv
     monthRevenue,
     bonusLifetime: lifetimeRevenue * tier.current.bonusRate,
     bonusThisMonth: monthRevenue * tier.current.bonusRate,
-    badges: computeBadges({ conversions: lifetimeConversions, revenue: lifetimeRevenue, referrals: referred.length }),
+    badges: computeBadges({
+      conversions: lifetimeConversions,
+      revenue: lifetimeRevenue,
+      referrals: referred.length,
+    }),
     referralCode,
     referrals,
     referralCount: referred.length,
@@ -458,9 +560,14 @@ export async function getActiveAnnouncements(limit = 3) {
   });
 }
 
-export async function getMonthlyLeaderboard(currentPublisherId: string, limit = 5): Promise<Leaderboard> {
+export async function getMonthlyLeaderboard(
+  currentPublisherId: string,
+  limit = 5,
+): Promise<Leaderboard> {
   const today = startOfTodayLocalAsUtc();
-  const startMonth = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1));
+  const startMonth = new Date(
+    Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1),
+  );
   const endExclusive = new Date(today.getTime() + DAY_MS);
 
   const grouped = await prisma.publisherDailyStat.groupBy({
@@ -484,7 +591,9 @@ export async function getMonthlyLeaderboard(currentPublisherId: string, limit = 
         },
       })
     : [];
-  const byId = new Map(publishers.map((publisher) => [publisher.id, publisher]));
+  const byId = new Map(
+    publishers.map((publisher) => [publisher.id, publisher]),
+  );
 
   const entries: LeaderboardEntry[] = ranked.map((group, index) => {
     const isCurrent = group.publisherId === currentPublisherId;
@@ -496,7 +605,9 @@ export async function getMonthlyLeaderboard(currentPublisherId: string, limit = 
       conversions: group._sum.conversions ?? 0,
       // Each affiliate's own earnings. Ranking is by conversions, so differing
       // commission rates can't reorder the board.
-      revenue: toNumber(group._sum.revenue) * toNumber(publisher?.commissionRate ?? 0.5),
+      revenue:
+        toNumber(group._sum.revenue) *
+        toNumber(publisher?.commissionRate ?? 0.5),
       clicks: group._sum.clicks ?? 0,
       isCurrent,
     };
@@ -513,12 +624,22 @@ export async function getMonthlyLeaderboard(currentPublisherId: string, limit = 
   };
 }
 
-export async function getAvailableOffers(filters?: { category?: string; country?: string }) {
+export async function getAvailableOffers(filters?: {
+  category?: string;
+  country?: string;
+}) {
   return prisma.offer.findMany({
     where: {
       status: "ACTIVE",
       ...(filters?.category ? { category: filters.category } : {}),
-      ...(filters?.country ? { OR: [{ countries: { isEmpty: true } }, { countries: { has: filters.country } }] } : {}),
+      ...(filters?.country
+        ? {
+            OR: [
+              { countries: { isEmpty: true } },
+              { countries: { has: filters.country } },
+            ],
+          }
+        : {}),
     },
     include: { advertiser: { select: { companyName: true } } },
     orderBy: { createdAt: "desc" },
@@ -535,13 +656,25 @@ export async function getOfferById(id: string) {
 export async function getPublisherLinks(publisherId: string) {
   return prisma.affiliateLink.findMany({
     where: { publisherId },
-    include: { offer: { select: { name: true, slug: true, payout: true, payoutType: true, status: true } } },
+    include: {
+      offer: {
+        select: {
+          name: true,
+          slug: true,
+          payout: true,
+          payoutType: true,
+          status: true,
+        },
+      },
+    },
     orderBy: { createdAt: "desc" },
   });
 }
 
 export async function getExistingLink(publisherId: string, offerId: string) {
-  return prisma.affiliateLink.findFirst({ where: { publisherId, offerId, subId: "" } });
+  return prisma.affiliateLink.findFirst({
+    where: { publisherId, offerId, subId: "" },
+  });
 }
 
 interface HistoryFilters {
@@ -550,7 +683,10 @@ interface HistoryFilters {
   pageSize?: number;
 }
 
-export async function getClickHistory(publisherId: string, { page = 1, pageSize = 20 }: HistoryFilters = {}) {
+export async function getClickHistory(
+  publisherId: string,
+  { page = 1, pageSize = 20 }: HistoryFilters = {},
+) {
   const [items, total] = await Promise.all([
     prisma.click.findMany({
       where: { publisherId },
@@ -564,7 +700,10 @@ export async function getClickHistory(publisherId: string, { page = 1, pageSize 
   return { items, total, page, pageSize };
 }
 
-export async function getConversionHistory(publisherId: string, { page = 1, pageSize = 20 }: HistoryFilters = {}) {
+export async function getConversionHistory(
+  publisherId: string,
+  { page = 1, pageSize = 20 }: HistoryFilters = {},
+) {
   const [items, total] = await Promise.all([
     prisma.conversion.findMany({
       where: { publisherId },
@@ -592,4 +731,3 @@ export async function getPendingCommissionsTotal(publisherId: string) {
   });
   return toNumber(agg._sum.amount);
 }
-

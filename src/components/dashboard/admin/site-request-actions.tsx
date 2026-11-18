@@ -22,7 +22,9 @@ export function SiteRequestActions({ requestId }: { requestId: string }) {
         toast.error(json.error ?? "Action impossible.");
         return;
       }
-      toast.success(status === "APPROVED" ? "Demande acceptée." : "Demande refusée.");
+      toast.success(
+        status === "APPROVED" ? "Demande acceptée." : "Demande refusée.",
+      );
       router.refresh();
     });
   }
@@ -36,7 +38,11 @@ export function SiteRequestActions({ requestId }: { requestId: string }) {
         disabled={isPending}
         aria-label="Accepter la demande"
       >
-        {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+        {isPending ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <Check className="h-3.5 w-3.5" />
+        )}
       </Button>
       <Button
         size="icon-sm"

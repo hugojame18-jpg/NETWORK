@@ -1,7 +1,11 @@
 import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
 
-export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+export default function MarketingLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // The public landing is ALWAYS dark, regardless of the theme a user picked in
   // the app dashboards (that preference is stored globally by next-themes and
   // would otherwise turn the landing white). Forcing `dark` here re-declares the

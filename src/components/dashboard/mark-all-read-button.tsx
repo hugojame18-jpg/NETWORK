@@ -18,7 +18,11 @@ export function MarkAllReadButton() {
 
   return (
     <Button variant="outline" size="sm" onClick={markAll} disabled={isPending}>
-      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCheck className="h-4 w-4" />}
+      {isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <CheckCheck className="h-4 w-4" />
+      )}
       Tout marquer comme lu
     </Button>
   );

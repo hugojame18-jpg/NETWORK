@@ -22,7 +22,12 @@ interface PermissionsDialogProps {
   grantedKeys: string[];
 }
 
-export function PermissionsDialog({ userId, userName, allPermissions, grantedKeys }: PermissionsDialogProps) {
+export function PermissionsDialog({
+  userId,
+  userName,
+  allPermissions,
+  grantedKeys,
+}: PermissionsDialogProps) {
   const router = useRouter();
   const [granted, setGranted] = useState(new Set(grantedKeys));
   const [pendingKey, setPendingKey] = useState<string | null>(null);
@@ -57,7 +62,11 @@ export function PermissionsDialog({ userId, userName, allPermissions, grantedKey
     <Dialog>
       <DialogTrigger
         render={
-          <Button variant="ghost" size="icon-sm" aria-label="Gérer les permissions">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Gérer les permissions"
+          >
             <KeyRound className="h-3.5 w-3.5" />
           </Button>
         }
@@ -66,14 +75,18 @@ export function PermissionsDialog({ userId, userName, allPermissions, grantedKey
         <DialogHeader>
           <DialogTitle>Permissions de {userName}</DialogTitle>
           <DialogDescription>
-            Les administrateurs ont accès à tout par défaut ; ces permissions permettent de restreindre un compte à un
-            sous-ensemble d&apos;actions.
+            Les administrateurs ont accès à tout par défaut ; ces permissions
+            permettent de restreindre un compte à un sous-ensemble
+            d&apos;actions.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3">
           {allPermissions.map((permission) => (
-            <label key={permission.id} className="flex items-start gap-3 rounded-lg border border-border p-3">
+            <label
+              key={permission.id}
+              className="flex items-start gap-3 rounded-lg border border-border p-3"
+            >
               <Checkbox
                 checked={granted.has(permission.key)}
                 onCheckedChange={() => toggle(permission.key)}
@@ -81,9 +94,13 @@ export function PermissionsDialog({ userId, userName, allPermissions, grantedKey
               />
               <div>
                 <p className="text-sm font-medium">{permission.key}</p>
-                <p className="text-xs text-muted-foreground">{permission.description}</p>
+                <p className="text-xs text-muted-foreground">
+                  {permission.description}
+                </p>
               </div>
-              {pendingKey === permission.key && <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />}
+              {pendingKey === permission.key && (
+                <Loader2 className="ml-auto h-3.5 w-3.5 animate-spin" />
+              )}
             </label>
           ))}
         </div>

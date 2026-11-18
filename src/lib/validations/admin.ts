@@ -43,7 +43,9 @@ export const dailyStatSchema = z.object({
   revenue: z.number().min(0),
 });
 
-export const dailyStatUpdateSchema = dailyStatSchema.omit({ publisherId: true, date: true }).partial();
+export const dailyStatUpdateSchema = dailyStatSchema
+  .omit({ publisherId: true, date: true })
+  .partial();
 
 // Offers the network runs itself, created straight from the admin panel
 // (no advertiser account involved). Deliberately lighter than the advertiser
@@ -55,7 +57,12 @@ export const adminOfferSchema = z.object({
   payout: z.number().min(0).max(100_000),
   payoutType: z.enum(["CPA", "CPL", "CPS", "REVSHARE"]),
   // Empty means "link not decided yet"; a placeholder is stored instead.
-  landingUrl: z.string().trim().url("URL invalide").optional().or(z.literal("")),
+  landingUrl: z
+    .string()
+    .trim()
+    .url("URL invalide")
+    .optional()
+    .or(z.literal("")),
 });
 
 export const adminOfferUpdateSchema = z.object({

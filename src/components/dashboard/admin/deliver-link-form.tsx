@@ -13,7 +13,11 @@ interface DeliverLinkFormProps {
   delivered?: boolean;
 }
 
-export function DeliverLinkForm({ linkId, currentUrl, delivered }: DeliverLinkFormProps) {
+export function DeliverLinkForm({
+  linkId,
+  currentUrl,
+  delivered,
+}: DeliverLinkFormProps) {
   const router = useRouter();
   const [url, setUrl] = useState(currentUrl ?? "");
   // Show the input unless there's already a real URL to display.
@@ -51,7 +55,12 @@ export function DeliverLinkForm({ linkId, currentUrl, delivered }: DeliverLinkFo
         >
           {currentUrl}
         </a>
-        <Button size="icon-sm" variant="ghost" onClick={() => setEditing(true)} aria-label="Modifier le lien">
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          onClick={() => setEditing(true)}
+          aria-label="Modifier le lien"
+        >
           <Pencil className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -69,7 +78,11 @@ export function DeliverLinkForm({ linkId, currentUrl, delivered }: DeliverLinkFo
         className="h-8 w-[260px] text-xs"
       />
       <Button type="submit" size="sm" disabled={isPending}>
-        {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+        {isPending ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <Send className="h-3.5 w-3.5" />
+        )}
         Envoyer
       </Button>
     </form>

@@ -3,6 +3,7 @@ import { getSetting } from "@/lib/data/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlatformSettingsForm } from "@/components/dashboard/admin/platform-settings-form";
 import { ChangePasswordForm } from "@/components/dashboard/change-password-form";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export const metadata: Metadata = { title: "Paramètres" };
 
@@ -24,11 +25,19 @@ const DEFAULTS: PlatformSettingsValue = {
 
 export default async function AdminSettingsPage() {
   const setting = await getSetting("platform");
-  const value = { ...DEFAULTS, ...(setting?.value as Partial<PlatformSettingsValue> | undefined) };
+  const value = {
+    ...DEFAULTS,
+    ...(setting?.value as Partial<PlatformSettingsValue> | undefined),
+  };
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Card className="shadow-premium">
+      <PageHeader
+        title="Paramètres"
+        description="La configuration générale de la plateforme."
+      />
+
+      <Card>
         <CardHeader>
           <CardTitle>Paramètres de la plateforme</CardTitle>
         </CardHeader>
@@ -37,7 +46,7 @@ export default async function AdminSettingsPage() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Sécurité de votre compte</CardTitle>
         </CardHeader>

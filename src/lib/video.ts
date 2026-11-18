@@ -15,13 +15,19 @@ export function youtubeId(url: string): string | null {
       return id || null;
     }
 
-    if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "youtube-nocookie.com"
+    ) {
       // https://youtube.com/watch?v=<id>
       const v = parsed.searchParams.get("v");
       if (v) return v;
 
       // https://youtube.com/embed/<id>, /shorts/<id>, /live/<id>
-      const match = parsed.pathname.match(/^\/(?:embed|shorts|live|v)\/([^/?#]+)/);
+      const match = parsed.pathname.match(
+        /^\/(?:embed|shorts|live|v)\/([^/?#]+)/,
+      );
       if (match) return match[1];
     }
 

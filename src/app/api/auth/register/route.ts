@@ -9,15 +9,24 @@ import { signUpSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
   const ip = getClientIp(request.headers);
-  const limit = await rateLimit(`auth:register:${ip}`, { limit: 5, windowSeconds: 60 * 15 });
+  const limit = await rateLimit(`auth:register:${ip}`, {
+    limit: 5,
+    windowSeconds: 60 * 15,
+  });
   if (!limit.success) {
-    return NextResponse.json({ error: "Trop de tentatives. Réessayez plus tard." }, { status: 429 });
+    return NextResponse.json(
+      { error: "Trop de tentatives. Réessayez plus tard." },
+      { status: 429 },
+    );
   }
 
   const body = await request.json().catch(() => null);
   const parsed = signUpSchema.safeParse(body);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Données invalides", issues: parsed.error.flatten() }, { status: 400 });
+    return NextResponse.json(
+      { error: "Données invalides", issues: parsed.error.flatten() },
+      { status: 400 },
+    );
   }
 
   const {
@@ -34,15 +43,24 @@ export async function POST(request: Request) {
     tiktokLinks,
   } = parsed.data;
 
-  const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
   if (existing) {
-    return NextResponse.json({ error: "Un compte existe déjà avec cette adresse email." }, { status: 409 });
+    return NextResponse.json(
+      { error: "Un compte existe déjà avec cette adresse email." },
+      { status: 409 },
+    );
   }
 
   // Referral attribution: resolve the code to the referring publisher (only
   // publishers can be referred). Unknown codes are silently ignored so a stale
   // link never blocks a sign-up.
-  const referredById = role === "PUBLISHER" && referralCode ? await resolveReferrer(referralCode) : null;
+  const referredById =
+    role === "PUBLISHER" && referralCode
+      ? await resolveReferrer(referralCode)
+      : null;
 
   const passwordHash = await bcrypt.hash(password, 12);
 
@@ -87,7 +105,10 @@ export async function POST(request: Request) {
   // No review to do any more, but a new affiliate joining is still worth
   // knowing about.
   if (role === "PUBLISHER") {
-    const admins = await prisma.user.findMany({ where: { role: "ADMIN" }, select: { id: true } });
+    const admins = await prisma.user.findMany({
+      where: { role: "ADMIN" },
+      select: { id: true },
+    });
     if (admins.length > 0) {
       await prisma.notification.createMany({
         data: admins.map((admin) => ({

@@ -97,7 +97,8 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
         <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary">
           <Gift className="h-4 w-4 shrink-0" />
           <span>
-            Vous êtes parrainé avec le code <span className="font-semibold tracking-wide">{referralCode}</span>.
+            Vous êtes parrainé avec le code{" "}
+            <span className="font-semibold tracking-wide">{referralCode}</span>.
           </span>
         </div>
       )}
@@ -107,7 +108,9 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
           <button
             key={option.value}
             type="button"
-            onClick={() => setValue("role", option.value, { shouldValidate: true })}
+            onClick={() =>
+              setValue("role", option.value, { shouldValidate: true })
+            }
             className={cn(
               "hover-lift rounded-xl border p-3 text-left transition-colors",
               role === option.value
@@ -117,38 +120,82 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
           >
             <option.icon className="mb-2 h-4 w-4 text-primary" />
             <p className="text-sm font-medium">{option.label}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">{option.description}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {option.description}
+            </p>
           </button>
         ))}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="name">Nom complet</Label>
-        <Input id="name" autoComplete="name" placeholder="Jane Doe" {...register("name")} />
-        {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+        <Input
+          id="name"
+          autoComplete="name"
+          placeholder="Jane Doe"
+          {...register("name")}
+        />
+        {errors.name && (
+          <p className="text-xs text-destructive">{errors.name.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="companyName">{role === "ADVERTISER" ? "Nom de l'entreprise" : "Société (optionnel)"}</Label>
-        <Input id="companyName" autoComplete="organization" placeholder="Acme Inc." {...register("companyName")} />
+        <Label htmlFor="companyName">
+          {role === "ADVERTISER"
+            ? "Nom de l'entreprise"
+            : "Société (optionnel)"}
+        </Label>
+        <Input
+          id="companyName"
+          autoComplete="organization"
+          placeholder="Acme Inc."
+          {...register("companyName")}
+        />
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" autoComplete="email" placeholder="vous@exemple.com" {...register("email")} />
-        {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
+        <Input
+          id="email"
+          type="email"
+          autoComplete="email"
+          placeholder="vous@exemple.com"
+          {...register("email")}
+        />
+        {errors.email && (
+          <p className="text-xs text-destructive">{errors.email.message}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
           <Label htmlFor="password">Mot de passe</Label>
-          <Input id="password" type="password" autoComplete="new-password" {...register("password")} />
-          {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
+          <Input
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-xs text-destructive">
+              {errors.password.message}
+            </p>
+          )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirmation</Label>
-          <Input id="confirmPassword" type="password" autoComplete="new-password" {...register("confirmPassword")} />
-          {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword.message}</p>}
+          <Input
+            id="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            {...register("confirmPassword")}
+          />
+          {errors.confirmPassword && (
+            <p className="text-xs text-destructive">
+              {errors.confirmPassword.message}
+            </p>
+          )}
         </div>
       </div>
 
@@ -159,7 +206,10 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
 
       <p className="text-center text-sm text-muted-foreground">
         Déjà un compte ?{" "}
-        <Link href="/sign-in" className="font-medium text-foreground hover:underline">
+        <Link
+          href="/sign-in"
+          className="font-medium text-foreground hover:underline"
+        >
           Se connecter
         </Link>
       </p>

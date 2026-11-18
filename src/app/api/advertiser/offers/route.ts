@@ -8,7 +8,9 @@ async function uniqueSlug(name: string) {
   const base = slugify(name) || "offre";
   let slug = base;
   let suffix = 1;
-  while (await prisma.offer.findUnique({ where: { slug }, select: { id: true } })) {
+  while (
+    await prisma.offer.findUnique({ where: { slug }, select: { id: true } })
+  ) {
     suffix += 1;
     slug = `${base}-${suffix}`;
   }
@@ -18,12 +20,17 @@ async function uniqueSlug(name: string) {
 export async function POST(request: Request) {
   try {
     const user = await requireApiRole("ADVERTISER");
-    const advertiser = await prisma.advertiser.findUniqueOrThrow({ where: { userId: user.id } });
+    const advertiser = await prisma.advertiser.findUniqueOrThrow({
+      where: { userId: user.id },
+    });
 
     const body = await request.json().catch(() => null);
     const parsed = offerSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: "Données invalides", issues: parsed.error.flatten() }, { status: 400 });
+      return NextResponse.json(
+        { error: "Données invalides", issues: parsed.error.flatten() },
+        { status: 400 },
+      );
     }
 
     if (parsed.data.campaignId) {
@@ -31,7 +38,10 @@ export async function POST(request: Request) {
         where: { id: parsed.data.campaignId, advertiserId: advertiser.id },
       });
       if (!campaign) {
-        return NextResponse.json({ error: "Campagne invalide" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Campagne invalide" },
+          { status: 400 },
+        );
       }
     }
 
@@ -62,7 +72,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ offer });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/advertiser/offers]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

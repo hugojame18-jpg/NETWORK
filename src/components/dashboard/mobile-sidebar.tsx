@@ -3,31 +3,49 @@
 import { useState } from "react";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+  SheetHeader,
+} from "@/components/ui/sheet";
 import { SidebarNav, type NavSection } from "./sidebar-nav";
+import { Logo } from "@/components/brand/logo-mark";
 
-export function MobileSidebar({ sections, brandLabel }: { sections: NavSection[]; brandLabel: string }) {
+export function MobileSidebar({
+  sections,
+  brandLabel,
+}: {
+  sections: NavSection[];
+  brandLabel: string;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Ouvrir le menu">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            aria-label="Ouvrir le menu"
+          >
             <Menu className="h-5 w-5" />
           </Button>
         }
       />
-      <SheetContent side="left" className="w-72 p-0">
-        <SheetHeader className="h-16 justify-center border-b border-border">
-          <SheetTitle className="flex items-center gap-2">
-            <span className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold">
-              CC
-            </span>
-            {brandLabel}
+      <SheetContent
+        side="left"
+        className="w-[272px] border-sidebar-border bg-sidebar p-0"
+      >
+        <SheetHeader className="h-16 justify-center border-b border-sidebar-border px-4">
+          <SheetTitle>
+            <Logo label={brandLabel} />
           </SheetTitle>
         </SheetHeader>
-        <div className="px-3 py-2" onClick={() => setOpen(false)}>
+        <div className="px-3 pb-4" onClick={() => setOpen(false)}>
           <SidebarNav sections={sections} />
         </div>
       </SheetContent>

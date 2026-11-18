@@ -17,9 +17,20 @@ export function CopyLinkCell({ token }: { token: string }) {
 
   return (
     <div className="flex items-center gap-2">
-      <code className="max-w-[240px] truncate rounded-md border border-border bg-muted px-2 py-1 text-xs">{url}</code>
-      <Button size="icon-sm" variant="ghost" onClick={copy} aria-label="Copier le lien">
-        {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+      <code className="max-w-[240px] truncate rounded-md border border-border bg-muted px-2 py-1 text-xs">
+        {url}
+      </code>
+      <Button
+        size="icon-sm"
+        variant="ghost"
+        onClick={copy}
+        aria-label="Copier le lien"
+      >
+        {copied ? (
+          <Check className="h-3.5 w-3.5" />
+        ) : (
+          <Copy className="h-3.5 w-3.5" />
+        )}
       </Button>
     </div>
   );

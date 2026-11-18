@@ -12,7 +12,9 @@ export function ReplayTourButton() {
 
   function replay() {
     startTransition(async () => {
-      const res = await fetch("/api/publisher/onboarding", { method: "DELETE" });
+      const res = await fetch("/api/publisher/onboarding", {
+        method: "DELETE",
+      });
       if (!res.ok) {
         toast.error("Impossible de relancer le guide.");
         return;
@@ -24,7 +26,11 @@ export function ReplayTourButton() {
 
   return (
     <Button variant="outline" onClick={replay} disabled={isPending}>
-      {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlayCircle className="h-4 w-4" />}
+      {isPending ? (
+        <Loader2 className="h-4 w-4 animate-spin" />
+      ) : (
+        <PlayCircle className="h-4 w-4" />
+      )}
       Revoir le guide de démarrage
     </Button>
   );

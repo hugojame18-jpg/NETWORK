@@ -13,7 +13,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
@@ -23,7 +26,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: "Données invalides" }, { status: 400 });
     }
 
-    await prisma.commission.update({ where: { id }, data: { status: parsed.data.status } });
+    await prisma.commission.update({
+      where: { id },
+      data: { status: parsed.data.status },
+    });
 
     await logAction({
       actorId: admin.id,
@@ -35,7 +41,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/admin/commissions/:id/status]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

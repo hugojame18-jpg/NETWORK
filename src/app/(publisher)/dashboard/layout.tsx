@@ -6,7 +6,11 @@ import { Topbar } from "@/components/dashboard/topbar";
 import { ApplicationPending } from "@/components/dashboard/application-pending";
 import { publisherNavSections } from "./nav-items";
 
-export default async function PublisherDashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function PublisherDashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const user = await requireRole("PUBLISHER");
 
   // Applications are vetted by hand: until an admin approves, the dashboard is
@@ -28,8 +32,13 @@ export default async function PublisherDashboardLayout({ children }: { children:
   const notifications = await getUnreadNotifications(user.id);
 
   return (
-    <div className="flex min-h-screen bg-muted/20">
-      <Sidebar sections={publisherNavSections} brandLabel="RevNetwork" brandHref="/dashboard" />
+    <div className="flex min-h-screen bg-background">
+      <Sidebar
+        sections={publisherNavSections}
+        brandLabel="RevNetwork"
+        brandHref="/dashboard"
+        brandSuffix="Espace affilié"
+      />
       <div className="flex min-h-screen flex-1 flex-col">
         <Topbar
           navSections={publisherNavSections}
@@ -38,9 +47,19 @@ export default async function PublisherDashboardLayout({ children }: { children:
           notificationsHref="/dashboard/notifications"
           profileHref="/dashboard/profile"
           settingsHref="/dashboard/settings"
-          user={{ name: user.name ?? "", email: user.email ?? "", image: user.image }}
+          user={{
+            name: user.name ?? "",
+            email: user.email ?? "",
+            image: user.image,
+          }}
         />
-        <main className="flex-1 space-y-6 p-4 sm:p-6">{children}</main>
+        <main className="flex-1">
+          {/* Capped width: a table stretched across a 27-inch screen is
+              unreadable, and the whitespace is what makes it feel composed. */}
+          <div className="mx-auto w-full max-w-[1360px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

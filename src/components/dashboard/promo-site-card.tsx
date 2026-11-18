@@ -27,8 +27,14 @@ const STATUS_LABEL: Record<RequestStatus, string> = {
   REJECTED: "Demande refusée",
 };
 
-export function PromoSiteCard({ site, initialStatus, readOnly }: PromoSiteCardProps) {
-  const [status, setStatus] = useState<RequestStatus | null>(initialStatus ?? null);
+export function PromoSiteCard({
+  site,
+  initialStatus,
+  readOnly,
+}: PromoSiteCardProps) {
+  const [status, setStatus] = useState<RequestStatus | null>(
+    initialStatus ?? null,
+  );
   const [isPending, startTransition] = useTransition();
 
   function request() {
@@ -44,12 +50,14 @@ export function PromoSiteCard({ site, initialStatus, readOnly }: PromoSiteCardPr
         return;
       }
       setStatus(json.request.status);
-      toast.success("Demande envoyée ! Tu seras notifié dès qu'elle est traitée.");
+      toast.success(
+        "Demande envoyée ! Tu seras notifié dès qu'elle est traitée.",
+      );
     });
   }
 
   return (
-    <Card className="hover-lift shadow-premium flex flex-col overflow-hidden">
+    <Card className="hover-lift flex flex-col overflow-hidden">
       {/* Live preview: the site itself, rendered small and non-interactive so the
           whole tile stays a link rather than a browsable frame. */}
       <a
@@ -85,17 +93,26 @@ export function PromoSiteCard({ site, initialStatus, readOnly }: PromoSiteCardPr
       <CardContent className="flex flex-1 flex-col gap-3 pt-4">
         <div className="flex items-start justify-between gap-2">
           <div>
-            <a href={site.url} target="_blank" rel="noreferrer" className="font-semibold hover:underline">
+            <a
+              href={site.url}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold hover:underline"
+            >
               {site.name}
             </a>
-            <p className="text-xs text-muted-foreground">{site.url.replace(/^https?:\/\//, "").replace(/\/.*$/, "")}</p>
+            <p className="text-xs text-muted-foreground">
+              {site.url.replace(/^https?:\/\//, "").replace(/\/.*$/, "")}
+            </p>
           </div>
           <Badge variant="secondary" className="shrink-0">
             {verticalIcon(site.category)} {verticalLabel(site.category)}
           </Badge>
         </div>
 
-        <p className="line-clamp-3 text-sm text-muted-foreground">{site.description}</p>
+        <p className="line-clamp-3 text-sm text-muted-foreground">
+          {site.description}
+        </p>
 
         <div className="mt-auto pt-2">
           {readOnly ? (
@@ -110,15 +127,29 @@ export function PromoSiteCard({ site, initialStatus, readOnly }: PromoSiteCardPr
             </a>
           ) : status === null ? (
             <Button className="w-full" onClick={request} disabled={isPending}>
-              {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+              {isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
               Demander
             </Button>
           ) : (
             <Badge
-              variant={status === "APPROVED" ? "default" : status === "REJECTED" ? "destructive" : "secondary"}
+              variant={
+                status === "APPROVED"
+                  ? "default"
+                  : status === "REJECTED"
+                    ? "destructive"
+                    : "secondary"
+              }
               className="flex w-full justify-center gap-1.5 py-2"
             >
-              {status === "APPROVED" ? <Check className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
+              {status === "APPROVED" ? (
+                <Check className="h-3.5 w-3.5" />
+              ) : (
+                <Clock className="h-3.5 w-3.5" />
+              )}
               {STATUS_LABEL[status]}
             </Badge>
           )}

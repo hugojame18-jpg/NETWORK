@@ -4,7 +4,11 @@ import { ApiAuthError, requireApiRole } from "@/lib/rbac";
 import { logAction } from "@/lib/audit";
 import { checkMutationRateLimit } from "@/lib/rate-limit";
 import { publisherApplicationSchema } from "@/lib/validations/admin";
-import { sendEmail, applicationApprovedEmail, applicationRejectedEmail } from "@/lib/email";
+import {
+  sendEmail,
+  applicationApprovedEmail,
+  applicationRejectedEmail,
+} from "@/lib/email";
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -14,7 +18,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
@@ -34,7 +41,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       data: {
         userId: publisher.userId,
         type: parsed.data.status === "APPROVED" ? "SUCCESS" : "WARNING",
-        title: parsed.data.status === "APPROVED" ? "Compte approuvé" : "Candidature refusée",
+        title:
+          parsed.data.status === "APPROVED"
+            ? "Compte approuvé"
+            : "Candidature refusée",
         body:
           parsed.data.status === "APPROVED"
             ? "Votre compte publisher a été approuvé, vous pouvez désormais générer des liens."
@@ -64,7 +74,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/admin/publishers/:id/application]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

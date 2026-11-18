@@ -9,9 +9,14 @@ export async function POST(request: Request) {
   try {
     const user = await requireApiRole("PUBLISHER");
     if (!(await checkMutationRateLimit(user.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
-    const publisher = await prisma.publisher.findUniqueOrThrow({ where: { userId: user.id } });
+    const publisher = await prisma.publisher.findUniqueOrThrow({
+      where: { userId: user.id },
+    });
 
     const body = await request.json().catch(() => null);
     const parsed = requestPaymentSchema.safeParse(body);
@@ -22,7 +27,9 @@ export async function POST(request: Request) {
     const minPayout = toNumber(publisher.minPayout);
     if (parsed.data.amount < minPayout) {
       return NextResponse.json(
-        { error: `Le montant minimum de retrait est de ${minPayout.toFixed(2)} $.` },
+        {
+          error: `Le montant minimum de retrait est de ${minPayout.toFixed(2)} $.`,
+        },
         { status: 400 },
       );
     }
@@ -31,11 +38,16 @@ export async function POST(request: Request) {
       where: { publisherId: publisher.id, status: "APPROVED", paymentId: null },
       orderBy: { createdAt: "asc" },
     });
-    const availableTotal = availableCommissions.reduce((sum, c) => sum + toNumber(c.amount), 0);
+    const availableTotal = availableCommissions.reduce(
+      (sum, c) => sum + toNumber(c.amount),
+      0,
+    );
 
     if (parsed.data.amount > availableTotal) {
       return NextResponse.json(
-        { error: `Solde disponible insuffisant (${availableTotal.toFixed(2)} $ disponible).` },
+        {
+          error: `Solde disponible insuffisant (${availableTotal.toFixed(2)} $ disponible).`,
+        },
         { status: 400 },
       );
     }
@@ -68,7 +80,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ payment });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[POST /api/publisher/payments]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

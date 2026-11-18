@@ -29,12 +29,7 @@ export const updatePaymentMethodSchema = z.object({
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1),
-    newPassword: z
-      .string()
-      .min(8)
-      .regex(/[a-z]/)
-      .regex(/[A-Z]/)
-      .regex(/[0-9]/),
+    newPassword: z.string().min(8).regex(/[a-z]/).regex(/[A-Z]/).regex(/[0-9]/),
     confirmPassword: z.string(),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {

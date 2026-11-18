@@ -4,6 +4,7 @@ import { getPublisherByUserId, getRewardsOverview } from "@/lib/data/publisher";
 import { RewardsPanel } from "@/components/dashboard/rewards-panel";
 import { RewardLadder } from "@/components/dashboard/reward-ladder";
 import { computePrizes } from "@/lib/loyalty";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export const metadata: Metadata = { title: "Récompenses" };
 
@@ -15,18 +16,19 @@ export default async function RewardsPage() {
   const rewards = await getRewardsOverview(publisher.id);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-6">
+      <PageHeader
+        title="Récompenses"
+        description="Monte en palier, débloque des badges et parraine des affiliés pour gagner plus."
+      />
       <div>
-        <h1 className="text-xl font-semibold tracking-tight">Récompenses</h1>
-        <p className="text-sm text-muted-foreground">
-          Montez en palier, débloquez des badges et parrainez des affiliés pour gagner plus.
-        </p>
-      </div>
-      <div className="pt-4">
-        <RewardLadder prizes={computePrizes(rewards.lifetimeRevenue)} lifetimeRevenue={rewards.lifetimeRevenue} />
+        <RewardLadder
+          prizes={computePrizes(rewards.lifetimeRevenue)}
+          lifetimeRevenue={rewards.lifetimeRevenue}
+        />
       </div>
 
-      <div className="pt-4">
+      <div>
         <RewardsPanel
           appUrl={appUrl()}
           tier={rewards.tier}

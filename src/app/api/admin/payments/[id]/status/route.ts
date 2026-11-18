@@ -14,7 +14,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   try {
     const admin = await requireApiRole("ADMIN");
     if (!(await checkMutationRateLimit(admin.id))) {
-      return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 });
+      return NextResponse.json(
+        { error: "Trop de requêtes, réessayez plus tard." },
+        { status: 429 },
+      );
     }
     const { id } = await params;
 
@@ -26,7 +29,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
 
     const payment = await prisma.payment.findUnique({ where: { id } });
     if (!payment) {
-      return NextResponse.json({ error: "Paiement introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Paiement introuvable" },
+        { status: 404 },
+      );
     }
 
     await prisma.$transaction(async (tx) => {
@@ -40,14 +46,23 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       });
 
       if (parsed.data.status === "PAID" && payment.status !== "PAID") {
-        await tx.commission.updateMany({ where: { paymentId: id }, data: { status: "PAID" } });
+        await tx.commission.updateMany({
+          where: { paymentId: id },
+          data: { status: "PAID" },
+        });
         // The balance already reflects approved commissions; paying out draws it down.
-        await tx.publisher.update({ where: { id: payment.publisherId }, data: { balance: { decrement: payment.amount } } });
+        await tx.publisher.update({
+          where: { id: payment.publisherId },
+          data: { balance: { decrement: payment.amount } },
+        });
       }
 
       if (parsed.data.status === "REJECTED") {
         // Free up the commissions so the publisher can include them in a future request.
-        await tx.commission.updateMany({ where: { paymentId: id }, data: { paymentId: null } });
+        await tx.commission.updateMany({
+          where: { paymentId: id },
+          data: { paymentId: null },
+        });
       }
     });
 
@@ -97,7 +112,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof ApiAuthError) {
-      return NextResponse.json({ error: error.message }, { status: error.status });
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
     }
     console.error("[PATCH /api/admin/payments/:id/status]", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

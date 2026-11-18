@@ -8,25 +8,38 @@ import { emailDeliveryEnabled } from "@/lib/email";
  * still being reviewed (or after it was turned down). Deliberately has no
  * sidebar or navigation: there is nothing to browse yet.
  */
-export function ApplicationPending({ name, rejected }: { name: string; rejected?: boolean }) {
+export function ApplicationPending({
+  name,
+  rejected,
+}: {
+  name: string;
+  rejected?: boolean;
+}) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
-      <Card className="shadow-premium w-full max-w-lg">
+      <Card className="w-full max-w-lg">
         <CardContent className="space-y-5 pt-8 pb-8 text-center">
           <div
             className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${
-              rejected ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"
+              rejected
+                ? "bg-destructive/10 text-destructive"
+                : "bg-primary/10 text-primary"
             }`}
           >
-            {rejected ? <XCircle className="h-7 w-7" /> : <Clock className="h-7 w-7" />}
+            {rejected ? (
+              <XCircle className="h-7 w-7" />
+            ) : (
+              <Clock className="h-7 w-7" />
+            )}
           </div>
 
           {rejected ? (
             <>
               <h1 className="text-xl font-semibold">Candidature non retenue</h1>
               <p className="text-sm text-muted-foreground">
-                Merci pour ton intérêt, {name}. Ta candidature n&apos;a pas été retenue cette fois-ci. Si tu penses
-                qu&apos;il s&apos;agit d&apos;une erreur, écris à{" "}
+                Merci pour ton intérêt, {name}. Ta candidature n&apos;a pas été
+                retenue cette fois-ci. Si tu penses qu&apos;il s&apos;agit
+                d&apos;une erreur, écris à{" "}
                 <a
                   href="https://t.me/solangerev"
                   target="_blank"
@@ -40,17 +53,21 @@ export function ApplicationPending({ name, rejected }: { name: string; rejected?
             </>
           ) : (
             <>
-              <h1 className="text-xl font-semibold">Ta candidature est en attente</h1>
+              <h1 className="text-xl font-semibold">
+                Ta candidature est en attente
+              </h1>
               <p className="text-sm text-muted-foreground">
-                Merci {name}&nbsp;! Ton compte est créé et nous étudions ta candidature. Nous vérifions ton
-                expérience en affiliation et tes contenus TikTok avant d&apos;ouvrir l&apos;accès.
+                Merci {name}&nbsp;! Ton compte est créé et nous étudions ta
+                candidature. Nous vérifions ton expérience en affiliation et tes
+                contenus TikTok avant d&apos;ouvrir l&apos;accès.
               </p>
               <p className="text-sm text-muted-foreground">
                 {/* Only promise an email when one can actually be sent. */}
                 {emailDeliveryEnabled()
                   ? "Tu recevras un email dès qu'elle est validée : "
                   : "Dès qu'elle est validée, "}
-                ton dashboard, les offres et les sites à promouvoir seront accessibles.
+                ton dashboard, les offres et les sites à promouvoir seront
+                accessibles.
               </p>
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 text-sm">
                 <p className="font-medium">Pour accélérer ta validation</p>

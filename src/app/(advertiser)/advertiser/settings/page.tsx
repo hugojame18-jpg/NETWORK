@@ -10,7 +10,7 @@ export default async function AdvertiserSettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <Card className="shadow-premium">
+      <Card>
         <CardHeader>
           <CardTitle>Sécurité</CardTitle>
         </CardHeader>
