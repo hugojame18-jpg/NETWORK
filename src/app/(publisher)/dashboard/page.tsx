@@ -12,7 +12,7 @@ import {
 } from "@/lib/data/publisher";
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { OnboardingTour } from "@/components/dashboard/onboarding-tour";
-import { NextStep, EarningsHero } from "@/components/dashboard/next-step";
+import { EarningsHero } from "@/components/dashboard/next-step";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { TopPerformers } from "@/components/dashboard/top-performers";
 import {
@@ -77,15 +77,6 @@ export default async function PublisherHomePage() {
       <PageHeader
         title={firstName ? `Salut ${firstName}` : "Salut 👋"}
         description="Voici où tu en es aujourd'hui."
-        action={
-          <Link
-            href="/dashboard/offers"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3.5 py-2 text-sm font-medium transition hover:bg-muted"
-          >
-            Parcourir les offres
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        }
       />
 
       <AnnouncementBanner announcements={announcements} />
@@ -96,12 +87,6 @@ export default async function PublisherHomePage() {
         total={revenue.total}
         rate={revenue.rate}
         formatValue={formatCurrency}
-      />
-
-      <NextStep
-        requestedLinks={snapshot.requestedLinks}
-        deliveredLinks={snapshot.deliveredLinks}
-        statDays={snapshot.statDays}
       />
 
       {/* Charts and tables only earn their place once there is data to show. */}

@@ -4,9 +4,6 @@ import {
   GraduationCap,
   History,
   LayoutDashboard,
-  Link2,
-  Layers,
-  MonitorSmartphone,
   Settings,
   User,
   Wallet,
@@ -15,9 +12,14 @@ import type { NavSection } from "@/components/dashboard/sidebar-nav";
 
 /**
  * Grouped by what the affiliate is trying to do, in the order they do it:
- * pick something to promote, get the link, watch the numbers, level up, get
- * paid. Notifications are deliberately absent — the topbar bell already owns
- * them, and a duplicate entry only lengthens the list.
+ * watch the numbers, level up, get paid. Notifications are deliberately
+ * absent — the topbar bell already owns them, and a duplicate entry only
+ * lengthens the list.
+ *
+ * Offers, Sites and My links are off the menu for now: an affiliate is given
+ * their link directly, and conversions come back on the global postback, so
+ * those screens had nothing to show. Their routes are untouched, ready to be
+ * listed again here.
  */
 export const publisherNavSections: NavSection[] = [
   {
@@ -28,18 +30,6 @@ export const publisherNavSections: NavSection[] = [
         icon: <LayoutDashboard />,
         exact: true,
       },
-    ],
-  },
-  {
-    title: "Gagner",
-    items: [
-      { href: "/dashboard/offers", label: "Offres", icon: <Layers /> },
-      {
-        href: "/dashboard/sites",
-        label: "Sites à promouvoir",
-        icon: <MonitorSmartphone />,
-      },
-      { href: "/dashboard/links", label: "Mes liens", icon: <Link2 /> },
     ],
   },
   {

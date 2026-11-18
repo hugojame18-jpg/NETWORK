@@ -2,11 +2,8 @@ import {
   BarChart3,
   Coins,
   GraduationCap,
-  Layers,
   LayoutDashboard,
-  Link2,
   Megaphone,
-  MonitorSmartphone,
   ScrollText,
   Settings,
   ShieldCheck,
@@ -44,16 +41,6 @@ export const adminNavSections: NavSection[] = [
     title: "Au quotidien",
     items: [
       { href: "/admin/stats", label: "Saisie des stats", icon: <BarChart3 /> },
-      {
-        href: "/admin/link-requests",
-        label: "Demandes de liens",
-        icon: <Link2 />,
-      },
-      {
-        href: "/admin/site-requests",
-        label: "Demandes de sites",
-        icon: <MonitorSmartphone />,
-      },
     ],
   },
   {
@@ -73,7 +60,6 @@ export const adminNavSections: NavSection[] = [
   {
     title: "Contenu",
     items: [
-      { href: "/admin/offers", label: "Offres", icon: <Layers /> },
       { href: "/admin/training", label: "Formation", icon: <GraduationCap /> },
       { href: "/admin/announcements", label: "Messages", icon: <Megaphone /> },
     ],

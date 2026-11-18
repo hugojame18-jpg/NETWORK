@@ -62,8 +62,15 @@ export const TIERS: Tier[] = [
   },
 ];
 
-/** Referral reward: share of a referred affiliate's lifetime revenue. */
-export const REFERRAL_RATE = 0.05;
+/**
+ * Referral reward: what a sponsor earns on an affiliate they brought in.
+ *
+ * Applied to the referred affiliate's own earnings — their share after their
+ * commission rate — not to the network's gross, which no publisher is ever
+ * shown. It costs the sponsor's referral nothing: the reward is paid by the
+ * network on top, it is not deducted from what they earn.
+ */
+export const REFERRAL_RATE = 0.1;
 
 // ---------------------------------------------------------------------------
 // Prize ladder

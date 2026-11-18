@@ -13,9 +13,10 @@ interface Step {
 
 /**
  * Walks a brand-new affiliate through the dashboard, in the order they'll
- * actually use it: find something to promote → get the link → watch the
- * numbers → get paid. Each step names the real menu entry so they can find it
- * again once the tour is closed.
+ * actually use it: get the link → watch the numbers → get paid. Each step
+ * names the real menu entry so they can find it again once the tour is
+ * closed — which is why picking an offer is no longer among them: that
+ * happens off the dashboard now.
  */
 const STEPS: Step[] = [
   {
@@ -24,38 +25,28 @@ const STEPS: Step[] = [
     body: "Deux minutes pour comprendre comment tout fonctionne. Tu pourras revoir ce guide à tout moment depuis tes Paramètres.",
   },
   {
-    icon: "🎯",
-    title: "1. Choisis ce que tu veux promouvoir",
-    body: "Dans « Offres disponibles », filtre par catégorie — CC Submit, Trial, SOI, DOI, CPA, PIN Submit — et ouvre celle qui t'intéresse. Chaque offre affiche son payout et son type de rémunération.",
-  },
-  {
-    icon: "🖥️",
-    title: "2. Ou pars d'un site tout prêt",
-    body: "Dans « Sites à promouvoir », tu as un aperçu en direct de chaque site du réseau. Clique dessus pour l'ouvrir en grand, puis sur « Demander » si tu veux le promouvoir.",
-  },
-  {
     icon: "🔗",
-    title: "3. Demande ton lien",
-    body: "Sur une offre, clique « Demander mon lien ». Ta demande nous arrive, on te renvoie ton lien d'affiliation personnel — tu le retrouves ensuite dans « Mes liens », prêt à copier.",
+    title: "1. Récupère ton lien",
+    body: "C'est l'équipe qui te remet ton lien d'affiliation, déjà configuré à ton nom. Tu n'as rien à demander depuis le dashboard : écris-nous et on te l'envoie.",
   },
   {
     icon: "🎓",
-    title: "4. Forme-toi",
+    title: "2. Forme-toi",
     body: "L'espace « Formation » regroupe nos vidéos : générer du trafic, choisir ses angles, convertir. Si tu débutes, commence par là avant de lancer une campagne.",
   },
   {
     icon: "📊",
-    title: "5. Suis tes résultats",
+    title: "3. Suis tes résultats",
     body: "« Statistiques » affiche tes clics, conversions et revenus jour par jour. Ces chiffres sont saisis chaque soir par l'équipe : ce sont les mêmes que ceux qui servent à te payer.",
   },
   {
     icon: "🎁",
-    title: "6. Débloque des récompenses",
-    body: "Plus tu génères de revenus, plus tu montes : paliers avec bonus de payout, badges, et des lots concrets — bonus cash, AirPods, Apple Watch, iPhone… Parraine aussi des affiliés pour toucher 5 % de leurs revenus.",
+    title: "4. Débloque des récompenses",
+    body: "Plus tu génères de revenus, plus tu montes : paliers avec bonus de payout, badges, et des lots concrets — bonus cash, AirPods, Apple Watch, iPhone… Parraine aussi des affiliés pour toucher 10 % de leurs revenus.",
   },
   {
     icon: "💰",
-    title: "7. Demande ton paiement",
+    title: "5. Demande ton paiement",
     body: "Renseigne ta méthode de paiement dans « Profil », puis demande ton virement depuis « Paiements » dès que tu atteins le minimum.",
   },
   {
