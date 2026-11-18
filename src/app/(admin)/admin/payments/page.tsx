@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { PaymentStatusMenu } from "@/components/dashboard/admin/payment-status-menu";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { paymentMethodLabel } from "@/lib/payment-methods";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { Wallet } from "lucide-react";
@@ -72,7 +73,9 @@ export default async function AdminPaymentsPage() {
                     <TableCell className="font-semibold">
                       {formatCurrency(payment.amount)}
                     </TableCell>
-                    <TableCell>{payment.method.replace("_", " ")}</TableCell>
+                    <TableCell>
+                      {paymentMethodLabel(payment.method)}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={STATUS_VARIANT[payment.status]}>
                         {payment.status}

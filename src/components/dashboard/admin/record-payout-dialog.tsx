@@ -23,7 +23,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PAYMENT_METHODS } from "@/lib/payment-methods";
+import { PAYMENT_METHODS, paymentMethodLabel } from "@/lib/payment-methods";
 import { formatCurrency } from "@/lib/format";
 import { toast } from "sonner";
 
@@ -181,7 +181,9 @@ export function RecordPayoutDialog({
               onValueChange={(value) => value && setMethod(String(value))}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Sélectionner..." />
+                {/* Without children the trigger shows the raw enum value —
+                    "BANK_WIRE" where the list says "Virement bancaire". */}
+                <SelectValue>{paymentMethodLabel(method)}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {PAYMENT_METHODS.map((entry) => (
