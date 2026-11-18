@@ -37,7 +37,12 @@ export const metadata: Metadata = { title: "Accueil" };
 // click away in Statistiques.
 const HOME_SERIES: ChartSeriesConfig[] = [
   { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
-  { key: "revenue", label: "Gains ($)", color: "var(--chart-5)" },
+  {
+    key: "revenue",
+    label: "Gains ($)",
+    color: "var(--chart-5)",
+    axis: "right",
+  },
 ];
 
 export default async function PublisherHomePage() {

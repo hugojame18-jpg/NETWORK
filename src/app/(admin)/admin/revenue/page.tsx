@@ -39,9 +39,9 @@ const PRESETS: { value: RevenuePeriod; label: string }[] = [
 ];
 
 const SERIES: ChartSeriesConfig[] = [
-  { key: "revenue", label: "CA ($)", color: "#fbbf24" },
-  { key: "conversions", label: "Conversions", color: "#34d399" },
-  { key: "clicks", label: "Clics", color: "#818cf8" },
+  { key: "revenue", label: "CA ($)", color: "var(--chart-5)", axis: "right" },
+  { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
+  { key: "clicks", label: "Clics", color: "var(--chart-1)" },
 ];
 
 interface PageProps {

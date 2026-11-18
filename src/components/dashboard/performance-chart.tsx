@@ -25,6 +25,12 @@ export interface ChartSeriesConfig {
   key: string;
   label: string;
   color: string;
+  /**
+   * Which vertical scale to read against. Money and counts differ by two orders
+   * of magnitude, so sharing one axis flattens the smaller series onto the
+   * baseline — it looks like nothing happened all month.
+   */
+  axis?: "left" | "right";
 }
 
 /* Series colours come from the theme's chart ramp, so the graph belongs to the
@@ -33,7 +39,12 @@ const DEFAULT_SERIES: ChartSeriesConfig[] = [
   { key: "clicks", label: "Clics", color: "var(--chart-1)" },
   { key: "leads", label: "Leads", color: "var(--chart-2)" },
   { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
-  { key: "commissions", label: "Commissions ($)", color: "var(--chart-5)" },
+  {
+    key: "commissions",
+    label: "Commissions ($)",
+    color: "var(--chart-5)",
+    axis: "right",
+  },
 ];
 
 const RANGES = [
@@ -103,6 +114,7 @@ export function PerformanceChart({
   className,
 }: PerformanceChartProps) {
   const [range, setRange] = useState("30");
+  const hasRightAxis = series.some((s) => s.axis === "right");
   const filtered = useMemo(
     () => (showRange ? data.slice(-Number(range)) : data),
     [data, range, showRange],
@@ -186,11 +198,22 @@ export function PerformanceChart({
             dy={6}
           />
           <YAxis
+            yAxisId="left"
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
             width={56}
           />
+          {hasRightAxis && (
+            <YAxis
+              yAxisId="right"
+              orientation="right"
+              tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+              axisLine={false}
+              tickLine={false}
+              width={56}
+            />
+          )}
           <Tooltip
             content={<ChartTooltip />}
             cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
@@ -198,6 +221,7 @@ export function PerformanceChart({
           {series.map((s) => (
             <Area
               key={s.key}
+              yAxisId={s.axis ?? "left"}
               type="monotone"
               dataKey={s.key}
               name={s.label}
