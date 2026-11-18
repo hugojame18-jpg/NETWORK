@@ -51,7 +51,7 @@ export function PeriodChart({
 
   return (
     <div className={cn("space-y-5", className)}>
-      <div className="flex items-center gap-0.5 self-start rounded-lg border border-border bg-muted/50 p-0.5">
+      <div className="inline-flex w-fit items-center gap-0.5 rounded-lg border border-border bg-muted/50 p-0.5">
         {METRICS.map((m) => (
           <button
             key={m.key}
