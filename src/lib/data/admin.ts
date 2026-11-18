@@ -1,103 +1,8 @@
 import "server-only";
-import { eachDayOfInterval, format, startOfDay, subDays } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
-
-export async function getPlatformStats() {
-  const [
-    publisherCount,
-    advertiserCount,
-    dailyAgg,
-    commissionAgg,
-    pendingOffers,
-    pendingPayments,
-  ] = await Promise.all([
-    prisma.publisher.count(),
-    prisma.advertiser.count(),
-    // Revenue and conversions come from the hand-entered daily stats, not from
-    // the Conversion table: tracking is manual, so Conversion stays empty and
-    // reading it would show $0 next to real earnings.
-    prisma.publisherDailyStat.aggregate({
-      _sum: { revenue: true, conversions: true },
-    }),
-    prisma.commission.aggregate({ _sum: { amount: true } }),
-    prisma.offer.count({ where: { status: "PENDING" } }),
-    prisma.payment.count({ where: { status: "PENDING" } }),
-  ]);
-
-  return {
-    publisherCount,
-    advertiserCount,
-    revenue: toNumber(dailyAgg._sum.revenue),
-    commissions: toNumber(commissionAgg._sum.amount),
-    conversionCount: dailyAgg._sum.conversions ?? 0,
-    pendingOffers,
-    pendingPayments,
-  };
-}
-
-export async function getPlatformSeries(days = 90) {
-  const since = startOfDay(subDays(new Date(), days - 1));
-
-  const [clicks, leads, conversions, commissions] = await Promise.all([
-    prisma.click.findMany({
-      where: { createdAt: { gte: since } },
-      select: { createdAt: true },
-    }),
-    prisma.lead.findMany({
-      where: { createdAt: { gte: since } },
-      select: { createdAt: true },
-    }),
-    prisma.conversion.findMany({
-      where: { createdAt: { gte: since } },
-      select: { createdAt: true },
-    }),
-    prisma.commission.findMany({
-      where: { createdAt: { gte: since } },
-      select: { createdAt: true, amount: true },
-    }),
-  ]);
-
-  const buckets = new Map<
-    string,
-    {
-      date: string;
-      clicks: number;
-      leads: number;
-      conversions: number;
-      commissions: number;
-    }
-  >();
-  for (const day of eachDayOfInterval({ start: since, end: new Date() })) {
-    const key = format(day, "yyyy-MM-dd");
-    buckets.set(key, {
-      date: key,
-      clicks: 0,
-      leads: 0,
-      conversions: 0,
-      commissions: 0,
-    });
-  }
-
-  clicks.forEach((c) => {
-    const b = buckets.get(format(c.createdAt, "yyyy-MM-dd"));
-    if (b) b.clicks += 1;
-  });
-  leads.forEach((l) => {
-    const b = buckets.get(format(l.createdAt, "yyyy-MM-dd"));
-    if (b) b.leads += 1;
-  });
-  conversions.forEach((c) => {
-    const b = buckets.get(format(c.createdAt, "yyyy-MM-dd"));
-    if (b) b.conversions += 1;
-  });
-  commissions.forEach((c) => {
-    const b = buckets.get(format(c.createdAt, "yyyy-MM-dd"));
-    if (b) b.commissions += toNumber(c.amount);
-  });
-
-  return Array.from(buckets.values());
-}
+import { getAffiliateLedgers } from "@/lib/data/ledger";
+import { flowConfig, lastSync } from "@/lib/flow";
 
 export async function getPublishersAdminList() {
   const [publishers, statTotals] = await Promise.all([
@@ -490,9 +395,55 @@ export async function getRevenueSeries(range: PeriodRange) {
 }
 
 /**
- * The admin home answers one question: what needs me right now? These are the
- * queues that block an affiliate until someone acts on them, plus today's
- * money so the first screen of the day is useful without a click.
+ * The network's activity day by day, oldest first, for the home chart.
+ *
+ * Read from the daily stats — the same rows the postback and the Flow sync
+ * write to. The chart used to read the Click/Lead/Conversion tables of the
+ * old tracking engine, which nothing fills any more, so it drew a flat line
+ * under a day with eleven conversions on it.
+ *
+ * Days without a row are filled with zeros: a gap in the line would read as
+ * "no data", when what it means is "nothing happened".
+ */
+export async function getNetworkSeries(days = 90) {
+  const today = startOfTodayLocalAsUtc();
+  const since = new Date(today.getTime() - (days - 1) * DAY_MS);
+
+  const grouped = await prisma.publisherDailyStat.groupBy({
+    by: ["date"],
+    where: { date: { gte: since } },
+    _sum: { revenue: true, conversions: true, clicks: true },
+  });
+  const byDay = new Map(
+    grouped.map((group) => [group.date.toISOString().slice(0, 10), group._sum]),
+  );
+
+  const points: {
+    date: string;
+    clicks: number;
+    conversions: number;
+    revenue: number;
+  }[] = [];
+  for (let t = since.getTime(); t <= today.getTime(); t += DAY_MS) {
+    const key = new Date(t).toISOString().slice(0, 10);
+    const sums = byDay.get(key);
+    points.push({
+      date: key,
+      clicks: sums?.clicks ?? 0,
+      conversions: sums?.conversions ?? 0,
+      revenue: toNumber(sums?.revenue),
+    });
+  }
+  return points;
+}
+
+/**
+ * The admin home answers one question: what needs me right now?
+ *
+ * Every item is something that costs money or trust if it is left alone: an
+ * affiliate waiting to be paid, traffic arriving under a sub3 nobody owns,
+ * postbacks being turned away, a sync that stopped. The queues it used to
+ * watch — link and site requests — belong to screens that are off the menu.
  */
 export async function getAdminPulse() {
   const today = startOfTodayLocalAsUtc();
@@ -500,16 +451,18 @@ export async function getAdminPulse() {
   const startMonth = new Date(
     Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1),
   );
+  const weekAgo = new Date(Date.now() - 7 * DAY_MS);
 
   const [
     todayRange,
     monthRange,
     publisherCount,
     activeToday,
-    pendingLinks,
-    pendingSites,
     pendingPayments,
-    statsToday,
+    rejectedHits,
+    ledgers,
+    sync,
+    flow,
   ] = await Promise.all([
     getNetworkRevenue({ from: today, to: tomorrow, label: "Aujourd'hui" }),
     getNetworkRevenue({ from: startMonth, to: tomorrow, label: "Ce mois-ci" }),
@@ -517,24 +470,50 @@ export async function getAdminPulse() {
     prisma.publisherDailyStat.count({
       where: { date: { gte: today, lt: tomorrow } },
     }),
-    prisma.affiliateLink.count({ where: { status: "REQUESTED" } }),
-    prisma.siteRequest.count({ where: { status: "PENDING" } }),
-    prisma.payment.count({ where: { status: "PENDING" } }),
-    prisma.publisherDailyStat.count({
-      where: { date: { gte: today, lt: tomorrow } },
+    prisma.payment.count({
+      where: { status: { in: ["PENDING", "APPROVED"] } },
     }),
+    // A week, not all time: an old rejected call that has since been dealt
+    // with should stop asking for attention on its own.
+    prisma.postbackHit.count({
+      where: {
+        createdAt: { gte: weekAgo },
+        status: { in: ["UNKNOWN_TOKEN", "UNAUTHORIZED", "INVALID"] },
+      },
+    }),
+    getAffiliateLedgers(),
+    lastSync(),
+    flowConfig(),
   ]);
+
+  let owed = 0;
+  let owedCount = 0;
+  for (const ledger of ledgers.values()) {
+    // Half a cent of float dust is not a debt.
+    if (ledger.balance > 0.005) {
+      owed += ledger.balance;
+      owedCount += 1;
+    }
+  }
 
   return {
     today: todayRange,
     month: monthRange,
     publisherCount,
-    /** Affiliates with figures entered for today — how far tonight's input got. */
+    /** Affiliates with activity recorded today. */
     activeToday,
-    pendingLinks,
-    pendingSites,
     pendingPayments,
-    statsEnteredToday: statsToday,
+    rejectedHits,
+    /** What is owed to affiliates right now, and to how many of them. */
+    owed,
+    owedCount,
+    unknownSub3: sync?.unknownSub3 ?? [],
+    sync: {
+      configured: flow.apiKey !== null,
+      ranAt: sync?.ranAt ?? null,
+      ok: sync?.ok ?? null,
+      error: sync?.error ?? null,
+    },
   };
 }
 

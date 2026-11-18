@@ -128,7 +128,7 @@ export function DailyStatFormDialog({
           ) : (
             <Button>
               <Plus className="h-4 w-4" />
-              Nouvelle journée
+              Ajouter une journée
             </Button>
           )
         }
@@ -136,11 +136,12 @@ export function DailyStatFormDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Modifier la journée" : "Saisir les statistiques du jour"}
+            {isEdit ? "Corriger la journée" : "Ajouter une journée à la main"}
           </DialogTitle>
           <DialogDescription>
-            Ces chiffres deviennent immédiatement les statistiques officielles
-            affichées au publisher.
+            Ces chiffres remplacent ceux de la journée chez l&apos;affilié, et
+            son solde suit. La prochaine synchro Flow réécrira les clics et les
+            hosts des trois derniers jours.
           </DialogDescription>
         </DialogHeader>
 

@@ -38,12 +38,12 @@ export const permissionGrantSchema = z.object({
   grant: z.boolean(),
 });
 
+// One setting, because it is the only one anything reads. The form used to
+// carry a site name, a support address, a cookie lifetime and a maintenance
+// switch that were saved and then consulted by nothing — a switch labelled
+// "maintenance" that leaves the site up is worse than no switch.
 export const platformSettingsSchema = z.object({
-  siteName: z.string().trim().min(1).max(100),
-  supportEmail: z.string().trim().email(),
-  defaultCookieDays: z.number().int().min(1).max(365),
-  minPayout: z.number().positive(),
-  maintenanceMode: z.boolean(),
+  minPayout: z.number().min(0).max(100_000),
 });
 
 export const dailyStatSchema = z.object({

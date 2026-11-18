@@ -1,108 +1,66 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
-interface PlatformSettingsFormProps {
-  siteName: string;
-  supportEmail: string;
-  defaultCookieDays: number;
-  minPayout: number;
-  maintenanceMode: boolean;
-}
-
-export function PlatformSettingsForm(initial: PlatformSettingsFormProps) {
-  const [form, setForm] = useState(initial);
+/**
+ * The network-wide withdrawal threshold.
+ *
+ * Saving it rewrites the threshold on every affiliate's account and becomes
+ * the default for new ones, so the figure typed here is the one an affiliate
+ * is actually held to.
+ */
+export function PlatformSettingsForm({ minPayout }: { minPayout: number }) {
+  const router = useRouter();
+  const [value, setValue] = useState(String(minPayout));
   const [isPending, startTransition] = useTransition();
 
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
+  const parsed = Number(value);
+  const valid = value.trim() !== "" && Number.isFinite(parsed) && parsed >= 0;
+
+  function submit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!valid) return;
     startTransition(async () => {
       const res = await fetch("/api/admin/settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          defaultCookieDays: Number(form.defaultCookieDays),
-          minPayout: Number(form.minPayout),
-        }),
+        body: JSON.stringify({ minPayout: parsed }),
       });
-      const json = await res.json();
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) {
         toast.error(json.error ?? "Erreur lors de la mise à jour.");
         return;
       }
-      toast.success("Paramètres enregistrés.");
+      toast.success("Minimum de retrait appliqué à tous les affiliés.");
+      router.refresh();
     });
   }
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="siteName">Nom de la plateforme</Label>
-          <Input
-            id="siteName"
-            value={form.siteName}
-            onChange={(e) => setForm({ ...form, siteName: e.target.value })}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="supportEmail">Email support</Label>
-          <Input
-            id="supportEmail"
-            type="email"
-            value={form.supportEmail}
-            onChange={(e) => setForm({ ...form, supportEmail: e.target.value })}
-          />
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="defaultCookieDays">Cookie par défaut (jours)</Label>
-          <Input
-            id="defaultCookieDays"
-            type="number"
-            min={1}
-            value={form.defaultCookieDays}
-            onChange={(e) =>
-              setForm({ ...form, defaultCookieDays: Number(e.target.value) })
-            }
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="minPayout">Paiement minimum ($)</Label>
-          <Input
-            id="minPayout"
-            type="number"
-            min={0}
-            value={form.minPayout}
-            onChange={(e) =>
-              setForm({ ...form, minPayout: Number(e.target.value) })
-            }
-          />
-        </div>
-      </div>
-      <div className="flex items-center justify-between rounded-lg border border-border p-3">
-        <div>
-          <p className="text-sm font-medium">Mode maintenance</p>
-          <p className="text-xs text-muted-foreground">
-            Désactive temporairement l&apos;accès public à la plateforme.
-          </p>
-        </div>
-        <Switch
-          checked={form.maintenanceMode}
-          onCheckedChange={(checked) =>
-            setForm({ ...form, maintenanceMode: checked })
-          }
+      <div className="max-w-xs space-y-2">
+        <Label htmlFor="minPayout">Minimum de retrait ($)</Label>
+        <Input
+          id="minPayout"
+          type="number"
+          min={0}
+          step="1"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
         />
+        <p className="text-xs text-muted-foreground">
+          En dessous de ce solde, un affilié ne peut pas demander de retrait.
+          Tu peux toujours lui enregistrer un paiement toi-même, quel que soit
+          le montant.
+        </p>
       </div>
-      <Button type="submit" disabled={isPending}>
+      <Button type="submit" disabled={isPending || !valid}>
         {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
         Enregistrer
       </Button>

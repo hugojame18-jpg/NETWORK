@@ -1,6 +1,5 @@
 import {
   BarChart3,
-  Coins,
   GraduationCap,
   LayoutDashboard,
   Megaphone,
@@ -16,11 +15,13 @@ import {
 import type { NavSection } from "@/components/dashboard/sidebar-nav";
 
 /**
- * Grouped around how the network is actually run: look at the money, do the
- * evening data entry, handle affiliates, keep the catalogue current, and only
- * then the plumbing. Advertisers and Campaigns are gone from the menu — the
- * network sells its own offers through a house advertiser, so they were empty
- * screens. Their routes still exist for any old bookmark.
+ * Grouped around how the network is actually run: look at the money, pay the
+ * affiliates, check the pipes that bring the numbers in, then content and
+ * plumbing.
+ *
+ * Off the menu because they read tables nothing fills any more — their routes
+ * still answer for an old bookmark: Advertisers, Campaigns, Commissions, and
+ * the link, site and offer screens that will come back with the catalogue.
  */
 export const adminNavSections: NavSection[] = [
   {
@@ -39,9 +40,10 @@ export const adminNavSections: NavSection[] = [
     ],
   },
   {
-    title: "Au quotidien",
+    title: "Affiliés",
     items: [
-      { href: "/admin/stats", label: "Saisie des stats", icon: <BarChart3 /> },
+      { href: "/admin/affiliates", label: "Mes affiliés", icon: <Users /> },
+      { href: "/admin/payments", label: "Paiements", icon: <Wallet /> },
     ],
   },
   {
@@ -49,14 +51,7 @@ export const adminNavSections: NavSection[] = [
     items: [
       { href: "/admin/postback", label: "Global postback", icon: <Webhook /> },
       { href: "/admin/flow", label: "Synchro Flow", icon: <RefreshCw /> },
-    ],
-  },
-  {
-    title: "Affiliés",
-    items: [
-      { href: "/admin/affiliates", label: "Mes affiliés", icon: <Users /> },
-      { href: "/admin/payments", label: "Paiements", icon: <Wallet /> },
-      { href: "/admin/commissions", label: "Commissions", icon: <Coins /> },
+      { href: "/admin/stats", label: "Stats par jour", icon: <BarChart3 /> },
     ],
   },
   {

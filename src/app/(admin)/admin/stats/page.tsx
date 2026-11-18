@@ -31,8 +31,8 @@ export default async function AdminDailyStatsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Saisie des stats"
-        description="Ces chiffres sont saisis à la main chaque jour. C'est la seule source de ce que voient tes affiliés — rien n'est calculé automatiquement."
+        title="Stats par jour"
+        description="Une ligne par affilié et par jour : c'est ce que lisent leurs dashboards. Les conversions y arrivent seules par le postback, les clics par la synchro Flow. Tu peux corriger une ligne ou en ajouter une à la main."
         action={<DailyStatFormDialog publishers={publishers} />}
       />
 
@@ -41,8 +41,8 @@ export default async function AdminDailyStatsPage() {
           {stats.length === 0 ? (
             <EmptyState
               icon={<BarChart3 />}
-              title="Aucune saisie"
-              description="Ajoute les chiffres du jour : ils apparaissent immédiatement chez l'affilié concerné."
+              title="Aucune journée enregistrée"
+              description="La première conversion reçue par le postback crée la ligne du jour. Tu peux aussi en ajouter une à la main."
             />
           ) : (
             <Table>

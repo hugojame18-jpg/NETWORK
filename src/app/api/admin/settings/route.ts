@@ -21,11 +21,20 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Données invalides" }, { status: 400 });
     }
 
-    await prisma.setting.upsert({
-      where: { key: "platform" },
-      update: { value: parsed.data },
-      create: { key: "platform", value: parsed.data },
-    });
+    // The threshold is stored per affiliate, which is what the withdrawal
+    // check reads. Saving it only as a setting changed nothing for anyone, so
+    // it is written to every account here and picked up at sign-up for the
+    // ones that do not exist yet.
+    await prisma.$transaction([
+      prisma.setting.upsert({
+        where: { key: "platform" },
+        update: { value: parsed.data },
+        create: { key: "platform", value: parsed.data },
+      }),
+      prisma.publisher.updateMany({
+        data: { minPayout: parsed.data.minPayout },
+      }),
+    ]);
 
     await logAction({
       actorId: admin.id,

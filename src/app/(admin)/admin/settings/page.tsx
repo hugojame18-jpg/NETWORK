@@ -7,48 +7,31 @@ import { PageHeader } from "@/components/dashboard/page-header";
 
 export const metadata: Metadata = { title: "Paramètres" };
 
-interface PlatformSettingsValue {
-  siteName: string;
-  supportEmail: string;
-  defaultCookieDays: number;
-  minPayout: number;
-  maintenanceMode: boolean;
-}
-
-const DEFAULTS: PlatformSettingsValue = {
-  siteName: "RevNetwork",
-  supportEmail: "support@ccsubmit.io",
-  defaultCookieDays: 30,
-  minPayout: 50,
-  maintenanceMode: false,
-};
-
 export default async function AdminSettingsPage() {
   const setting = await getSetting("platform");
-  const value = {
-    ...DEFAULTS,
-    ...(setting?.value as Partial<PlatformSettingsValue> | undefined),
-  };
+  const stored = (setting?.value as { minPayout?: unknown } | undefined)
+    ?.minPayout;
+  const minPayout = typeof stored === "number" ? stored : 50;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <PageHeader
         title="Paramètres"
-        description="La configuration générale de la plateforme."
+        description="Le seuil de retrait du réseau et la sécurité de ton compte."
       />
 
       <Card>
         <CardHeader>
-          <CardTitle>Paramètres de la plateforme</CardTitle>
+          <CardTitle>Retraits</CardTitle>
         </CardHeader>
         <CardContent>
-          <PlatformSettingsForm {...value} />
+          <PlatformSettingsForm minPayout={minPayout} />
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>Sécurité de votre compte</CardTitle>
+          <CardTitle>Sécurité de ton compte</CardTitle>
         </CardHeader>
         <CardContent>
           <ChangePasswordForm />

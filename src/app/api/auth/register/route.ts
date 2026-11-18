@@ -64,6 +64,15 @@ export async function POST(request: Request) {
 
   const passwordHash = await bcrypt.hash(password, 12);
 
+  // New accounts start on the network's current withdrawal threshold rather
+  // than on the column default, which would ignore whatever the admin set.
+  const platform = await prisma.setting.findUnique({
+    where: { key: "platform" },
+  });
+  const storedMin = (platform?.value as { minPayout?: unknown } | null)
+    ?.minPayout;
+  const minPayout = typeof storedMin === "number" ? storedMin : undefined;
+
   const user = await prisma.user.create({
     data: {
       name,
@@ -87,6 +96,7 @@ export async function POST(request: Request) {
                 tiktokLinks: tiktokLinks || null,
                 referralCode: generateReferralCode(),
                 referredById,
+                ...(minPayout !== undefined ? { minPayout } : {}),
               },
             },
           }
