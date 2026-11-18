@@ -97,3 +97,20 @@ export const deliverLinkSchema = z.object({
   // The real affiliate URL (the advertiser's tracker) the admin pastes.
   targetUrl: z.string().trim().url("URL invalide").max(2000),
 });
+
+export const postbackTokenSchema = z.object({
+  publisherId: z.string().min(1),
+  // The sub3 an affiliate carries in their traffic. Lower-cased on both sides
+  // so a network that echoes "Slime" still finds the affiliate who set
+  // "slime"; dots, dashes and underscores because networks use all three.
+  token: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, "Trois caractères au minimum")
+    .max(40, "Quarante caractères au maximum")
+    .regex(
+      /^[a-z0-9._-]+$/,
+      "Lettres, chiffres, point, tiret et tiret bas uniquement",
+    ),
+});

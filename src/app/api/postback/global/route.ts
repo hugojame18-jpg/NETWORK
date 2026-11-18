@@ -45,7 +45,9 @@ async function handle(
   const ip = getClientIp(request.headers);
   const rawQuery = params.toString();
 
-  const sub3 = pickParam(params, SUB3_PARAMS);
+  // Networks echo back whatever case the sub3 was written in, and tokens are
+  // stored lower-cased, so a site set up as "Slime" must still resolve.
+  const sub3 = pickParam(params, SUB3_PARAMS)?.toLowerCase() ?? null;
   const transactionId = pickParam(params, TXID_PARAMS);
   const offerName = pickParam(params, OFFER_PARAMS);
   const amount = parseAmount(pickParam(params, AMOUNT_PARAMS));

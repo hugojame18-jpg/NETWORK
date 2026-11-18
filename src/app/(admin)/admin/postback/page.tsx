@@ -11,6 +11,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { CopyValue } from "@/components/dashboard/admin/copy-value";
 import { PostbackTest } from "@/components/dashboard/admin/postback-test";
+import { Sub3Field } from "@/components/dashboard/admin/sub3-field";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -144,6 +145,8 @@ export default async function AdminPostbackPage() {
               &amp;sub3=
             </code>
             son jeton déjà en place. Colle l&apos;URL du réseau telle quelle.
+            Si un affilié envoie déjà du trafic sous un sub3 à lui, écris-le
+            directement dans son champ — la casse n&apos;a pas d&apos;importance.
           </p>
           {publishers.length === 0 ? (
             <EmptyState
@@ -174,9 +177,12 @@ export default async function AdminPostbackPage() {
                     <TableCell className="num text-muted-foreground">
                       #{publisher.memberId}
                     </TableCell>
-                    <TableCell className="w-[280px]">
+                    <TableCell className="w-[300px]">
                       {publisher.postbackToken ? (
-                        <CopyValue value={publisher.postbackToken} />
+                        <Sub3Field
+                          publisherId={publisher.id}
+                          value={publisher.postbackToken}
+                        />
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
