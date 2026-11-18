@@ -31,6 +31,12 @@ export interface ChartSeriesConfig {
    * baseline — it looks like nothing happened all month.
    */
   axis?: "left" | "right";
+  /**
+   * Whether to shade the area under the line. Two translucent fills over the
+   * same stretch of chart muddy each other into a third colour, so only the
+   * series a page is really about is filled; the rest stay as lines.
+   */
+  fill?: boolean;
 }
 
 /* Series colours come from the theme's chart ramp, so the graph belongs to the
@@ -233,7 +239,7 @@ export function PerformanceChart({
               dataKey={s.key}
               name={s.label}
               stroke={s.color}
-              fill={`url(#fill-${s.key})`}
+              fill={s.fill === false ? "transparent" : `url(#fill-${s.key})`}
               strokeWidth={2}
               dot={false}
               activeDot={{ r: 3.5, strokeWidth: 2, stroke: "var(--card)" }}

@@ -36,7 +36,12 @@ export const metadata: Metadata = { title: "Accueil" };
 // home chart shows the two the affiliate steers on. The full breakdown is one
 // click away in Statistiques.
 const HOME_SERIES: ChartSeriesConfig[] = [
-  { key: "conversions", label: "Conversions", color: "var(--chart-4)" },
+  {
+    key: "conversions",
+    label: "Conversions",
+    color: "var(--chart-4)",
+    fill: false,
+  },
   {
     key: "revenue",
     label: "Gains ($)",
