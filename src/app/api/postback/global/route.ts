@@ -1,7 +1,8 @@
 import { timingSafeEqual } from "node:crypto";
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getClientIp } from "@/lib/ip";
+import { maybeSyncFlowTraffic } from "@/lib/flow";
 import {
   AMOUNT_PARAMS,
   OFFER_PARAMS,
@@ -136,6 +137,11 @@ async function handle(
       );
     }
   }
+
+  // A conversion means traffic is live right now, which is exactly when the
+  // click count beside it is worth refreshing. Queued after the response:
+  // networks time out postbacks, and this must never be on that path.
+  after(maybeSyncFlowTraffic);
 
   const day = todayUtc();
   const revenue = amount ?? 0;

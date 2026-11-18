@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { after } from "next/server";
 import {
   BarChart3,
   MousePointerClick,
@@ -8,6 +9,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { requireRole } from "@/lib/rbac";
+import { maybeSyncFlowTraffic } from "@/lib/flow";
 import {
   getPublisherByUserId,
   getStatsForPeriod,
@@ -51,6 +53,11 @@ interface PageProps {
 
 export default async function PublisherStatsPage({ searchParams }: PageProps) {
   const user = await requireRole("PUBLISHER");
+
+  // Someone is looking at their traffic right now. Refresh it from Flow once
+  // the page has been sent — throttled, so opening the page repeatedly costs
+  // nothing, and never blocking the render if Flow is slow or down.
+  after(maybeSyncFlowTraffic);
   const publisher = await getPublisherByUserId(user.id);
   const params = await searchParams;
 

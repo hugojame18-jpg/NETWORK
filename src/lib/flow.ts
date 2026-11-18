@@ -22,6 +22,10 @@ const DEFAULT_API_URL = "https://api-flownetwork.affise.com";
  * last few days are rewritten rather than written once and trusted. */
 const WINDOW_DAYS = 3;
 
+/** Nothing re-reads Flow more often than this, however many times a day the
+ *  opportunistic triggers fire. */
+const MIN_INTERVAL_MS = 20 * 60 * 1000;
+
 export interface FlowConfig {
   apiKey: string | null;
   apiUrl: string;
@@ -250,4 +254,31 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
 
   await writeSetting(LAST_SYNC_SETTING, summary);
   return summary;
+}
+
+/**
+ * Runs a sync unless one ran recently.
+ *
+ * The scheduled run is daily, because that is all a Vercel Hobby plan allows,
+ * and a day-old click count next to a live conversion would be worse than the
+ * manual entry it replaces. So the moments that actually matter trigger it
+ * too: a conversion arriving, and an affiliate opening their statistics. Both
+ * call this after their response has been sent, so neither waits on Flow, and
+ * the throttle keeps a burst of conversions from becoming a burst of calls.
+ */
+export async function maybeSyncFlowTraffic(): Promise<void> {
+  try {
+    const [config, previous] = await Promise.all([flowConfig(), lastSync()]);
+    if (!config.apiKey) return;
+
+    if (previous?.ranAt) {
+      const age = Date.now() - new Date(previous.ranAt).getTime();
+      if (Number.isFinite(age) && age < MIN_INTERVAL_MS) return;
+    }
+
+    await syncFlowTraffic();
+  } catch {
+    // Never the caller's problem: this is a background refresh of a figure
+    // that is already on screen, not part of anyone's request.
+  }
 }
