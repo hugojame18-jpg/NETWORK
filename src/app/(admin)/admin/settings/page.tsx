@@ -11,7 +11,7 @@ export default async function AdminSettingsPage() {
   const setting = await getSetting("platform");
   const stored = (setting?.value as { minPayout?: unknown } | undefined)
     ?.minPayout;
-  const minPayout = typeof stored === "number" ? stored : 50;
+  const minPayout = typeof stored === "number" ? stored : 250;
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
