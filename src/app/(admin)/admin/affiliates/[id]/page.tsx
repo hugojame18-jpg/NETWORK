@@ -282,8 +282,13 @@ export default async function AdminAffiliateDetailPage({
             </div>
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-muted-foreground">sub3</span>
-              <span className="font-mono text-xs">
-                {publisher.postbackToken ?? "—"}
+              <span className="text-right font-mono text-xs break-all">
+                {[
+                  publisher.postbackToken,
+                  ...publisher.sub3Aliases.map((alias) => alias.token),
+                ]
+                  .filter(Boolean)
+                  .join(" · ") || "—"}
               </span>
             </div>
             {publisher.referredBy && (

@@ -1,5 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
+import { sub3Directory } from "@/lib/postback";
+import { aggregateTraffic, type TrafficRow } from "@/lib/flow-math";
 
 /**
  * Pulling clicks and hosts from the upstream network (Flow Network, which runs
@@ -85,17 +87,7 @@ export async function lastSync(): Promise<SyncSummary | null> {
 // The API call
 // ---------------------------------------------------------------------------
 
-interface CustomStatRow {
-  slice?: {
-    year?: number;
-    month?: number;
-    day?: number;
-    sub3?: string | null;
-  };
-  traffic?: { raw?: string | number; uniq?: string | number };
-  clicks?: string | number;
-  hosts?: string | number;
-}
+type CustomStatRow = TrafficRow;
 
 interface CustomStatsResponse {
   status?: number;
@@ -103,12 +95,6 @@ interface CustomStatsResponse {
   pagination?: { page?: number; total_count?: number; per_page?: number };
   error?: string;
   message?: string;
-}
-
-function toInt(value: string | number | undefined): number {
-  if (value === undefined || value === null) return 0;
-  const n = typeof value === "number" ? value : Number.parseInt(value, 10);
-  return Number.isFinite(n) ? n : 0;
 }
 
 function isoDay(date: Date): string {
@@ -209,12 +195,9 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
       throw new Error("Aucune clé API Flow enregistrée.");
     }
 
-    const [rows, publishers] = await Promise.all([
+    const [rows, directory] = await Promise.all([
       fetchTraffic(config, summary.from, summary.to),
-      prisma.publisher.findMany({
-        where: { postbackToken: { not: null } },
-        select: { id: true, postbackToken: true },
-      }),
+      sub3Directory(),
     ]);
 
     summary.rowsReturned = rows.length;
@@ -222,45 +205,9 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
       .slice(0, 5)
       .map((row) => JSON.stringify(row.slice ?? {}));
 
-    const byToken = new Map(
-      publishers.map((p) => [p.postbackToken!.toLowerCase(), p.id]),
-    );
-    const unknown = new Set<string>();
+    const { totals, unknown } = aggregateTraffic(rows, directory, from, to);
 
-    // Flow can answer a day-slice with the day number alone, no year or
-    // month. Every date in the window is known, so the day number is enough
-    // to place the row — and skipping it instead, as this once did, loses
-    // the whole sync without a word.
-    const dayToDate = new Map<number, Date>();
-    for (
-      let t = from.getTime();
-      t <= to.getTime();
-      t += 86_400_000
-    ) {
-      const d = new Date(t);
-      dayToDate.set(d.getUTCDate(), d);
-    }
-
-    for (const row of rows) {
-      const sub3 = row.slice?.sub3?.trim().toLowerCase();
-      const { year, month, day } = row.slice ?? {};
-      if (!sub3 || !day) continue;
-
-      const date =
-        year && month
-          ? new Date(Date.UTC(year, month - 1, day))
-          : dayToDate.get(day);
-      if (!date) continue;
-
-      const publisherId = byToken.get(sub3);
-      if (!publisherId) {
-        unknown.add(sub3);
-        continue;
-      }
-
-      const clicks = toInt(row.clicks ?? row.traffic?.raw);
-      const hosts = toInt(row.hosts ?? row.traffic?.uniq);
-
+    for (const { publisherId, date, clicks, hosts } of totals) {
       await prisma.publisherDailyStat.upsert({
         where: { publisherId_date: { publisherId, date } },
         create: {
@@ -278,7 +225,7 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
       summary.rowsWritten += 1;
     }
 
-    summary.unknownSub3 = [...unknown].slice(0, 20);
+    summary.unknownSub3 = unknown.slice(0, 20);
     summary.ok = true;
   } catch (error) {
     summary.error =

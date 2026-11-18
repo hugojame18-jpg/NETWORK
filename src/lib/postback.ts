@@ -1,6 +1,23 @@
 import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { appUrl } from "@/lib/app-url";
+import { bookingDay } from "@/lib/postback-params";
+
+// The parsing half lives in its own module so it can be tested without a
+// database; re-exported so existing imports keep working.
+export {
+  AMOUNT_PARAMS,
+  OFFER_PARAMS,
+  STATUS_PARAMS,
+  SUB3_PARAMS,
+  TXID_PARAMS,
+  bookingDay,
+  conversionState,
+  normalizeSub3,
+  parseAmount,
+  pickParam,
+  withSub3,
+} from "@/lib/postback-params";
 
 const SECRET_KEY = "postback.secret";
 
@@ -105,63 +122,84 @@ export function postbackUrlTemplate(secret: string): string {
  * copied once and works.
  */
 export function affisePostbackUrl(secret: string): string {
-  return `${appUrl()}/api/postback/global?key=${secret}&sub3={sub3}&payout={sum}&txid={transactionid}&offer={offer_name}`;
+  return `${appUrl()}/api/postback/global?key=${secret}&sub3={sub3}&payout={sum}&txid={transactionid}&offer={offer_name}&status={status}`;
+}
+
+/** Today's stats day — see `bookingDay`. */
+export function todayUtc(): Date {
+  return bookingDay(new Date());
 }
 
 /**
- * Parameter names seen in the wild for the same three things. Networks each
- * pick their own, and a conversion silently worth zero because the amount
- * arrived as `sum` instead of `payout` is exactly the kind of bug nobody
- * notices for a month.
+ * Which affiliate a sub3 belongs to: their primary token, or one of the
+ * additional values attached to their account.
+ *
+ * Expects the value already normalised (see `normalizeSub3`).
  */
-export const AMOUNT_PARAMS = [
-  "payout",
-  "amount",
-  "sum",
-  "revenue",
-  "value",
-  "price",
-];
-export const TXID_PARAMS = [
-  "txid",
-  "transaction_id",
-  "transactionid",
-  "tid",
-  "clickid",
-  "click_id",
-];
-export const SUB3_PARAMS = ["sub3", "sub_id3", "subid3", "s3", "aff_sub3"];
-export const OFFER_PARAMS = [
-  "offer",
-  "offer_name",
-  "campaign",
-  "campaign_name",
-];
+export async function resolveSub3(sub3: string): Promise<string | null> {
+  const direct = await prisma.publisher.findUnique({
+    where: { postbackToken: sub3 },
+    select: { id: true },
+  });
+  if (direct) return direct.id;
 
-/** First present, non-empty value among `names`. */
-export function pickParam(
-  params: URLSearchParams,
-  names: string[],
-): string | null {
-  for (const name of names) {
-    const value = params.get(name);
-    if (value !== null && value.trim() !== "") return value.trim();
+  const alias = await prisma.publisherSub3.findUnique({
+    where: { token: sub3 },
+    select: { publisherId: true },
+  });
+  return alias?.publisherId ?? null;
+}
+
+/**
+ * Who already holds a sub3, by name — for refusing to give it to someone else.
+ *
+ * Checked across both places a sub3 can live, because the database can only
+ * enforce uniqueness inside each one: without this, the same value could be
+ * one affiliate's primary token and another's additional one, and a
+ * conversion would go to whichever lookup ran first.
+ */
+export async function sub3Holder(
+  sub3: string,
+): Promise<{ publisherId: string; name: string } | null> {
+  const direct = await prisma.publisher.findUnique({
+    where: { postbackToken: sub3 },
+    select: { id: true, user: { select: { name: true } } },
+  });
+  if (direct) return { publisherId: direct.id, name: direct.user.name };
+
+  const alias = await prisma.publisherSub3.findUnique({
+    where: { token: sub3 },
+    select: {
+      publisherId: true,
+      publisher: { select: { user: { select: { name: true } } } },
+    },
+  });
+  return alias
+    ? { publisherId: alias.publisherId, name: alias.publisher.user.name }
+    : null;
+}
+
+/** Every sub3 in use, primary and additional, mapped to its affiliate. */
+export async function sub3Directory(): Promise<Map<string, string>> {
+  const [publishers, aliases] = await Promise.all([
+    prisma.publisher.findMany({
+      where: { postbackToken: { not: null } },
+      select: { id: true, postbackToken: true },
+    }),
+    prisma.publisherSub3.findMany({
+      select: { publisherId: true, token: true },
+    }),
+  ]);
+
+  const directory = new Map<string, string>();
+  for (const alias of aliases) {
+    directory.set(alias.token.toLowerCase(), alias.publisherId);
   }
-  return null;
-}
-
-/** Parses an amount that may arrive as "30", "30.00", "30,00" or "$30". */
-export function parseAmount(raw: string | null): number | null {
-  if (raw === null) return null;
-  const cleaned = raw.replace(/[^0-9.,-]/g, "").replace(",", ".");
-  const value = Number.parseFloat(cleaned);
-  return Number.isFinite(value) ? value : null;
-}
-
-/** Today at UTC midnight, matching how PublisherDailyStat stores its DATE. */
-export function todayUtc(): Date {
-  const now = new Date();
-  return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  // Primary tokens last, so they win if the two ever disagree.
+  for (const publisher of publishers) {
+    directory.set(publisher.postbackToken!.toLowerCase(), publisher.id);
+  }
+  return directory;
 }
 
 /**
@@ -190,28 +228,4 @@ export async function publisherPostbackToken(
     }
   }
   return null;
-}
-
-/**
- * The link an affiliate actually shares.
- *
- * The advertiser URL the admin delivered, carrying this affiliate's sub3 so
- * the network echoes it back on conversion. Without it every postback arrives
- * anonymous and no conversion can be attributed.
- */
-export function withSub3(
-  targetUrl: string,
-  token: string | null | undefined,
-): string {
-  if (!token) return targetUrl;
-  try {
-    const url = new URL(targetUrl);
-    // An admin who already wrote a sub3 by hand knows something we don't.
-    if (url.searchParams.has("sub3")) return targetUrl;
-    url.searchParams.set("sub3", token);
-    return url.toString();
-  } catch {
-    // Not a URL we can parse: hand it back untouched rather than corrupt it.
-    return targetUrl;
-  }
 }

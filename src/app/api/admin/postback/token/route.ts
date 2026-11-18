@@ -4,6 +4,7 @@ import { ApiAuthError, requireApiRole } from "@/lib/rbac";
 import { logAction } from "@/lib/audit";
 import { checkMutationRateLimit } from "@/lib/rate-limit";
 import { postbackTokenSchema } from "@/lib/validations/admin";
+import { sub3Holder } from "@/lib/postback";
 
 /**
  * Sets an affiliate's sub3 to a chosen value.
@@ -34,16 +35,19 @@ export async function PATCH(request: Request) {
 
     const { publisherId, token } = parsed.data;
 
-    const holder = await prisma.publisher.findUnique({
-      where: { postbackToken: token },
-      select: { id: true, user: { select: { name: true } } },
-    });
-    if (holder && holder.id !== publisherId) {
+    // Checked against additional sub3 as well as primary ones: one value can
+    // only ever mean one account.
+    const holder = await sub3Holder(token);
+    if (holder && holder.publisherId !== publisherId) {
       return NextResponse.json(
-        { error: `Ce sub3 est déjà celui de ${holder.user.name}.` },
+        { error: `Ce sub3 est déjà celui de ${holder.name}.` },
         { status: 409 },
       );
     }
+
+    // Already theirs as an additional value: promote it rather than keep the
+    // same sub3 in two places.
+    await prisma.publisherSub3.deleteMany({ where: { publisherId, token } });
 
     await prisma.publisher.update({
       where: { id: publisherId },

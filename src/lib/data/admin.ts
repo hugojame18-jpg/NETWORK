@@ -50,6 +50,10 @@ export async function getAffiliateProfile(publisherId: string) {
       website: true,
       commissionRate: true,
       postbackToken: true,
+      sub3Aliases: {
+        orderBy: { createdAt: "asc" },
+        select: { id: true, token: true },
+      },
       paymentMethod: true,
       paymentDetails: true,
       minPayout: true,

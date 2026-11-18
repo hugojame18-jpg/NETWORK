@@ -6,14 +6,17 @@ import { maybeSyncFlowTraffic } from "@/lib/flow";
 import {
   AMOUNT_PARAMS,
   OFFER_PARAMS,
+  STATUS_PARAMS,
   SUB3_PARAMS,
   TXID_PARAMS,
+  conversionState,
+  normalizeSub3,
   parseAmount,
   pickParam,
   postbackSecret,
-  todayUtc,
+  resolveSub3,
 } from "@/lib/postback";
-import type { PostbackStatus } from "@/generated/prisma/enums";
+import { settle, type Outcome } from "@/lib/postback-booking";
 
 // Money arrives through this route; nothing about it may be cached or
 // statically evaluated at build time.
@@ -27,15 +30,6 @@ function sameSecret(given: string, expected: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-interface Outcome {
-  status: PostbackStatus;
-  httpStatus: number;
-  body: string;
-  message?: string;
-}
-
-const OK: Outcome = { status: "ACCEPTED", httpStatus: 200, body: "OK" };
-
 async function handle(
   request: Request,
   params: URLSearchParams,
@@ -48,7 +42,8 @@ async function handle(
 
   // Networks echo back whatever case the sub3 was written in, and tokens are
   // stored lower-cased, so a site set up as "Slime" must still resolve.
-  const sub3 = pickParam(params, SUB3_PARAMS)?.toLowerCase() ?? null;
+  const sub3 = normalizeSub3(pickParam(params, SUB3_PARAMS));
+  const rawStatus = pickParam(params, STATUS_PARAMS);
   const transactionId = pickParam(params, TXID_PARAMS);
   const offerName = pickParam(params, OFFER_PARAMS);
   const amount = parseAmount(pickParam(params, AMOUNT_PARAMS));
@@ -100,12 +95,11 @@ async function handle(
     );
   }
 
-  const publisher = await prisma.publisher.findUnique({
-    where: { postbackToken: sub3 },
-    select: { id: true },
-  });
+  // The sub3 can be the affiliate's primary token or any of the additional
+  // values attached to their account — one account, several sites.
+  const publisherId = await resolveSub3(sub3);
 
-  if (!publisher) {
+  if (!publisherId) {
     return log(
       {
         status: "UNKNOWN_TOKEN",
@@ -117,64 +111,21 @@ async function handle(
     );
   }
 
-  // Networks re-fire postbacks on timeouts and retries. Counting the same
-  // transaction twice is counting money twice, so a repeat is recorded and
-  // then ignored.
-  if (transactionId) {
-    const seen = await prisma.postbackHit.findFirst({
-      where: { publisherId: publisher.id, transactionId, status: "ACCEPTED" },
-      select: { id: true },
-    });
-    if (seen) {
-      return log(
-        {
-          status: "DUPLICATE",
-          httpStatus: 200,
-          body: "duplicate",
-          message: `Transaction ${transactionId} déjà comptée.`,
-        },
-        publisher.id,
-      );
-    }
-  }
+  const outcome = await settle({
+    publisherId,
+    state: conversionState(rawStatus),
+    rawStatus,
+    transactionId,
+    amount,
+    at: new Date(),
+  });
 
   // A conversion means traffic is live right now, which is exactly when the
   // click count beside it is worth refreshing. Queued after the response:
   // networks time out postbacks, and this must never be on that path.
-  after(maybeSyncFlowTraffic);
+  if (outcome.status === "ACCEPTED") after(maybeSyncFlowTraffic);
 
-  const day = todayUtc();
-  const revenue = amount ?? 0;
-
-  // The affiliate dashboard reads PublisherDailyStat and nothing else, so a
-  // conversion only exists as far as anyone is concerned once it lands here.
-  // Clicks stay at whatever was entered by hand.
-  await prisma.publisherDailyStat.upsert({
-    where: { publisherId_date: { publisherId: publisher.id, date: day } },
-    create: {
-      publisherId: publisher.id,
-      date: day,
-      clicks: 0,
-      hosts: 0,
-      conversions: 1,
-      revenue,
-    },
-    update: {
-      conversions: { increment: 1 },
-      revenue: { increment: revenue },
-    },
-  });
-
-  return log(
-    amount === null
-      ? {
-          ...OK,
-          message:
-            "Conversion comptée sans montant : aucun paramètre de payout reçu.",
-        }
-      : OK,
-    publisher.id,
-  );
+  return log(outcome, publisherId);
 }
 
 export async function GET(request: Request) {

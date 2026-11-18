@@ -2,6 +2,15 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
 import { REFERRAL_RATE, payoutRate } from "@/lib/loyalty";
+import {
+  composeLedger,
+  emptyLedger,
+  splitPayments,
+  type AffiliateLedger,
+  type PaymentGroup,
+} from "@/lib/ledger-math";
+
+export { emptyLedger, type AffiliateLedger } from "@/lib/ledger-math";
 
 /**
  * What an affiliate has earned, what has been paid out, and what is still owed.
@@ -16,100 +25,10 @@ import { REFERRAL_RATE, payoutRate } from "@/lib/loyalty";
  * balance that drifts is an argument with an affiliate about money. This one is
  * recomputed on every read, so correcting a wrong daily stat or deleting a
  * mistyped payout immediately corrects the balance too.
+ *
+ * This file only fetches. What the figures add up to is decided in
+ * `@/lib/ledger-math`, which has no database in it and is covered by tests.
  */
-
-export interface AffiliateLedger {
-  publisherId: string;
-  /** The rate on their contract, before the referral share. */
-  commissionRate: number;
-  /** What they actually keep per dollar of gross, referral share deducted. */
-  rate: number;
-  isReferred: boolean;
-  /** Gross the network billed on their traffic. Never shown to the affiliate. */
-  gross: number;
-  /** Their cut of their own traffic. */
-  ownEarnings: number;
-  /** What they earn as a sponsor, on the gross their referrals generate. */
-  referralEarnings: number;
-  /** Everything they have earned, ever. */
-  earned: number;
-  /** Sum of the payouts marked as sent. */
-  paid: number;
-  /** Withdrawal requests opened but not yet sent. */
-  pending: number;
-  /** Still owed: earned minus paid. A payout never touches the stats. */
-  balance: number;
-  /** Balance minus what is already requested — what can still be asked for. */
-  available: number;
-}
-
-interface LedgerInput {
-  publisherId: string;
-  commissionRate: number;
-  isReferred: boolean;
-  gross: number;
-  referredGross: number;
-  paid: number;
-  pending: number;
-}
-
-/** The arithmetic, in one place, so every caller gets the same answer. */
-function compose(input: LedgerInput): AffiliateLedger {
-  const rate = payoutRate(input.commissionRate, input.isReferred);
-  const ownEarnings = input.gross * rate;
-  const referralEarnings = input.referredGross * REFERRAL_RATE;
-  const earned = ownEarnings + referralEarnings;
-  const balance = earned - input.paid;
-
-  return {
-    publisherId: input.publisherId,
-    commissionRate: input.commissionRate,
-    rate,
-    isReferred: input.isReferred,
-    gross: input.gross,
-    ownEarnings,
-    referralEarnings,
-    earned,
-    paid: input.paid,
-    pending: input.pending,
-    balance,
-    available: Math.max(0, balance - input.pending),
-  };
-}
-
-export function emptyLedger(publisherId: string): AffiliateLedger {
-  return compose({
-    publisherId,
-    commissionRate: 0.5,
-    isReferred: false,
-    gross: 0,
-    referredGross: 0,
-    paid: 0,
-    pending: 0,
-  });
-}
-
-interface PaymentGroup {
-  status: string;
-  amount: number;
-}
-
-/**
- * A REJECTED request is neither money owed nor money sent, so it counts in
- * neither column. PENDING and APPROVED both mean "asked for, not yet gone".
- */
-function splitPayments(groups: PaymentGroup[]): {
-  paid: number;
-  pending: number;
-} {
-  let paid = 0;
-  let pending = 0;
-  for (const group of groups) {
-    if (group.status === "PAID") paid += group.amount;
-    else if (group.status !== "REJECTED") pending += group.amount;
-  }
-  return { paid, pending };
-}
 
 /** The ledger of a single affiliate. */
 export async function getAffiliateLedger(
@@ -148,7 +67,7 @@ export async function getAffiliateLedger(
       )
     : 0;
 
-  return compose({
+  return composeLedger({
     publisherId,
     commissionRate: toNumber(publisher.commissionRate),
     isReferred: publisher.referredById != null,
@@ -214,7 +133,7 @@ export async function getAffiliateLedgers(): Promise<
   return new Map(
     publishers.map((publisher) => [
       publisher.id,
-      compose({
+      composeLedger({
         publisherId: publisher.id,
         commissionRate: toNumber(publisher.commissionRate),
         isReferred: publisher.referredById != null,

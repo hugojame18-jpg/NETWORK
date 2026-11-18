@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { flowConfig, lastSync } from "@/lib/flow";
+import { getPublishersForSelect } from "@/lib/data/admin";
+import { AttachSub3 } from "@/components/dashboard/admin/attach-sub3";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { FlowSyncPanel } from "@/components/dashboard/admin/flow-sync-panel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,7 +14,11 @@ export const metadata: Metadata = { title: "Synchro Flow" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminFlowPage() {
-  const [config, sync] = await Promise.all([flowConfig(), lastSync()]);
+  const [config, sync, publishers] = await Promise.all([
+    flowConfig(),
+    lastSync(),
+    getPublishersForSelect(),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -106,16 +112,34 @@ export default async function AdminFlowPage() {
               {sync.unknownSub3.length > 0 && (
                 <div className="rounded-lg border border-warning/40 bg-warning/10 p-3">
                   <p className="font-medium">
-                    Du trafic arrive sous des sub3 inconnus
+                    Du trafic arrive sous des sub3 que personne ne porte
                   </p>
                   <p className="mt-1 text-muted-foreground">
-                    Ces valeurs tournent chez Flow mais ne correspondent à aucun
-                    affilié ici, donc leurs clics ne sont attribués à personne.
-                    Mets le sub3 correspondant sur le bon compte depuis la page
-                    Global postback :
+                    Ces valeurs tournent chez Flow mais ne correspondent à
+                    aucun compte ici : leurs clics ne s&apos;affichent nulle
+                    part et leurs conversions sont refusées par le postback.
+                    Dis à qui chacune appartient — un affilié peut en porter
+                    autant qu&apos;il a de sites, et tout s&apos;additionne
+                    sur son dashboard. Les conversions déjà refusées sous ce
+                    sub3 lui seront comptées dans la foulée.
                   </p>
-                  <p className="mt-2 font-mono text-xs">
-                    {sync.unknownSub3.join(", ")}
+                  <div className="mt-3 space-y-2">
+                    {sync.unknownSub3.map((token) => (
+                      <AttachSub3
+                        key={token}
+                        token={token}
+                        publishers={publishers.map((publisher) => ({
+                          id: publisher.id,
+                          label: publisher.label,
+                        }))}
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    Une valeur qui se termine par un accent grave est une faute
+                    de frappe dans la configuration du site. Tu peux la
+                    rattacher telle quelle : c&apos;est bien ce que le site
+                    envoie.
                   </p>
                 </div>
               )}

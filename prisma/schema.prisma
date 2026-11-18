@@ -256,6 +256,12 @@ model Publisher {
   // assigned lazily to accounts that existed before postbacks.
   postbackToken String? @unique
 
+  // Every other sub3 this affiliate's traffic carries. One account, several
+  // sites: each site was set up with its own sub3 long before the account
+  // existed, and making the affiliate reconfigure them all is asking for the
+  // traffic to be lost in the meantime.
+  sub3Aliases PublisherSub3[]
+
   paymentMethod  PaymentMethod?
   paymentDetails Json?
 
@@ -664,6 +670,29 @@ enum PostbackStatus {
   UNKNOWN_TOKEN
   UNAUTHORIZED
   INVALID
+  // The network took a conversion back (declined, charged back). Set on the
+  // call that announced it and on the conversion it cancels.
+  REVERSED
+  // Understood and deliberately not counted: a pending conversion, or a
+  // decline for something that was never counted in the first place.
+  IGNORED
+}
+
+/// An additional sub3 attached to an affiliate, besides the primary one on
+/// Publisher.postbackToken. Unique across the table, and checked in code
+/// against the primary tokens too, so one sub3 can only ever mean one account.
+/// Stored lower-cased and otherwise verbatim — a value with a stray backtick
+/// typed into a site's config is still the value the network sends back.
+model PublisherSub3 {
+  id          String    @id @default(cuid())
+  publisherId String
+  publisher   Publisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  token String @unique
+
+  createdAt DateTime @default(now())
+
+  @@index([publisherId])
 }
 
 /// Every call to the global postback endpoint, counted or not. These calls turn

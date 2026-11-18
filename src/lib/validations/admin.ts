@@ -127,3 +127,17 @@ export const postbackTokenSchema = z.object({
       "Lettres, chiffres, point, tiret et tiret bas uniquement",
     ),
 });
+
+// An additional sub3 for an affiliate. Looser than the primary token on
+// purpose: it has to match whatever a site already sends, including values
+// nobody would choose — two letters, or a name with a backtick typed after it.
+export const sub3AliasSchema = z.object({
+  publisherId: z.string().min(1),
+  token: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, "Le sub3 est vide")
+    .max(64, "Soixante-quatre caractères au maximum")
+    .regex(/^\S+$/, "Pas d'espace dans un sub3"),
+});

@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/dashboard/empty-state";
 import { CopyValue } from "@/components/dashboard/admin/copy-value";
 import { PostbackTest } from "@/components/dashboard/admin/postback-test";
 import { Sub3Field } from "@/components/dashboard/admin/sub3-field";
+import { Sub3Aliases } from "@/components/dashboard/admin/sub3-aliases";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -38,6 +39,8 @@ const STATUS: Record<
   UNKNOWN_TOKEN: { label: "sub3 inconnu", variant: "destructive" },
   UNAUTHORIZED: { label: "Clé refusée", variant: "destructive" },
   INVALID: { label: "Appel incomplet", variant: "destructive" },
+  REVERSED: { label: "Annulée", variant: "secondary" },
+  IGNORED: { label: "Non comptée", variant: "secondary" },
 };
 
 export default async function AdminPostbackPage() {
@@ -54,6 +57,10 @@ export default async function AdminPostbackPage() {
         memberId: true,
         companyName: true,
         postbackToken: true,
+        sub3Aliases: {
+          orderBy: { createdAt: "asc" },
+          select: { id: true, token: true },
+        },
         user: { select: { name: true, email: true } },
       },
     }),
@@ -89,9 +96,12 @@ export default async function AdminPostbackPage() {
             <CopyValue value={affiseUrl} />
             <p className="text-xs text-muted-foreground">
               Prête à coller telle quelle : la clé et les macros sont déjà
-              dedans, il n&apos;y a rien à remplacer. Côté réseau, mets le
-              filtre de statut sur <strong>Approved</strong> — sinon les
-              conversions en attente et refusées remontent aussi.
+              dedans, il n&apos;y a rien à remplacer. Elle transmet aussi le{" "}
+              <strong>statut</strong> de la conversion : validée, elle est
+              comptée ; en attente, elle est ignorée ; refusée après coup, elle
+              est retirée du jour où elle avait été comptée. Pour que les
+              annulations remontent, ajoute chez le réseau un second postback
+              sur le statut <strong>Declined</strong> avec cette même URL.
             </p>
           </div>
 
@@ -147,6 +157,8 @@ export default async function AdminPostbackPage() {
             son jeton déjà en place. Colle l&apos;URL du réseau telle quelle.
             Si un affilié envoie déjà du trafic sous un sub3 à lui, écris-le
             directement dans son champ — la casse n&apos;a pas d&apos;importance.
+            Et s&apos;il a plusieurs sites, chacun avec son sub3, ajoute les
+            autres à droite : tout s&apos;additionne sur le même compte.
           </p>
           {publishers.length === 0 ? (
             <EmptyState
@@ -160,7 +172,8 @@ export default async function AdminPostbackPage() {
                 <TableRow>
                   <TableHead>Affilié</TableHead>
                   <TableHead>ID</TableHead>
-                  <TableHead>sub3 à passer dans son trafic</TableHead>
+                  <TableHead>sub3 principal</TableHead>
+                  <TableHead>Autres sub3 de son trafic</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -177,7 +190,7 @@ export default async function AdminPostbackPage() {
                     <TableCell className="num text-muted-foreground">
                       #{publisher.memberId}
                     </TableCell>
-                    <TableCell className="w-[300px]">
+                    <TableCell className="w-[260px] align-top">
                       {publisher.postbackToken ? (
                         <Sub3Field
                           publisherId={publisher.id}
@@ -186,6 +199,12 @@ export default async function AdminPostbackPage() {
                       ) : (
                         <span className="text-xs text-muted-foreground">—</span>
                       )}
+                    </TableCell>
+                    <TableCell className="w-[320px] align-top">
+                      <Sub3Aliases
+                        publisherId={publisher.id}
+                        aliases={publisher.sub3Aliases}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}
