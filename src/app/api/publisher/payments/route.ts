@@ -4,6 +4,7 @@ import { ApiAuthError, requireApiRole } from "@/lib/rbac";
 import { requestPaymentSchema } from "@/lib/validations/publisher";
 import { toNumber } from "@/lib/format";
 import { checkMutationRateLimit } from "@/lib/rate-limit";
+import { getAffiliateLedger } from "@/lib/data/ledger";
 
 export async function POST(request: Request) {
   try {
@@ -34,14 +35,17 @@ export async function POST(request: Request) {
       );
     }
 
+    // What they can ask for comes from the ledger: their share of the daily
+    // stats, less what has already been paid or requested. The Commission
+    // table used to answer this and always said zero, which made every
+    // withdrawal request impossible while the dashboard showed real earnings.
+    const ledger = await getAffiliateLedger(publisher.id);
+    const availableTotal = ledger.available;
+
     const availableCommissions = await prisma.commission.findMany({
       where: { publisherId: publisher.id, status: "APPROVED", paymentId: null },
       orderBy: { createdAt: "asc" },
     });
-    const availableTotal = availableCommissions.reduce(
-      (sum, c) => sum + toNumber(c.amount),
-      0,
-    );
 
     if (parsed.data.amount > availableTotal) {
       return NextResponse.json(

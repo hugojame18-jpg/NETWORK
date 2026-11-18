@@ -96,6 +96,10 @@ enum PaymentMethod {
   BANK_WIRE
   CRYPTO
   PAYONEER
+  // An admin recording a payout they already sent needs to be able to name the
+  // real channel (Revolut, Wise, cash in hand) rather than file it under the
+  // nearest wrong label. Publishers still pick from the four above.
+  OTHER
 }
 
 enum NotificationType {

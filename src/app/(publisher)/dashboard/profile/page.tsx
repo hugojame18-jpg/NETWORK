@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/rbac";
 import { getPublisherByUserId } from "@/lib/data/publisher";
+import { getAffiliateLedger } from "@/lib/data/ledger";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -27,6 +28,10 @@ export default async function ProfilePage() {
     prisma.user.findUniqueOrThrow({ where: { id: authUser.id } }),
     getPublisherByUserId(authUser.id),
   ]);
+  // Not `publisher.balance`: that column is never written to and reads 0 next
+  // to real earnings. Both figures below are derived from the stats and the
+  // payouts recorded against this account.
+  const ledger = await getAffiliateLedger(publisher.id);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -98,14 +103,14 @@ export default async function ProfilePage() {
         <CardContent className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-muted-foreground">Solde actuel</p>
-            <p className="text-lg font-semibold">
-              {formatCurrency(publisher.balance)}
+            <p className="num text-lg font-semibold">
+              {formatCurrency(ledger.available)}
             </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Total gagné</p>
-            <p className="text-lg font-semibold">
-              {formatCurrency(publisher.totalEarned)}
+            <p className="num text-lg font-semibold">
+              {formatCurrency(ledger.earned)}
             </p>
           </div>
         </CardContent>

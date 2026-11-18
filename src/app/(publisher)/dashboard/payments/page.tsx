@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { requireRole } from "@/lib/rbac";
-import {
-  getPublisherByUserId,
-  getPayments,
-  getPendingCommissionsTotal,
-} from "@/lib/data/publisher";
+import { getPublisherByUserId, getPayments } from "@/lib/data/publisher";
+import { getAffiliateLedger } from "@/lib/data/ledger";
+import { paymentMethodLabel } from "@/lib/payment-methods";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Table,
@@ -37,10 +35,14 @@ export default async function PaymentsPage() {
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
 
-  const [payments, available] = await Promise.all([
+  // The balance is derived from the stats and the payouts actually recorded —
+  // the same figure the admin sees on this affiliate's file, so the two sides
+  // can never quote each other different numbers.
+  const [payments, ledger] = await Promise.all([
     getPayments(publisher.id),
-    getPendingCommissionsTotal(publisher.id),
+    getAffiliateLedger(publisher.id),
   ]);
+  const available = ledger.available;
 
   return (
     <div className="space-y-6">
@@ -59,6 +61,16 @@ export default async function PaymentsPage() {
           <p className="mt-2.5 text-xs text-muted-foreground">
             Minimum de retrait&nbsp;:{" "}
             {formatCurrency(toNumber(publisher.minPayout))}
+            {ledger.pending > 0 && (
+              <>
+                {" · "}
+                {formatCurrency(ledger.pending)} déjà en cours de traitement
+              </>
+            )}
+          </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            {formatCurrency(ledger.earned)} gagnés depuis le début, dont{" "}
+            {formatCurrency(ledger.paid)} déjà versés.
           </p>
         </div>
         <RequestPaymentForm
@@ -96,7 +108,9 @@ export default async function PaymentsPage() {
                     <TableCell className="num font-medium">
                       {formatCurrency(payment.amount)}
                     </TableCell>
-                    <TableCell>{payment.method.replace("_", " ")}</TableCell>
+                    <TableCell>
+                      {paymentMethodLabel(payment.method)}
+                    </TableCell>
                     <TableCell>
                       <Badge variant={STATUS_LABELS[payment.status].variant}>
                         {STATUS_LABELS[payment.status].label}

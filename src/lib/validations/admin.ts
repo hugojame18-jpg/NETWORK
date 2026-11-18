@@ -16,6 +16,19 @@ export const paymentStatusSchema = z.object({
   status: z.enum(["PENDING", "APPROVED", "PAID", "REJECTED"]),
 });
 
+// A payout the admin has already sent, recorded after the fact. The date is
+// theirs to set, because the money may have left days before anyone opened the
+// panel — defaulting it to "now" would quietly misdate the books.
+export const recordPayoutSchema = z.object({
+  amount: z
+    .number()
+    .positive("Le montant doit être supérieur à 0")
+    .max(1_000_000, "Montant invalide"),
+  paidAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date invalide"),
+  method: z.enum(["PAYPAL", "BANK_WIRE", "CRYPTO", "PAYONEER", "OTHER"]),
+  note: z.string().trim().max(500).optional().or(z.literal("")),
+});
+
 export const commissionStatusSchema = z.object({
   status: z.enum(["PENDING", "APPROVED", "PAID", "REJECTED"]),
 });

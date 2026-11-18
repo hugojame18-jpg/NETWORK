@@ -51,3 +51,28 @@ export function formatCalendarDate(value: Date | string): string {
 export function formatDateTime(value: Date | string): string {
   return dateTimeFormatter.format(new Date(value));
 }
+
+// Months are read off `@db.Date` values too, so they are formatted in UTC for
+// the same reason: a month boundary must not shift with the viewer's timezone.
+const monthFormatter = new Intl.DateTimeFormat("fr-FR", {
+  month: "long",
+  year: "numeric",
+  timeZone: "UTC",
+});
+
+/** Format a month from its first day, e.g. "novembre 2026". */
+export function formatMonth(value: Date | string): string {
+  const date =
+    typeof value === "string" ? new Date(`${value}-01T00:00:00.000Z`) : value;
+  return monthFormatter.format(date);
+}
+
+const percentFormatter = new Intl.NumberFormat("fr-FR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+/** A percentage already expressed on a 0–100 scale, e.g. "7,41 %". */
+export function formatPercent(value: number): string {
+  return `${percentFormatter.format(value)} %`;
+}

@@ -130,6 +130,52 @@ export async function getPublishersAdminList() {
   });
 }
 
+/**
+ * One affiliate's file, for the detail screen: who they are, the terms they
+ * are on, and where to send their money. Returns null for an unknown id so
+ * the route can answer 404 rather than throw.
+ */
+export async function getAffiliateProfile(publisherId: string) {
+  return prisma.publisher.findUnique({
+    where: { id: publisherId },
+    select: {
+      id: true,
+      memberId: true,
+      companyName: true,
+      website: true,
+      commissionRate: true,
+      postbackToken: true,
+      paymentMethod: true,
+      paymentDetails: true,
+      minPayout: true,
+      createdAt: true,
+      referredById: true,
+      referredBy: {
+        select: {
+          id: true,
+          memberId: true,
+          user: { select: { name: true } },
+        },
+      },
+      workedWithNetworks: true,
+      previousNetworks: true,
+      affiliateExperience: true,
+      tiktokLinks: true,
+      trafficSources: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          status: true,
+          createdAt: true,
+        },
+      },
+      _count: { select: { referrals: true } },
+    },
+  });
+}
+
 export async function getAdvertisersAdminList() {
   return prisma.advertiser.findMany({
     include: {
