@@ -1,52 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const BLOCKS = [
-  {
-    role: "Publisher",
-    tagline: "Votre aventure commence ici.",
-    className: "bg-indigo-600",
-  },
-  {
-    role: "Advertiser",
-    tagline: "Laissez-nous venir à vous.",
-    className: "bg-sky-500",
-  },
-];
-
+/**
+ * The closing call to action.
+ *
+ * It used to be split in two, Publisher on one side and Advertiser on the
+ * other. The network has no advertiser side to sign up for, so there is one
+ * door now, and it leads somewhere.
+ */
 export function SignupSplit() {
   return (
     <section id="join" className="relative">
-      <div className="grid sm:grid-cols-2">
-        {BLOCKS.map((block, i) => (
-          <motion.div
-            key={block.role}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, delay: i * 0.1 }}
-            className={`${block.className} flex flex-col items-center justify-center px-6 py-20 text-center text-white`}
-          >
-            <h3 className="text-2xl font-bold tracking-tight uppercase">
-              {block.role}
-            </h3>
-            <p className="mt-3 text-sm text-white/90">{block.tagline}</p>
-            <Button
-              size="lg"
-              className="mt-6 h-11 w-40 bg-white text-neutral-900 hover:bg-white/90"
-              render={<Link href="/sign-up" />}
-            >
-              S&apos;inscrire
-            </Button>
-          </motion.div>
-        ))}
-      </div>
-
       {/* Scrolling watermark strip — pauses on hover (see `.marquee-group` rule). */}
-      <div className="marquee-group relative overflow-hidden border-t border-border bg-background py-16">
+      <div className="marquee-group relative overflow-hidden border-t border-border bg-background py-24">
         <div className="flex -rotate-3 flex-col gap-2 opacity-[0.06]">
           {[0, 1, 2].map((row) => (
             <div
@@ -58,24 +27,32 @@ export function SignupSplit() {
               }}
             >
               <span className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl">
-                {"S'inscrire · ".repeat(10)}
+                {"Rejoindre · ".repeat(10)}
               </span>
               <span
                 aria-hidden
                 className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl"
               >
-                {"S'inscrire · ".repeat(10)}
+                {"Rejoindre · ".repeat(10)}
               </span>
             </div>
           ))}
         </div>
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center">
+          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Prêt à envoyer ton premier clic ?
+          </h2>
+          <p className="max-w-md text-sm text-muted-foreground">
+            Compte gratuit, dashboard ouvert tout de suite, 50 % de chaque
+            conversion.
+          </p>
           <Button
             size="lg"
             className="pointer-events-auto h-12 px-8 text-base"
             render={<Link href="/sign-up" />}
           >
-            Rejoindre RevNetwork
+            Créer mon compte
+            <ArrowRight className="h-4 w-4" />
           </Button>
         </div>
       </div>

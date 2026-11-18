@@ -6,38 +6,45 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SUPPORT_TELEGRAM } from "@/lib/contact";
 import { SectionHeading } from "./section-heading";
 
+/**
+ * Answers checked against what the product does, including the one that is
+ * less flattering: a referred affiliate keeps 40 %, not 50 %. Saying "50 %"
+ * on the page and showing 40 % in the dashboard is the kind of surprise that
+ * costs more than the sentence that prevents it.
+ */
 const FAQS = [
   {
-    question: "Combien coûte l'inscription sur RevNetwork ?",
+    question: "L'inscription est-elle payante ?",
     answer:
-      "L'inscription est gratuite pour les publishers comme pour les annonceurs. Nous ne prenons aucune commission cachée sur vos gains : ce que vous voyez dans votre dashboard est ce que vous recevez.",
+      "Non. Créer un compte est gratuit et ton dashboard est accessible tout de suite, sans validation préalable.",
   },
   {
-    question: "Comment sont calculées les commissions ?",
+    question: "Combien est-ce que je touche ?",
     answer:
-      "Chaque offre définit un payout (CPA, CPL, CPS ou revenue share). Dès qu'une conversion est validée par l'annonceur, la commission correspondante est calculée automatiquement et ajoutée à votre solde.",
+      "50 % de ce que l'annonceur verse pour chaque conversion validée. Le montant affiché dans ton dashboard est déjà ta part. Une exception : si tu t'inscris avec le code d'un parrain, 10 points reviennent à ce parrain et tu gardes 40 %.",
   },
   {
-    question: "Quels moyens de paiement sont disponibles ?",
+    question: "Quand une conversion apparaît-elle ?",
     answer:
-      "PayPal, virement bancaire, Payoneer et paiement en crypto-monnaies. Vous choisissez votre méthode préférée dans les paramètres de votre compte, et suivez chaque paiement de sa demande jusqu'à son versement.",
+      "Dès que l'annonceur la valide : elle remonte automatiquement, sans saisie de notre part. Si l'annonceur l'annule par la suite, elle est retirée de la journée où elle avait été comptée.",
   },
   {
-    question: "Comment fonctionne la protection anti-fraude ?",
+    question: "Comment et quand suis-je payé ?",
     answer:
-      "Chaque clic est analysé : détection des doublons, du trafic bot, des adresses IP suspectes et des schémas de clics anormaux. Les clics identifiés comme frauduleux sont exclus du calcul des commissions.",
+      "Tu renseignes ton moyen de paiement dans ton profil — PayPal, virement bancaire, crypto ou Payoneer. Quand ton solde atteint le minimum de retrait indiqué dans ton dashboard, tu demandes ton paiement. Chaque versement apparaît dans ton historique.",
   },
   {
-    question: "Puis-je promouvoir des offres dans plusieurs pays ?",
+    question: "Comment fonctionne le parrainage ?",
     answer:
-      "Oui. Chaque offre précise les pays et devices autorisés. Le catalogue est filtrable pour ne vous montrer que les offres compatibles avec votre trafic.",
+      "Ton code de parrainage est dans l'onglet Récompenses. Chaque affilié qui s'inscrit avec te rapporte 10 % du chiffre d'affaires qu'il génère. Cette part est prise sur sa commission à lui, pas ajoutée par le réseau.",
   },
   {
-    question: "Combien de temps dure le cookie de tracking ?",
+    question: "Est-ce que je dois créer mes liens moi-même ?",
     answer:
-      "La durée du cookie est définie par offre, généralement entre 7 et 30 jours. Elle est indiquée directement sur la fiche de chaque offre avant que vous ne génériez votre lien.",
+      "Non. L'équipe te remet ton lien de tracking, déjà configuré avec ton identifiant. Tu n'as qu'à le partager.",
   },
 ];
 
@@ -48,7 +55,7 @@ export function Faq() {
         <SectionHeading
           eyebrow="FAQ"
           title="Questions fréquentes"
-          description="Tout ce qu'il faut savoir avant de commencer. Une autre question ? Notre support répond en moins de 24h."
+          description="Ce qu'il faut savoir avant de commencer."
         />
 
         <div className="mt-12">
@@ -65,6 +72,19 @@ export function Faq() {
             ))}
           </Accordion>
         </div>
+
+        <p className="mt-10 text-center text-sm text-muted-foreground">
+          Une autre question ?{" "}
+          <a
+            href={SUPPORT_TELEGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground underline-offset-4 hover:underline"
+          >
+            Écris-nous sur Telegram
+          </a>
+          .
+        </p>
       </div>
     </section>
   );

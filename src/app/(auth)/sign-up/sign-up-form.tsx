@@ -7,27 +7,11 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Loader2, Megaphone, Users, Gift } from "lucide-react";
+import { Loader2, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
 import { signUpSchema, type SignUpInput } from "@/lib/validations/auth";
-
-const ROLE_OPTIONS = [
-  {
-    value: "PUBLISHER" as const,
-    label: "Publisher",
-    description: "Je génère du trafic et je monétise mon audience.",
-    icon: Users,
-  },
-  {
-    value: "ADVERTISER" as const,
-    label: "Advertiser",
-    description: "Je diffuse des offres et je recrute des affiliés.",
-    icon: Megaphone,
-  },
-];
 
 export function SignUpForm({ referralCode }: { referralCode?: string }) {
   const router = useRouter();
@@ -37,15 +21,11 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     formState: { errors },
   } = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { role: "PUBLISHER" },
   });
-
-  const role = watch("role");
 
   const onSubmit = (data: SignUpInput) => {
     setFormError(null);
@@ -73,7 +53,7 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
         return;
       }
 
-      router.push(data.role === "ADVERTISER" ? "/advertiser" : "/dashboard");
+      router.push("/dashboard");
       router.refresh();
     });
   };
@@ -97,35 +77,11 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
         <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm text-primary">
           <Gift className="h-4 w-4 shrink-0" />
           <span>
-            Vous êtes parrainé avec le code{" "}
+            Tu es parrainé avec le code{" "}
             <span className="font-semibold tracking-wide">{referralCode}</span>.
           </span>
         </div>
       )}
-
-      <div className="grid grid-cols-2 gap-3">
-        {ROLE_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            onClick={() =>
-              setValue("role", option.value, { shouldValidate: true })
-            }
-            className={cn(
-              "hover-lift rounded-xl border p-3 text-left transition-colors",
-              role === option.value
-                ? "border-primary bg-accent"
-                : "border-border bg-card hover:bg-accent/50",
-            )}
-          >
-            <option.icon className="mb-2 h-4 w-4 text-primary" />
-            <p className="text-sm font-medium">{option.label}</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              {option.description}
-            </p>
-          </button>
-        ))}
-      </div>
 
       <div className="space-y-2">
         <Label htmlFor="name">Nom complet</Label>
@@ -141,11 +97,7 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="companyName">
-          {role === "ADVERTISER"
-            ? "Nom de l'entreprise"
-            : "Société (optionnel)"}
-        </Label>
+        <Label htmlFor="companyName">Société (optionnel)</Label>
         <Input
           id="companyName"
           autoComplete="organization"
@@ -160,7 +112,7 @@ export function SignUpForm({ referralCode }: { referralCode?: string }) {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="vous@exemple.com"
+          placeholder="toi@exemple.com"
           {...register("email")}
         />
         {errors.email && (

@@ -6,21 +6,21 @@ import { motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/brand/logo-mark";
 
+// "/#…" rather than "#…", so the links still work from the privacy page.
 const NAV_LINKS = [
-  { href: "#verticals", label: "Verticales" },
-  { href: "#why", label: "Pourquoi nous" },
-  { href: "#join", label: "Contact" },
+  { href: "/#how", label: "Comment ça marche" },
+  { href: "/#why", label: "Pourquoi nous" },
+  { href: "/#referral", label: "Parrainage" },
+  { href: "/#faq", label: "FAQ" },
 ];
 
+/** The same mark and name as inside the app: one brand, not two. */
 function Wordmark() {
   return (
-    <Link
-      href="/"
-      className="flex items-center text-2xl font-extrabold tracking-tight lowercase"
-    >
-      rev
-      <span className="text-primary">.</span>
+    <Link href="/" aria-label="RevNetwork — accueil">
+      <Logo />
     </Link>
   );
 }
@@ -49,7 +49,7 @@ export function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Wordmark />
 
-        <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground md:flex">
+        <nav className="hidden items-center gap-8 text-sm font-medium whitespace-nowrap text-muted-foreground lg:flex">
           {NAV_LINKS.map((link) => (
             <a
               key={link.href}
@@ -61,7 +61,7 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-4 md:flex">
+        <div className="hidden items-center gap-4 lg:flex">
           <Link
             href="/sign-in"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -69,15 +69,14 @@ export function Navbar() {
             Connexion
           </Link>
           <Button
-            className="bg-blue-600 text-white hover:bg-blue-700"
             render={<Link href="/sign-up" />}
           >
-            S&apos;inscrire
+            Créer mon compte
           </Button>
         </div>
 
         <button
-          className="text-foreground md:hidden"
+          className="text-foreground lg:hidden"
           onClick={() => setMobileOpen((v) => !v)}
           aria-label="Ouvrir le menu"
         >
@@ -93,7 +92,7 @@ export function Navbar() {
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
-          className="glass border-t px-6 py-4 md:hidden"
+          className="glass border-t px-6 py-4 lg:hidden"
         >
           <nav className="flex flex-col gap-4 text-sm">
             {NAV_LINKS.map((link) => (
@@ -110,10 +109,9 @@ export function Navbar() {
                 Connexion
               </Button>
               <Button
-                className="bg-blue-600 text-white hover:bg-blue-700"
                 render={<Link href="/sign-up" />}
               >
-                S&apos;inscrire
+                Créer mon compte
               </Button>
             </div>
           </nav>

@@ -7,27 +7,23 @@ import {
   useMotionValue,
   useSpring,
 } from "framer-motion";
-import {
-  ArrowUpRight,
-  TrendingUp,
-  Users,
-  MousePointerClick,
-  Wallet,
-} from "lucide-react";
+import { MousePointerClick, Percent, TrendingUp, Wallet } from "lucide-react";
 
 const BARS = [38, 52, 44, 61, 58, 70, 64, 78, 72, 88, 82, 95];
 
+/* Illustrative figures, kept modest and internally consistent: 9 conversions
+   on 1 204 clicks is the 0,75 % shown beside them. The caption under the
+   mockup says they are an example. */
 const STATS = [
-  {
-    label: "Revenus aujourd'hui",
-    value: "1 284 $",
-    delta: "+12,4%",
-    icon: Wallet,
-  },
-  { label: "Clics", value: "8 942", delta: "+4,1%", icon: MousePointerClick },
-  { label: "Conversions", value: "312", delta: "+8,7%", icon: TrendingUp },
-  { label: "Nouveaux publishers", value: "24", delta: "+2", icon: Users },
+  { label: "Tes gains aujourd'hui", value: "135 $", icon: Wallet },
+  { label: "Clics", value: "1 204", icon: MousePointerClick },
+  { label: "Conversions", value: "9", icon: TrendingUp },
+  { label: "Taux de conversion", value: "0,75 %", icon: Percent },
 ];
+
+/* The affiliate menu as it really is, so the picture matches what opens
+   after sign-up. */
+const MENU = ["Accueil", "Statistiques", "Formation", "Récompenses", "Paiements"];
 
 export function DashboardMockup() {
   const ref = useRef<HTMLDivElement>(null);
@@ -67,7 +63,7 @@ export function DashboardMockup() {
         <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
         <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
         <span className="ml-3 text-xs text-muted-foreground">
-          app.revnetwork.io/dashboard
+          revnetwork.live/dashboard
         </span>
       </div>
 
@@ -79,13 +75,11 @@ export function DashboardMockup() {
             </span>
             <span className="text-xs font-medium">RevNetwork</span>
           </div>
-          {["Overview", "Offres", "Liens", "Paiements", "Profil"].map(
-            (item, i) => (
-              <div key={item} className={cnItem(i === 0)}>
-                {item}
-              </div>
-            ),
-          )}
+          {MENU.map((item, i) => (
+            <div key={item} className={cnItem(i === 0)}>
+              {item}
+            </div>
+          ))}
         </div>
 
         <div className="space-y-3">
@@ -98,13 +92,7 @@ export function DashboardMockup() {
                 transition={{ delay: 0.4 + i * 0.08, duration: 0.5 }}
                 className="hover-lift rounded-lg border border-border/60 bg-card/80 p-3"
               >
-                <div className="flex items-center justify-between">
-                  <stat.icon className="h-3.5 w-3.5 text-primary" />
-                  <span className="flex items-center gap-0.5 text-[10px] font-medium text-success">
-                    {stat.delta}
-                    <ArrowUpRight className="h-2.5 w-2.5" />
-                  </span>
-                </div>
+                <stat.icon className="h-3.5 w-3.5 text-primary" />
                 <p className="mt-2 text-base font-semibold">{stat.value}</p>
                 <p className="text-[10px] text-muted-foreground">
                   {stat.label}
@@ -116,7 +104,7 @@ export function DashboardMockup() {
           <div className="rounded-lg border border-border/60 bg-card/80 p-4">
             <div className="mb-3 flex items-center justify-between">
               <p className="text-xs font-medium">
-                Revenus des 12 dernières semaines
+                Tes gains sur 12 semaines
               </p>
               <span className="text-[10px] text-muted-foreground">USD</span>
             </div>

@@ -12,9 +12,9 @@
  */
 
 import { appUrl } from "@/lib/app-url";
+import { SUPPORT_TELEGRAM } from "@/lib/contact";
 
 const BRAND = "RevNetwork";
-const SUPPORT_TELEGRAM = "https://t.me/solangerev";
 
 function from() {
   return process.env.EMAIL_FROM ?? `${BRAND} <no-reply@revnetwork.live>`;

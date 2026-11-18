@@ -3,41 +3,46 @@
 import { motion } from "framer-motion";
 import { SectionHeading } from "./section-heading";
 
+/**
+ * The path an affiliate really takes, step for step. There is no catalogue to
+ * browse and no link to generate: the team hands over the link, and
+ * conversions come back on their own.
+ */
 const STEPS = [
   {
     number: "01",
-    title: "Créez votre compte",
+    title: "Tu crées ton compte",
     description:
-      "Inscrivez-vous en tant que publisher ou annonceur en moins de deux minutes, sans paperasse.",
+      "Gratuit, en deux minutes. Pas de dossier à faire valider : ton dashboard est ouvert dès l'inscription.",
   },
   {
     number: "02",
-    title: "Choisissez vos offres",
+    title: "On te donne ton lien",
     description:
-      "Parcourez le catalogue d'offres filtrées par pays, device et catégorie, ou publiez les vôtres.",
+      "L'équipe te remet ton lien de tracking, prêt à être partagé. Il porte ton identifiant : tout ce qui passe par lui est à toi.",
   },
   {
     number: "03",
-    title: "Générez vos liens",
+    title: "Tu envoies ton trafic",
     description:
-      "Récupérez un lien de tracking unique par offre, prêt à être diffusé sur vos canaux.",
+      "Chaque conversion validée par l'annonceur remonte toute seule dans ton dashboard, avec ce qu'elle te rapporte.",
   },
   {
     number: "04",
-    title: "Suivez et encaissez",
+    title: "Tu demandes ton paiement",
     description:
-      "Visualisez vos clics, conversions et commissions en direct, puis demandez votre paiement.",
+      "Ton solde se met à jour à chaque conversion. Dès qu'il atteint le minimum de retrait, tu demandes ton virement.",
   },
 ];
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-muted/30 py-28">
+    <section id="how" className="bg-muted/30 py-28">
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow="Comment ça marche"
           title="De l'inscription au premier paiement"
-          description="Un parcours pensé pour vous faire gagner du temps, pas pour vous le faire perdre en configuration."
+          description="Quatre étapes, et aucune ne te demande de configurer quoi que ce soit."
         />
 
         <div className="relative mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,17 +1,16 @@
 import Link from "next/link";
-import { Send, Share2, AtSign } from "lucide-react";
+import { Send } from "lucide-react";
+import { Logo } from "@/components/brand/logo-mark";
+import { SUPPORT_TELEGRAM } from "@/lib/contact";
 
+/* Every link here goes somewhere. The footer used to carry a privacy link
+   that 404'd and three social icons pointing at "#". */
 const LINKS = [
-  { label: "Verticales", href: "#verticals" },
-  { label: "Pourquoi nous", href: "#why" },
-  { label: "Contact", href: "#join" },
+  { label: "Comment ça marche", href: "/#how" },
+  { label: "Pourquoi nous", href: "/#why" },
+  { label: "Parrainage", href: "/#referral" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Confidentialité", href: "/privacy" },
-];
-
-const SOCIALS = [
-  { label: "Telegram", href: "#", icon: Send },
-  { label: "Réseaux sociaux", href: "#", icon: Share2 },
-  { label: "Email", href: "#", icon: AtSign },
 ];
 
 export function Footer() {
@@ -20,11 +19,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-14">
         <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <Link
-              href="/"
-              className="text-2xl font-extrabold tracking-tight lowercase"
-            >
-              rev<span className="text-primary">.</span>
+            <Link href="/" aria-label="RevNetwork — accueil">
+              <Logo />
             </Link>
             <nav className="mt-5 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground sm:justify-start">
               {LINKS.map((link) => (
@@ -39,18 +35,15 @@ export function Footer() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
-            {SOCIALS.map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                aria-label={social.label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
-              >
-                <social.icon className="h-4 w-4" />
-              </a>
-            ))}
-          </div>
+          <a
+            href={SUPPORT_TELEGRAM}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+          >
+            <Send className="h-4 w-4" />
+            Nous écrire sur Telegram
+          </a>
         </div>
 
         <div className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">

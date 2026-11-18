@@ -24,7 +24,11 @@ export const signUpSchema = z
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: z.string(),
-    role: z.enum(["PUBLISHER", "ADVERTISER"]),
+    // Affiliates only. The network sells its own offers, so there is no
+    // advertiser side to sign up for — an account created as one landed in a
+    // dashboard with nothing in it. Kept as a field so the payload shape, and
+    // every caller that reads it, stays the same.
+    role: z.literal("PUBLISHER"),
     companyName: z.string().trim().max(150).optional(),
     website: z.string().trim().url("URL invalide").optional().or(z.literal("")),
     referralCode: z.string().trim().max(32).optional(),

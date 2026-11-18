@@ -3,20 +3,23 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
+/* Each word and each line below is something the product does today. The
+   earlier copy promised round-the-clock support, same-day payouts and
+   worldwide coverage — none of which anything here could back up. */
 const DIAGONAL_WORDS = [
-  "Support 24/7",
-  "Paiements rapides",
-  "Taux élevés",
-  "Couverture mondiale",
-  "Offres exclusives",
+  "50 % pour toi",
+  "Conversions en direct",
+  "Parrainage 10 %",
+  "Formation incluse",
+  "Solde transparent",
 ];
 
 const POINTS = [
-  "Un support réactif et disponible 24h/24, 7j/7.",
-  "Des paiements rapides, avec option au jour le jour.",
-  "Du trafic testé qui transforme vos leads en profit.",
-  "Des offres exclusives et directes en CPA et CPL, partout dans le monde.",
-  "Des produits à forte conversion, scalables à l'international.",
+  "Tu touches 50 % de ce que rapporte chaque conversion, affiché au dollar près.",
+  "Une conversion validée apparaît dans ton dashboard sans attendre la fin de journée.",
+  "Clics, conversions, taux et gains : tes chiffres jour par jour, et ton solde à tout moment.",
+  "Des vidéos de formation pour lancer ton trafic, accessibles dès l'inscription.",
+  "Un contact direct avec l'équipe sur Telegram, sans ticket ni formulaire.",
 ];
 
 export function WhyUs() {
@@ -56,15 +59,13 @@ export function WhyUs() {
           </motion.h2>
 
           <p className="mt-6 text-muted-foreground">
-            RevNetwork est un réseau d&apos;affiliation à la performance qui
-            réunit les meilleurs acteurs du secteur. Nous aidons les marketeurs
-            à booster leurs résultats et à développer leurs revenus grâce à nos
-            technologies, nos outils et une équipe expérimentée et réactive.
+            RevNetwork est un réseau d&apos;affiliation à la performance,
+            spécialisé dans les offres CC Submit. Tu amènes le trafic, on
+            s&apos;occupe des offres, du tracking et du paiement — et tu vois
+            exactement ce que tu gagnes.
           </p>
 
-          <p className="mt-6 font-medium">
-            En devenant notre partenaire, vous obtenez&nbsp;:
-          </p>
+          <p className="mt-6 font-medium">Concrètement&nbsp;:</p>
           <ul className="mt-4 space-y-3">
             {POINTS.map((point, i) => (
               <motion.li

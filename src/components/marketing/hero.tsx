@@ -7,6 +7,17 @@ import { Button } from "@/components/ui/button";
 import { DashboardMockup } from "./dashboard-mockup";
 import { Particles } from "./particles";
 
+/**
+ * Three figures, each one a rule the product actually enforces — the
+ * commission rate, the referral share, and how fast a conversion shows up.
+ * Nothing here is a promise about volume or earnings.
+ */
+const FACTS = [
+  { value: "50 %", label: "de chaque conversion, pour toi" },
+  { value: "10 %", label: "du chiffre de chaque affilié que tu parraines" },
+  { value: "En direct", label: "une conversion validée s'affiche aussitôt" },
+];
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden pt-20 pb-24 lg:pt-28">
@@ -27,7 +38,7 @@ export function Hero() {
           transition={{ duration: 0.5 }}
           className="glass mx-auto mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium text-muted-foreground"
         >
-          Réseau d&apos;affiliation à la performance · CPA · CPL · CPI
+          Réseau d&apos;affiliation CC Submit · payé à la conversion
         </motion.p>
 
         <motion.h1
@@ -36,11 +47,9 @@ export function Hero() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="text-5xl leading-[1.05] font-semibold tracking-tight sm:text-6xl md:text-7xl"
         >
-          Faites décoller vos
+          Ton trafic rapporte.
           <br />
-          <span className="text-gradient-brand">
-            revenus d&apos;affiliation
-          </span>
+          <span className="text-gradient-brand">Tu en gardes la moitié.</span>
         </motion.h1>
 
         <motion.p
@@ -49,9 +58,10 @@ export function Hero() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground"
         >
-          RevNetwork connecte publishers et annonceurs autour d&apos;offres
-          exclusives à fort payout — tracking en temps réel, paiements rapides
-          et un support disponible 24/7.
+          RevNetwork te donne ton lien, compte chaque conversion dès
+          qu&apos;elle est validée et te reverse 50 % de ce qu&apos;elle
+          rapporte. L&apos;inscription est gratuite et ton dashboard est ouvert
+          tout de suite.
         </motion.p>
 
         <motion.div
@@ -65,18 +75,36 @@ export function Hero() {
             className="h-11 px-6"
             render={<Link href="/sign-up" />}
           >
-            Rejoindre en tant que Publisher
+            Créer mon compte
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button
             size="lg"
             variant="outline"
             className="h-11 px-6"
-            render={<Link href="/sign-up" />}
+            render={<a href="#how" />}
           >
-            Devenir Annonceur
+            Comment ça marche
           </Button>
         </motion.div>
+
+        <motion.dl
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.26 }}
+          className="mx-auto mt-14 grid max-w-3xl gap-px overflow-hidden rounded-2xl border border-border bg-border sm:grid-cols-3"
+        >
+          {FACTS.map((fact) => (
+            <div key={fact.value} className="bg-background/80 px-5 py-5">
+              <dt className="text-2xl font-semibold tracking-tight">
+                {fact.value}
+              </dt>
+              <dd className="mt-1 text-sm text-muted-foreground">
+                {fact.label}
+              </dd>
+            </div>
+          ))}
+        </motion.dl>
       </div>
 
       {/* Floating dashboard preview */}
@@ -100,6 +128,9 @@ export function Hero() {
             <DashboardMockup />
           </motion.div>
         </motion.div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          Aperçu du dashboard affilié — les chiffres affichés sont un exemple.
+        </p>
       </div>
     </section>
   );

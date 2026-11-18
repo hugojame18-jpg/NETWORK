@@ -4,6 +4,7 @@ import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { appUrl } from "@/lib/app-url";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,13 +17,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const DESCRIPTION =
+  "Réseau d'affiliation CC Submit. Tu envoies ton trafic, chaque conversion validée s'affiche en direct et tu en gardes 50 %. Inscription gratuite.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(appUrl()),
   title: {
-    default: "RevNetwork — Le réseau d'affiliation nouvelle génération",
+    default: "RevNetwork — Ton trafic rapporte, tu en gardes la moitié",
     template: "%s · RevNetwork",
   },
-  description:
-    "RevNetwork connecte publishers et annonceurs autour d'offres à forte performance, avec un tracking en temps réel et des paiements fiables.",
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "RevNetwork",
+    locale: "fr_FR",
+    title: "RevNetwork — Ton trafic rapporte, tu en gardes la moitié",
+    description: DESCRIPTION,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({

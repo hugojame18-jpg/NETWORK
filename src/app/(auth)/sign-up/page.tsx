@@ -15,7 +15,7 @@ export default async function SignUpPage({ searchParams }: PageProps) {
     <div>
       <AuthHeader
         title="Rejoindre RevNetwork"
-        description="Créez votre compte en moins de deux minutes."
+        description="Ton compte affilié en deux minutes. Gratuit, et ouvert tout de suite."
       />
       <SignUpForm referralCode={ref?.trim().toUpperCase() || undefined} />
     </div>

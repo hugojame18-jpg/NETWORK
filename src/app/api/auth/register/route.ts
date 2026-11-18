@@ -57,10 +57,9 @@ export async function POST(request: Request) {
   // Referral attribution: resolve the code to the referring publisher (only
   // publishers can be referred). Unknown codes are silently ignored so a stale
   // link never blocks a sign-up.
-  const referredById =
-    role === "PUBLISHER" && referralCode
-      ? await resolveReferrer(referralCode)
-      : null;
+  const referredById = referralCode
+    ? await resolveReferrer(referralCode)
+    : null;
 
   const passwordHash = await bcrypt.hash(password, 12);
 
@@ -80,55 +79,42 @@ export async function POST(request: Request) {
       passwordHash,
       role,
       status: "ACTIVE",
-      ...(role === "PUBLISHER"
-        ? {
-            publisher: {
-              create: {
-                companyName: companyName || null,
-                website: website || null,
-                // Sign-up is open: publishers get their dashboard immediately.
-                // The status stays on the model so an admin can still revoke
-                // access later from the affiliates page.
-                applicationStatus: "APPROVED",
-                workedWithNetworks: workedWithNetworks ?? false,
-                previousNetworks: previousNetworks || null,
-                affiliateExperience: affiliateExperience || null,
-                tiktokLinks: tiktokLinks || null,
-                referralCode: generateReferralCode(),
-                referredById,
-                ...(minPayout !== undefined ? { minPayout } : {}),
-              },
-            },
-          }
-        : {
-            advertiser: {
-              create: {
-                companyName: companyName || name,
-                website: website || null,
-              },
-            },
-          }),
+      publisher: {
+        create: {
+          companyName: companyName || null,
+          website: website || null,
+          // Sign-up is open: publishers get their dashboard immediately.
+          // The status stays on the model so an admin can still revoke
+          // access later from the affiliates page.
+          applicationStatus: "APPROVED",
+          workedWithNetworks: workedWithNetworks ?? false,
+          previousNetworks: previousNetworks || null,
+          affiliateExperience: affiliateExperience || null,
+          tiktokLinks: tiktokLinks || null,
+          referralCode: generateReferralCode(),
+          referredById,
+          ...(minPayout !== undefined ? { minPayout } : {}),
+        },
+      },
     },
     select: { id: true, email: true, name: true },
   });
 
   // No review to do any more, but a new affiliate joining is still worth
   // knowing about.
-  if (role === "PUBLISHER") {
-    const admins = await prisma.user.findMany({
-      where: { role: "ADMIN" },
-      select: { id: true },
+  const admins = await prisma.user.findMany({
+    where: { role: "ADMIN" },
+    select: { id: true },
+  });
+  if (admins.length > 0) {
+    await prisma.notification.createMany({
+      data: admins.map((admin) => ({
+        userId: admin.id,
+        type: "INFO" as const,
+        title: "Nouvel affilié inscrit",
+        body: `${user.name} (${user.email}) vient de rejoindre le réseau.`,
+      })),
     });
-    if (admins.length > 0) {
-      await prisma.notification.createMany({
-        data: admins.map((admin) => ({
-          userId: admin.id,
-          type: "INFO" as const,
-          title: "Nouvel affilié inscrit",
-          body: `${user.name} (${user.email}) vient de rejoindre le réseau.`,
-        })),
-      });
-    }
   }
 
   const token = crypto.randomUUID();
