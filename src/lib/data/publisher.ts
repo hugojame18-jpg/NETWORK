@@ -2,6 +2,7 @@ import "server-only";
 import { randomInt } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
+import { REVERSED_NOTE } from "@/lib/postback-booking";
 import {
   REFERRAL_RATE,
   payoutRate,
@@ -743,4 +744,59 @@ export async function getPendingCommissionsTotal(publisherId: string) {
     _sum: { amount: true },
   });
   return toNumber(agg._sum.amount);
+}
+
+export interface RecentConversion {
+  id: string;
+  at: Date;
+  /** The offer as the network named it, when it sent a name. */
+  offer: string | null;
+  /** The affiliate's share of this conversion. */
+  earnings: number;
+  /** True when the network cancelled it after it had been counted. */
+  reversed: boolean;
+}
+
+/**
+ * The affiliate's latest conversions, one by one.
+ *
+ * The daily totals say how the day went; this says what just happened. Each
+ * line is a postback that was counted for them, shown at their share — the
+ * gross the network was paid is never sent to this screen. A conversion the
+ * network later took back stays in the list, marked, because a sale that
+ * silently disappears from a feed looks like a bug rather than a refund.
+ */
+export async function getRecentConversions(
+  publisherId: string,
+  take = 8,
+): Promise<RecentConversion[]> {
+  const [rate, hits] = await Promise.all([
+    commissionRate(publisherId),
+    prisma.postbackHit.findMany({
+      where: {
+        publisherId,
+        OR: [
+          { status: "ACCEPTED" },
+          { status: "REVERSED", message: REVERSED_NOTE },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+      take,
+      select: {
+        id: true,
+        createdAt: true,
+        offerName: true,
+        amount: true,
+        status: true,
+      },
+    }),
+  ]);
+
+  return hits.map((hit) => ({
+    id: hit.id,
+    at: hit.createdAt,
+    offer: hit.offerName,
+    earnings: toNumber(hit.amount) * rate,
+    reversed: hit.status === "REVERSED",
+  }));
 }

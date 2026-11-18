@@ -22,6 +22,13 @@ import type { PostbackStatus } from "@/generated/prisma/enums";
  * eventually disagree about what counts, and the difference would be money.
  */
 
+/**
+ * The note left on a conversion the network later took back. Exported because
+ * the affiliate's feed has to tell that row — a sale that was theirs and then
+ * was not — from the cancellation call itself, which carries the same status.
+ */
+export const REVERSED_NOTE = "Comptée, puis annulée par le réseau.";
+
 export interface Outcome {
   status: PostbackStatus;
   httpStatus: number;
@@ -145,7 +152,7 @@ export async function settle(input: Settlement): Promise<Outcome> {
         // back, and a later re-approval is counted again instead of being
         // dismissed as a duplicate.
         status: "REVERSED",
-        message: "Comptée, puis annulée par le réseau.",
+        message: REVERSED_NOTE,
       },
     });
 
