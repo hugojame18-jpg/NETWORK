@@ -4,6 +4,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Megaphone,
+  RefreshCw,
   ScrollText,
   Settings,
   ShieldCheck,
@@ -47,6 +48,7 @@ export const adminNavSections: NavSection[] = [
     title: "Tracking",
     items: [
       { href: "/admin/postback", label: "Global postback", icon: <Webhook /> },
+      { href: "/admin/flow", label: "Synchro Flow", icon: <RefreshCw /> },
     ],
   },
   {
