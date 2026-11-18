@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Webhook } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import {
+  affisePostbackUrl,
   ensurePostbackTokens,
   postbackSecret,
   postbackUrlTemplate,
@@ -66,6 +67,7 @@ export default async function AdminPostbackPage() {
   ]);
 
   const url = postbackUrlTemplate(secret);
+  const affiseUrl = affisePostbackUrl(secret);
   const accepted = hits.filter((hit) => hit.status === "ACCEPTED").length;
 
   return (
@@ -80,7 +82,22 @@ export default async function AdminPostbackPage() {
           <CardTitle>Ton URL de postback</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <CopyValue value={url} />
+          <div className="space-y-1.5">
+            <p className="eyebrow">Flow Network, et tout réseau sous Affise</p>
+            <CopyValue value={affiseUrl} />
+            <p className="text-xs text-muted-foreground">
+              Prête à coller telle quelle : la clé et les macros sont déjà
+              dedans, il n&apos;y a rien à remplacer. Côté réseau, mets le
+              filtre de statut sur <strong>Approved</strong> — sinon les
+              conversions en attente et refusées remontent aussi.
+            </p>
+          </div>
+
+          <div className="space-y-1.5 border-t border-border pt-4">
+            <p className="eyebrow">Un autre réseau</p>
+            <CopyValue value={url} />
+          </div>
+
           <div className="space-y-2 text-sm text-muted-foreground">
             <p>
               Remplace{" "}

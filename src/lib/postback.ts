@@ -97,6 +97,18 @@ export function postbackUrlTemplate(secret: string): string {
 }
 
 /**
+ * The same URL with Affise's macro names already filled in.
+ *
+ * Flow Network runs on Affise, and so do most of the networks around it. The
+ * generic template above has to have its macros swapped by hand, which is one
+ * more chance to paste a placeholder instead of a real value — this one is
+ * copied once and works.
+ */
+export function affisePostbackUrl(secret: string): string {
+  return `${appUrl()}/api/postback/global?key=${secret}&sub3={sub3}&payout={sum}&txid={transactionid}&offer={offer_name}`;
+}
+
+/**
  * Parameter names seen in the wild for the same three things. Networks each
  * pick their own, and a conversion silently worth zero because the amount
  * arrived as `sum` instead of `payout` is exactly the kind of bug nobody
