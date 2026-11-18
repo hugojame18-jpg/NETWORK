@@ -38,65 +38,66 @@ export default async function AdminAdvertisersPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Entreprise</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Campagnes</TableHead>
-                <TableHead className="text-right">Offres</TableHead>
-                <TableHead className="text-right">Dépensé</TableHead>
-                <TableHead>Inscrit le</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {advertisers.map((advertiser) => (
-                <TableRow key={advertiser.id}>
-                  <TableCell className="font-medium">
-                    {advertiser.companyName}
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-sm">{advertiser.user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {advertiser.user.email}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[advertiser.user.status]}>
-                      {advertiser.user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {advertiser._count.campaigns}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {advertiser._count.offers}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(advertiser.totalSpent)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(advertiser.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    <UserStatusMenu
-                      userId={advertiser.userId}
-                      currentStatus={advertiser.user.status}
-                      userLabel={advertiser.companyName}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {advertisers.length === 0 && (
+          {advertisers.length === 0 ? (
             <EmptyState
               icon={<Building2 />}
               title="Aucun annonceur"
               description="Ajoute un annonceur pour pouvoir lui rattacher des campagnes et des offres."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Entreprise</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Campagnes</TableHead>
+                  <TableHead className="text-right">Offres</TableHead>
+                  <TableHead className="text-right">Dépensé</TableHead>
+                  <TableHead>Inscrit le</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {advertisers.map((advertiser) => (
+                  <TableRow key={advertiser.id}>
+                    <TableCell className="font-medium">
+                      {advertiser.companyName}
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm">{advertiser.user.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {advertiser.user.email}
+                      </p>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANT[advertiser.user.status]}>
+                        {advertiser.user.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {advertiser._count.campaigns}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {advertiser._count.offers}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(advertiser.totalSpent)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(advertiser.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <UserStatusMenu
+                        userId={advertiser.userId}
+                        currentStatus={advertiser.user.status}
+                        userLabel={advertiser.companyName}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

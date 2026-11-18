@@ -37,50 +37,53 @@ export default async function AdminCampaignsPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Campagne</TableHead>
-                <TableHead>Annonceur</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead className="text-right">Offres</TableHead>
-                <TableHead className="text-right">Budget</TableHead>
-                <TableHead className="text-right">Dépensé</TableHead>
-                <TableHead>Créée le</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {campaigns.map((campaign) => (
-                <TableRow key={campaign.id}>
-                  <TableCell className="font-medium">{campaign.name}</TableCell>
-                  <TableCell>{campaign.advertiser.companyName}</TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[campaign.status]}>
-                      {campaign.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign._count.offers}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign.budget ? formatCurrency(campaign.budget) : "—"}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatCurrency(campaign.spent)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(campaign.createdAt)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {campaigns.length === 0 && (
+          {campaigns.length === 0 ? (
             <EmptyState
               icon={<Megaphone />}
               title="Aucune campagne"
               description="Crée une campagne pour regrouper plusieurs offres d'un même annonceur."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Campagne</TableHead>
+                  <TableHead>Annonceur</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead className="text-right">Offres</TableHead>
+                  <TableHead className="text-right">Budget</TableHead>
+                  <TableHead className="text-right">Dépensé</TableHead>
+                  <TableHead>Créée le</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {campaigns.map((campaign) => (
+                  <TableRow key={campaign.id}>
+                    <TableCell className="font-medium">
+                      {campaign.name}
+                    </TableCell>
+                    <TableCell>{campaign.advertiser.companyName}</TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANT[campaign.status]}>
+                        {campaign.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {campaign._count.offers}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {campaign.budget ? formatCurrency(campaign.budget) : "—"}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(campaign.spent)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(campaign.createdAt)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

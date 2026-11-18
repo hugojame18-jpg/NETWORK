@@ -42,64 +42,64 @@ export default async function AdminUsersPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Utilisateur</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Inscrit le</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {user.email}
-                    </p>
-                  </TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[user.status]}>
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(user.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      {user.role === "ADMIN" && (
-                        <PermissionsDialog
-                          userId={user.id}
-                          userName={user.name}
-                          allPermissions={permissions}
-                          grantedKeys={user.permissions.map(
-                            (p) => p.permission.key,
-                          )}
-                        />
-                      )}
-                      <UserStatusMenu
-                        userId={user.id}
-                        currentStatus={user.status}
-                        userLabel={user.name}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {users.length === 0 && (
+          {users.length === 0 ? (
             <EmptyState
               icon={<Shield />}
               title="Aucun utilisateur"
               description="Les comptes créés sur la plateforme apparaîtront ici."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Utilisateur</TableHead>
+                  <TableHead>Rôle</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Inscrit le</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {users.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell>
+                      <p className="font-medium">{user.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </TableCell>
+                    <TableCell>{user.role}</TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANT[user.status]}>
+                        {user.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(user.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-1">
+                        {user.role === "ADMIN" && (
+                          <PermissionsDialog
+                            userId={user.id}
+                            userName={user.name}
+                            allPermissions={permissions}
+                            grantedKeys={user.permissions.map(
+                              (p) => p.permission.key,
+                            )}
+                          />
+                        )}
+                        <UserStatusMenu
+                          userId={user.id}
+                          currentStatus={user.status}
+                          userLabel={user.name}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

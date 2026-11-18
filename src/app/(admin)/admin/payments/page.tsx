@@ -38,61 +38,62 @@ export default async function AdminPaymentsPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Publisher</TableHead>
-                <TableHead>Montant</TableHead>
-                <TableHead>Méthode</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Demandé le</TableHead>
-                <TableHead>Payé le</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {payments.map((payment) => (
-                <TableRow key={payment.id}>
-                  <TableCell>
-                    <p className="font-medium">
-                      {payment.publisher.companyName ??
-                        payment.publisher.user.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {payment.publisher.user.email}
-                    </p>
-                  </TableCell>
-                  <TableCell className="font-semibold">
-                    {formatCurrency(payment.amount)}
-                  </TableCell>
-                  <TableCell>{payment.method.replace("_", " ")}</TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[payment.status]}>
-                      {payment.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(payment.requestedAt)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {payment.paidAt ? formatDate(payment.paidAt) : "—"}
-                  </TableCell>
-                  <TableCell>
-                    <PaymentStatusMenu
-                      paymentId={payment.id}
-                      currentStatus={payment.status}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {payments.length === 0 && (
+          {payments.length === 0 ? (
             <EmptyState
               icon={<Wallet />}
               title="Aucune demande de paiement"
               description="Quand un affilié atteint le minimum de retrait, sa demande arrive ici."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Publisher</TableHead>
+                  <TableHead>Montant</TableHead>
+                  <TableHead>Méthode</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Demandé le</TableHead>
+                  <TableHead>Payé le</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payments.map((payment) => (
+                  <TableRow key={payment.id}>
+                    <TableCell>
+                      <p className="font-medium">
+                        {payment.publisher.companyName ??
+                          payment.publisher.user.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {payment.publisher.user.email}
+                      </p>
+                    </TableCell>
+                    <TableCell className="font-semibold">
+                      {formatCurrency(payment.amount)}
+                    </TableCell>
+                    <TableCell>{payment.method.replace("_", " ")}</TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANT[payment.status]}>
+                        {payment.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(payment.requestedAt)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {payment.paidAt ? formatDate(payment.paidAt) : "—"}
+                    </TableCell>
+                    <TableCell>
+                      <PaymentStatusMenu
+                        paymentId={payment.id}
+                        currentStatus={payment.status}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

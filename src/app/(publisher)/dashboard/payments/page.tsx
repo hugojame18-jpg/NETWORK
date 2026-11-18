@@ -70,45 +70,45 @@ export default async function PaymentsPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date de demande</TableHead>
-                <TableHead>Montant</TableHead>
-                <TableHead>Méthode</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Payé le</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {payments.map((payment) => (
-                <TableRow key={payment.id}>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(payment.requestedAt)}
-                  </TableCell>
-                  <TableCell className="num font-medium">
-                    {formatCurrency(payment.amount)}
-                  </TableCell>
-                  <TableCell>{payment.method.replace("_", " ")}</TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_LABELS[payment.status].variant}>
-                      {STATUS_LABELS[payment.status].label}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {payment.paidAt ? formatDate(payment.paidAt) : "—"}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-
-          {payments.length === 0 && (
+          {payments.length === 0 ? (
             <EmptyState
               icon={<Wallet />}
               title="Aucun retrait pour l'instant"
               description="Dès que ton solde atteint le minimum, demande ton paiement : il apparaîtra ici avec son statut."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date de demande</TableHead>
+                  <TableHead>Montant</TableHead>
+                  <TableHead>Méthode</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Payé le</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payments.map((payment) => (
+                  <TableRow key={payment.id}>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(payment.requestedAt)}
+                    </TableCell>
+                    <TableCell className="num font-medium">
+                      {formatCurrency(payment.amount)}
+                    </TableCell>
+                    <TableCell>{payment.method.replace("_", " ")}</TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_LABELS[payment.status].variant}>
+                        {STATUS_LABELS[payment.status].label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {payment.paidAt ? formatDate(payment.paidAt) : "—"}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

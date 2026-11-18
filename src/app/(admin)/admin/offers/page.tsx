@@ -54,64 +54,67 @@ export default async function AdminOffersPage() {
 
       <Card>
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Offre</TableHead>
-                <TableHead>Annonceur</TableHead>
-                <TableHead>Catégorie</TableHead>
-                <TableHead>Payout</TableHead>
-                <TableHead>Lien de l&apos;offre</TableHead>
-                <TableHead className="text-right">Liens</TableHead>
-                <TableHead className="text-right">Conversions</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {offers.map((offer) => (
-                <TableRow key={offer.id}>
-                  <TableCell className="font-medium">{offer.name}</TableCell>
-                  <TableCell>{offer.advertiser.companyName}</TableCell>
-                  <TableCell>
-                    {verticalIcon(offer.category)}{" "}
-                    {verticalLabel(offer.category)}
-                  </TableCell>
-                  <TableCell>{formatCurrency(offer.payout)}</TableCell>
-                  <TableCell>
-                    <OfferLandingForm
-                      offerId={offer.id}
-                      currentUrl={offer.landingUrl}
-                      placeholder={offer.landingUrl === PLACEHOLDER_LANDING_URL}
-                    />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {offer._count.affiliateLinks}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {offer._count.conversions}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={STATUS_VARIANT[offer.status]}>
-                      {offer.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <OfferStatusMenu
-                      offerId={offer.id}
-                      currentStatus={offer.status}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {offers.length === 0 && (
+          {offers.length === 0 ? (
             <EmptyState
               icon={<Layers />}
               title="Aucune offre au catalogue"
               description="Crée ta première offre ci-dessus : elle apparaîtra immédiatement chez tes affiliés."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Offre</TableHead>
+                  <TableHead>Annonceur</TableHead>
+                  <TableHead>Catégorie</TableHead>
+                  <TableHead>Payout</TableHead>
+                  <TableHead>Lien de l&apos;offre</TableHead>
+                  <TableHead className="text-right">Liens</TableHead>
+                  <TableHead className="text-right">Conversions</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {offers.map((offer) => (
+                  <TableRow key={offer.id}>
+                    <TableCell className="font-medium">{offer.name}</TableCell>
+                    <TableCell>{offer.advertiser.companyName}</TableCell>
+                    <TableCell>
+                      {verticalIcon(offer.category)}{" "}
+                      {verticalLabel(offer.category)}
+                    </TableCell>
+                    <TableCell>{formatCurrency(offer.payout)}</TableCell>
+                    <TableCell>
+                      <OfferLandingForm
+                        offerId={offer.id}
+                        currentUrl={offer.landingUrl}
+                        placeholder={
+                          offer.landingUrl === PLACEHOLDER_LANDING_URL
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {offer._count.affiliateLinks}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {offer._count.conversions}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={STATUS_VARIANT[offer.status]}>
+                        {offer.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <OfferStatusMenu
+                        offerId={offer.id}
+                        currentStatus={offer.status}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

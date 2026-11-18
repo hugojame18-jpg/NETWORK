@@ -43,57 +43,58 @@ export default async function AdminLinkRequestsPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Affilié</TableHead>
-                <TableHead>Offre</TableHead>
-                <TableHead>Demandé le</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Lien d&apos;affiliation</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {links.map((link) => (
-                <TableRow key={link.id}>
-                  <TableCell>
-                    <p className="font-medium">{link.publisher.user.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      #{link.publisher.memberId} · {link.publisher.user.email}
-                    </p>
-                  </TableCell>
-                  <TableCell>
-                    {verticalIcon(link.offer.category)} {link.offer.name}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(link.createdAt)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        link.status === "DELIVERED" ? "default" : "secondary"
-                      }
-                    >
-                      {link.status === "DELIVERED" ? "Envoyé" : "En attente"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <DeliverLinkForm
-                      linkId={link.id}
-                      currentUrl={link.targetUrl}
-                      delivered={link.status === "DELIVERED"}
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {links.length === 0 && (
+          {links.length === 0 ? (
             <EmptyState
               icon={<Link2 />}
               title="Aucune demande"
               description="Quand un affilié demande son lien sur une offre, la demande arrive ici."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Affilié</TableHead>
+                  <TableHead>Offre</TableHead>
+                  <TableHead>Demandé le</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Lien d&apos;affiliation</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {links.map((link) => (
+                  <TableRow key={link.id}>
+                    <TableCell>
+                      <p className="font-medium">{link.publisher.user.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        #{link.publisher.memberId} · {link.publisher.user.email}
+                      </p>
+                    </TableCell>
+                    <TableCell>
+                      {verticalIcon(link.offer.category)} {link.offer.name}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(link.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          link.status === "DELIVERED" ? "default" : "secondary"
+                        }
+                      >
+                        {link.status === "DELIVERED" ? "Envoyé" : "En attente"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <DeliverLinkForm
+                        linkId={link.id}
+                        currentUrl={link.targetUrl}
+                        delivered={link.status === "DELIVERED"}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

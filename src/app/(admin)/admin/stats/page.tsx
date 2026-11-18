@@ -38,69 +38,70 @@ export default async function AdminDailyStatsPage() {
 
       <Card>
         <CardContent className="px-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Publisher</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead className="text-right">Clics</TableHead>
-                <TableHead className="text-right">Hosts</TableHead>
-                <TableHead className="text-right">Conversions</TableHead>
-                <TableHead className="text-right">Revenus</TableHead>
-                <TableHead />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {stats.map((stat) => (
-                <TableRow key={stat.id}>
-                  <TableCell className="font-medium">
-                    {stat.publisher.user.name || stat.publisher.user.email}
-                    {stat.publisher.companyName && (
-                      <span className="ml-1.5 text-xs text-muted-foreground">
-                        ({stat.publisher.companyName})
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell>{formatCalendarDate(stat.date)}</TableCell>
-                  <TableCell className="text-right">
-                    {formatNumber(stat.clicks)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatNumber(stat.hosts)}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {formatNumber(stat.conversions)}
-                  </TableCell>
-                  <TableCell className="text-right font-medium">
-                    {formatCurrency(toNumber(stat.revenue))}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
-                      <DailyStatFormDialog
-                        publishers={publishers}
-                        stat={{
-                          id: stat.id,
-                          publisherId: stat.publisherId,
-                          date: stat.date.toISOString().slice(0, 10),
-                          clicks: String(stat.clicks),
-                          hosts: String(stat.hosts),
-                          conversions: String(stat.conversions),
-                          revenue: String(toNumber(stat.revenue)),
-                        }}
-                      />
-                      <DeleteDailyStatButton id={stat.id} />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {stats.length === 0 && (
+          {stats.length === 0 ? (
             <EmptyState
               icon={<BarChart3 />}
               title="Aucune saisie"
               description="Ajoute les chiffres du jour : ils apparaissent immédiatement chez l'affilié concerné."
             />
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Publisher</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead className="text-right">Clics</TableHead>
+                  <TableHead className="text-right">Hosts</TableHead>
+                  <TableHead className="text-right">Conversions</TableHead>
+                  <TableHead className="text-right">Revenus</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stats.map((stat) => (
+                  <TableRow key={stat.id}>
+                    <TableCell className="font-medium">
+                      {stat.publisher.user.name || stat.publisher.user.email}
+                      {stat.publisher.companyName && (
+                        <span className="ml-1.5 text-xs text-muted-foreground">
+                          ({stat.publisher.companyName})
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell>{formatCalendarDate(stat.date)}</TableCell>
+                    <TableCell className="text-right">
+                      {formatNumber(stat.clicks)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatNumber(stat.hosts)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {formatNumber(stat.conversions)}
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      {formatCurrency(toNumber(stat.revenue))}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1">
+                        <DailyStatFormDialog
+                          publishers={publishers}
+                          stat={{
+                            id: stat.id,
+                            publisherId: stat.publisherId,
+                            date: stat.date.toISOString().slice(0, 10),
+                            clicks: String(stat.clicks),
+                            hosts: String(stat.hosts),
+                            conversions: String(stat.conversions),
+                            revenue: String(toNumber(stat.revenue)),
+                          }}
+                        />
+                        <DeleteDailyStatButton id={stat.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>

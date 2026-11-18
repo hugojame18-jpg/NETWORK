@@ -69,69 +69,70 @@ export default async function AdminSiteRequestsPage() {
 
         <Card>
           <CardContent className="px-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Affilié</TableHead>
-                  <TableHead>Site demandé</TableHead>
-                  <TableHead>Demandé le</TableHead>
-                  <TableHead>Statut</TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {requests.map((request) => {
-                  const site = getPromoSite(request.siteSlug);
-                  return (
-                    <TableRow key={request.id}>
-                      <TableCell>
-                        <p className="font-medium">
-                          {request.publisher.user.name}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          #{request.publisher.memberId} ·{" "}
-                          {request.publisher.user.email}
-                        </p>
-                      </TableCell>
-                      <TableCell>
-                        <p className="font-medium">
-                          {promoSiteName(request.siteSlug)}
-                        </p>
-                        {site && (
-                          <a
-                            href={site.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-xs text-primary hover:underline"
-                          >
-                            {site.url}
-                          </a>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground">
-                        {formatDate(request.createdAt)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={STATUS_VARIANT[request.status]}>
-                          {STATUS_LABEL[request.status]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {request.status === "PENDING" && (
-                          <SiteRequestActions requestId={request.id} />
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            {requests.length === 0 && (
+            {requests.length === 0 ? (
               <EmptyState
                 icon={<MonitorSmartphone />}
                 title="Aucune demande"
                 description="Quand un affilié demande un site du catalogue, sa demande arrive ici."
               />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Affilié</TableHead>
+                    <TableHead>Site demandé</TableHead>
+                    <TableHead>Demandé le</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead />
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {requests.map((request) => {
+                    const site = getPromoSite(request.siteSlug);
+                    return (
+                      <TableRow key={request.id}>
+                        <TableCell>
+                          <p className="font-medium">
+                            {request.publisher.user.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            #{request.publisher.memberId} ·{" "}
+                            {request.publisher.user.email}
+                          </p>
+                        </TableCell>
+                        <TableCell>
+                          <p className="font-medium">
+                            {promoSiteName(request.siteSlug)}
+                          </p>
+                          {site && (
+                            <a
+                              href={site.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-xs text-primary hover:underline"
+                            >
+                              {site.url}
+                            </a>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {formatDate(request.createdAt)}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={STATUS_VARIANT[request.status]}>
+                            {STATUS_LABEL[request.status]}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {request.status === "PENDING" && (
+                            <SiteRequestActions requestId={request.id} />
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             )}
           </CardContent>
         </Card>
