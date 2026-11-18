@@ -38,6 +38,10 @@ export interface SyncSummary {
   rowsWritten: number;
   /** sub3 values Flow reported that match no affiliate here. */
   unknownSub3: string[];
+  /** How many rows Flow returned, before matching. */
+  rowsReturned?: number;
+  /** The first few slices as Flow sent them — dates and sub3 only, no secrets. */
+  sampleSlices?: string[];
   from: string;
   to: string;
   error?: string;
@@ -131,6 +135,9 @@ async function fetchTraffic(
     url.searchParams.append("slice[]", "sub3");
     url.searchParams.append("fields[]", "clicks");
     url.searchParams.append("fields[]", "hosts");
+    // Affise's own example always sends this. Left out, the endpoint can
+    // answer "status: 1" with an empty set rather than refusing.
+    url.searchParams.append("conversionTypes[]", "total");
     url.searchParams.set("filter[date_from]", from);
     url.searchParams.set("filter[date_to]", to);
     url.searchParams.set("timezone", "UTC");
@@ -207,6 +214,11 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
         select: { id: true, postbackToken: true },
       }),
     ]);
+
+    summary.rowsReturned = rows.length;
+    summary.sampleSlices = rows
+      .slice(0, 5)
+      .map((row) => JSON.stringify(row.slice ?? {}));
 
     const byToken = new Map(
       publishers.map((p) => [p.postbackToken!.toLowerCase(), p.id]),

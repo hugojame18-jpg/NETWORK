@@ -18,7 +18,7 @@ export default async function AdminFlowPage() {
     <div className="space-y-6">
       <PageHeader
         title="Synchronisation Flow"
-        description="Les clics et les hosts sont relus chez Flow toutes les deux heures, par affilié. Plus rien à saisir le soir."
+        description="Les clics et les hosts sont relus chez Flow par affilié : à chaque conversion, quand un affilié ouvre ses stats, et une fois par nuit. Plus rien à saisir le soir."
       />
 
       <Card>
@@ -71,12 +71,34 @@ export default async function AdminFlowPage() {
               </div>
 
               {sync.ok ? (
-                <p className="text-muted-foreground">
-                  <strong className="num text-foreground">
-                    {sync.rowsWritten}
-                  </strong>{" "}
-                  journée(s) d&apos;affilié mise(s) à jour.
-                </p>
+                <div className="space-y-2 text-muted-foreground">
+                  <p>
+                    <strong className="num text-foreground">
+                      {sync.rowsWritten}
+                    </strong>{" "}
+                    journée(s) d&apos;affilié mise(s) à jour, sur{" "}
+                    <strong className="num text-foreground">
+                      {sync.rowsReturned ?? 0}
+                    </strong>{" "}
+                    ligne(s) renvoyée(s) par Flow.
+                  </p>
+                  {sync.rowsReturned === 0 && (
+                    <p>
+                      Flow a accepté la requête mais n&apos;a aucun trafic à
+                      remonter sur ces trois jours. Soit il n&apos;y a
+                      effectivement pas eu de clic, soit tes liens ne portent
+                      pas de sub3.
+                    </p>
+                  )}
+                  {sync.sampleSlices && sync.sampleSlices.length > 0 && (
+                    <div>
+                      <p className="eyebrow">Échantillon reçu</p>
+                      <p className="mt-1 font-mono text-xs break-all">
+                        {sync.sampleSlices.join("  ·  ")}
+                      </p>
+                    </div>
+                  )}
+                </div>
               ) : (
                 <p className="text-destructive">{sync.error}</p>
               )}
