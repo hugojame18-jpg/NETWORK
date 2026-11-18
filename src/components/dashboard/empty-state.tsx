@@ -33,7 +33,7 @@ export function EmptyState({
       <div className="relative mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-muted/40 text-muted-foreground [&_svg]:h-6 [&_svg]:w-6">
         {icon}
         <span
-          className="absolute -inset-4 -z-10 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,var(--primary)_14%,transparent),transparent_70%)]"
+          className="absolute -inset-4 -z-10 rounded-full bg-[radial-gradient(circle,color-mix(in_srgb,var(--primary)_14%,transparent),transparent_70%)]"
           aria-hidden
         />
       </div>

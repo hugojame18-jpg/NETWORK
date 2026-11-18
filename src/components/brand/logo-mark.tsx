@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
 
 /**
- * The RevNetwork mark: three rising bars with a node on the tallest one —
- * revenue going up, carried across a network. Drawn rather than set in type,
- * because a letter in a coloured square is what every unfinished dashboard
- * uses and it reads as a placeholder.
+ * The RevNetwork mark: the brand's R, drawn as paths rather than set in type so
+ * it keeps its weight and proportions at any size and in any font stack.
+ *
+ * NOTE: this stands in for the real logo file, which was lost with the original
+ * project folder. Swap the artwork here once it is back.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
@@ -17,23 +18,22 @@ export function LogoMark({ className }: { className?: string }) {
       )}
       aria-hidden
     >
-      <svg viewBox="0 0 24 24" fill="none" className="h-[18px] w-[18px]">
+      <svg viewBox="0 0 24 24" fill="none" className="h-[19px] w-[19px]">
         <path
-          d="M4 17.5v-3M9.5 17.5v-6.5M15 17.5V8"
+          d="M8 19.5V4.5h5a4.25 4.25 0 0 1 0 8.5H8"
           stroke="currentColor"
           className="text-primary-foreground"
-          strokeWidth="2.4"
+          strokeWidth="2.6"
           strokeLinecap="round"
-          opacity="0.75"
+          strokeLinejoin="round"
         />
         <path
-          d="M15 8 20 4"
+          d="m12.6 13 4.6 6.5"
           stroke="currentColor"
           className="text-primary-foreground"
-          strokeWidth="2.4"
+          strokeWidth="2.6"
           strokeLinecap="round"
         />
-        <circle cx="20" cy="4" r="2.6" className="fill-primary-foreground" />
       </svg>
     </span>
   );

@@ -254,17 +254,17 @@
 @layer utilities {
   /* Discreet glassmorphism: translucent surface with a soft blur and hairline border. */
   .glass {
-    background: color-mix(in oklch, var(--card) 68%, transparent);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid color-mix(in oklch, var(--foreground) 8%, transparent);
+    background: color-mix(in srgb, var(--card) 68%, transparent);
+    backdrop-filter: blur(20px) saturate(115%);
+    -webkit-backdrop-filter: blur(20px) saturate(115%);
+    border: 1px solid color-mix(in srgb, var(--foreground) 8%, transparent);
   }
 
   .glass-strong {
-    background: color-mix(in oklch, var(--card) 85%, transparent);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
+    background: color-mix(in srgb, var(--card) 85%, transparent);
+    backdrop-filter: blur(24px) saturate(120%);
+    -webkit-backdrop-filter: blur(24px) saturate(120%);
+    border: 1px solid color-mix(in srgb, var(--foreground) 10%, transparent);
   }
 
   /* Subtle layered elevation used for cards that should feel "premium", not flat. */
@@ -299,12 +299,12 @@
   .bg-grid {
     background-image:
       linear-gradient(
-        color-mix(in oklch, var(--foreground) 5%, transparent) 1px,
+        color-mix(in srgb, var(--foreground) 5%, transparent) 1px,
         transparent 1px
       ),
       linear-gradient(
         90deg,
-        color-mix(in oklch, var(--foreground) 5%, transparent) 1px,
+        color-mix(in srgb, var(--foreground) 5%, transparent) 1px,
         transparent 1px
       );
     background-size: 40px 40px;
@@ -313,7 +313,7 @@
   /* Perspective dot floor used under the hero (rotated in 3D by the markup). */
   .dotted-floor {
     background-image: radial-gradient(
-      color-mix(in oklch, var(--foreground) 45%, transparent) 1.5px,
+      color-mix(in srgb, var(--foreground) 45%, transparent) 1.5px,
       transparent 1.5px
     );
     background-size: 26px 26px;
@@ -374,17 +374,17 @@
     background:
       radial-gradient(
         120% 140% at 0% 0%,
-        color-mix(in oklch, var(--primary) 16%, transparent),
+        color-mix(in srgb, var(--primary) 16%, transparent),
         transparent 60%
       ),
       var(--card);
-    border: 1px solid color-mix(in oklch, var(--primary) 28%, transparent);
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-card);
   }
   .dark .surface-brand {
     box-shadow:
-      inset 0 1px 0 0 color-mix(in oklch, var(--primary) 22%, transparent),
+      inset 0 1px 0 0 color-mix(in srgb, var(--primary) 22%, transparent),
       var(--shadow-card-dark);
   }
 
@@ -400,7 +400,7 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: color-mix(in oklch, var(--muted-foreground) 85%, transparent);
+    color: color-mix(in srgb, var(--muted-foreground) 85%, transparent);
   }
 
   /* Hairline divider that fades at both ends — softer than a full-width rule. */
