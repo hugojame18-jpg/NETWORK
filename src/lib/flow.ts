@@ -131,6 +131,8 @@ async function fetchTraffic(
 
   for (let page = 1; page <= 20; page += 1) {
     const url = new URL(`${config.apiUrl}/3.0/stats/custom`);
+    url.searchParams.append("slice[]", "year");
+    url.searchParams.append("slice[]", "month");
     url.searchParams.append("slice[]", "day");
     url.searchParams.append("slice[]", "sub3");
     url.searchParams.append("fields[]", "clicks");
@@ -225,10 +227,30 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
     );
     const unknown = new Set<string>();
 
+    // Flow can answer a day-slice with the day number alone, no year or
+    // month. Every date in the window is known, so the day number is enough
+    // to place the row — and skipping it instead, as this once did, loses
+    // the whole sync without a word.
+    const dayToDate = new Map<number, Date>();
+    for (
+      let t = from.getTime();
+      t <= to.getTime();
+      t += 86_400_000
+    ) {
+      const d = new Date(t);
+      dayToDate.set(d.getUTCDate(), d);
+    }
+
     for (const row of rows) {
       const sub3 = row.slice?.sub3?.trim().toLowerCase();
       const { year, month, day } = row.slice ?? {};
-      if (!sub3 || !year || !month || !day) continue;
+      if (!sub3 || !day) continue;
+
+      const date =
+        year && month
+          ? new Date(Date.UTC(year, month - 1, day))
+          : dayToDate.get(day);
+      if (!date) continue;
 
       const publisherId = byToken.get(sub3);
       if (!publisherId) {
@@ -238,7 +260,6 @@ export async function syncFlowTraffic(): Promise<SyncSummary> {
 
       const clicks = toInt(row.clicks ?? row.traffic?.raw);
       const hosts = toInt(row.hosts ?? row.traffic?.uniq);
-      const date = new Date(Date.UTC(year, month - 1, day));
 
       await prisma.publisherDailyStat.upsert({
         where: { publisherId_date: { publisherId, date } },
