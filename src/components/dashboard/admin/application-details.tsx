@@ -29,7 +29,7 @@ export function ApplicationDetails(props: ApplicationDetailsProps) {
   return (
     <details className="mt-1">
       <summary className="w-fit cursor-pointer text-xs text-primary hover:underline">
-        Ce qu'il a déclaré à l'inscription
+        Ce qu&apos;il a déclaré à l&apos;inscription
       </summary>
       <div className="mt-2 max-w-md space-y-2 rounded-md border border-border bg-muted/40 p-3 text-xs">
         <Field
