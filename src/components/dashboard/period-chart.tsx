@@ -30,11 +30,46 @@ export interface PeriodPoint {
  * switcher keeps every series readable at full height and leaves a single line
  * on screen, which is also simply easier to read.
  */
+/* Axis labels get a compact form of their own: "2 365,88 $US" does not fit in
+   the gutter and Recharts simply clips it, which left the axis reading
+   ".00 $US" down the side. The tooltip still shows the exact figure. */
+function compactNumber(value: number): string {
+  if (Math.abs(value) >= 1000)
+    return `${(value / 1000).toFixed(1).replace(".", ",")} k`;
+  return formatNumber(value);
+}
+
+function compactMoney(value: number): string {
+  if (Math.abs(value) >= 1000)
+    return `${(value / 1000).toFixed(1).replace(".", ",")} k$`;
+  return `${Math.round(value)} $`;
+}
+
 const METRICS = [
-  { key: "clicks", label: "Clics", format: formatNumber },
-  { key: "hosts", label: "Hosts", format: formatNumber },
-  { key: "conversions", label: "Conversions", format: formatNumber },
-  { key: "revenue", label: "Revenus", format: formatCurrency },
+  {
+    key: "clicks",
+    label: "Clics",
+    format: formatNumber,
+    axisFormat: compactNumber,
+  },
+  {
+    key: "hosts",
+    label: "Hosts",
+    format: formatNumber,
+    axisFormat: compactNumber,
+  },
+  {
+    key: "conversions",
+    label: "Conversions",
+    format: formatNumber,
+    axisFormat: compactNumber,
+  },
+  {
+    key: "revenue",
+    label: "Revenus",
+    format: formatCurrency,
+    axisFormat: compactMoney,
+  },
 ] as const;
 
 type MetricKey = (typeof METRICS)[number]["key"];
@@ -100,8 +135,8 @@ export function PeriodChart({
             tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
-            width={64}
-            tickFormatter={(value: number) => active.format(value)}
+            width={58}
+            tickFormatter={(value: number) => active.axisFormat(value)}
           />
           <Tooltip
             content={<ChartTooltip formatValue={active.format} />}
