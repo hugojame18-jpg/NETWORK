@@ -10,6 +10,7 @@ import {
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { CopyValue } from "@/components/dashboard/admin/copy-value";
+import { PostbackTest } from "@/components/dashboard/admin/postback-test";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -185,6 +186,28 @@ export default async function AdminPostbackPage() {
               </TableBody>
             </Table>
           )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Vérifier que la chaîne fonctionne</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Envoie un appel identique à celui du réseau, depuis le serveur —
+            ta clé ne sort nulle part. L&apos;appel est réel : il compte une
+            vraie conversion du montant choisi sur l&apos;affilié visé, et
+            apparaît ci-dessous. À réserver à un compte de test.
+          </p>
+          <PostbackTest
+            publishers={publishers
+              .filter((publisher) => publisher.postbackToken)
+              .map((publisher) => ({
+                id: publisher.id,
+                label: `${publisher.companyName ?? publisher.user.name} — ${publisher.user.email}`,
+              }))}
+          />
         </CardContent>
       </Card>
 
