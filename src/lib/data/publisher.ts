@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
 import {
   REFERRAL_RATE,
+  payoutRate,
   computeBadges,
   resolveTier,
   type Badge,
@@ -79,16 +80,24 @@ export async function getPublisherByUserId(userId: string) {
 }
 
 /**
- * The affiliate's share of gross revenue. Stats hold what the advertiser pays
- * the network; everything shown to a publisher is their cut of it, so this is
- * read once per page and applied at the edge of each loader.
+ * The affiliate's share of gross revenue, after the referral share.
+ *
+ * Stats hold what the advertiser pays the network; everything shown to a
+ * publisher is their cut of it, so this is read once per page and applied at
+ * the edge of each loader. An affiliate someone brought in keeps their rate
+ * less REFERRAL_RATE, which is what their sponsor takes — netting it off here
+ * means every figure on their dashboard agrees, down to the badge on the
+ * earnings hero, without each loader having to remember.
  */
 async function commissionRate(publisherId: string): Promise<number> {
   const publisher = await prisma.publisher.findUnique({
     where: { id: publisherId },
-    select: { commissionRate: true },
+    select: { commissionRate: true, referredById: true },
   });
-  return toNumber(publisher?.commissionRate ?? 0.5);
+  return payoutRate(
+    toNumber(publisher?.commissionRate ?? 0.5),
+    publisher?.referredById != null,
+  );
 }
 
 export async function getRevenueSummary(publisherId: string) {
@@ -399,7 +408,7 @@ export interface ReferredAffiliate {
   joinedAt: Date;
   revenue: number;
   conversions: number;
-  /** Your reward from this affiliate (REFERRAL_RATE of their lifetime revenue). */
+  /** Your reward from this affiliate: REFERRAL_RATE of the gross they generated. */
   reward: number;
 }
 
@@ -484,15 +493,15 @@ export async function getRewardsOverview(
 
   const referrals: ReferredAffiliate[] = referred.map((r) => {
     const s = statByPublisher.get(r.id) ?? { revenue: 0, conversions: 0 };
-    // What the referred affiliate earns, using their own rate — never the
+    // Your reward is a share of the gross they generate. What is shown as
+    // theirs is what they keep once that share is taken out — never the
     // network's gross, which no publisher should see.
-    const earnings = s.revenue * toNumber(r.commissionRate);
     return {
       displayName: maskAffiliateName(r),
       joinedAt: r.createdAt,
-      revenue: earnings,
+      revenue: s.revenue * payoutRate(toNumber(r.commissionRate), true),
       conversions: s.conversions,
-      reward: earnings * REFERRAL_RATE,
+      reward: s.revenue * REFERRAL_RATE,
     };
   });
   const referralEarnings = referrals.reduce((sum, r) => sum + r.reward, 0);
@@ -587,6 +596,7 @@ export async function getMonthlyLeaderboard(
           id: true,
           companyName: true,
           commissionRate: true,
+          referredById: true,
           user: { select: { name: true, email: true } },
         },
       })
@@ -603,11 +613,14 @@ export async function getMonthlyLeaderboard(
       publisherId: group.publisherId,
       displayName: leaderboardName(publisher, isCurrent),
       conversions: group._sum.conversions ?? 0,
-      // Each affiliate's own earnings. Ranking is by conversions, so differing
-      // commission rates can't reorder the board.
+      // Each affiliate's own earnings, net of any referral share. Ranking is
+      // by conversions, so differing rates can't reorder the board.
       revenue:
         toNumber(group._sum.revenue) *
-        toNumber(publisher?.commissionRate ?? 0.5),
+        payoutRate(
+          toNumber(publisher?.commissionRate ?? 0.5),
+          publisher?.referredById != null,
+        ),
       clicks: group._sum.clicks ?? 0,
       isCurrent,
     };

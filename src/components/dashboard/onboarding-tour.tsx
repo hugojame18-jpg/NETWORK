@@ -42,7 +42,7 @@ const STEPS: Step[] = [
   {
     icon: "🎁",
     title: "4. Débloque des récompenses",
-    body: "Plus tu génères de revenus, plus tu montes : paliers avec bonus de payout, badges, et des lots concrets — bonus cash, AirPods, Apple Watch, iPhone… Parraine aussi des affiliés pour toucher 10 % de leurs revenus.",
+    body: "Plus tu génères de revenus, plus tu montes : paliers avec bonus de payout, badges, et des lots concrets — bonus cash, AirPods, Apple Watch, iPhone… Parraine aussi des affiliés pour toucher 10 % du chiffre d'affaires qu'ils génèrent.",
   },
   {
     icon: "💰",

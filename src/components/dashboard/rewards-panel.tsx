@@ -227,8 +227,8 @@ function ReferralCard({
           Parrainage
         </CardTitle>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gagnez {(REFERRAL_RATE * 100).toFixed(0)}% des revenus de chaque
-          affilié que vous parrainez, à vie.
+          Gagnez {(REFERRAL_RATE * 100).toFixed(0)}% du chiffre d&apos;affaires
+          généré par chaque affilié que vous parrainez, à vie.
         </p>
       </CardHeader>
       <CardContent className="space-y-5">

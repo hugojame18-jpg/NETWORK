@@ -65,12 +65,27 @@ export const TIERS: Tier[] = [
 /**
  * Referral reward: what a sponsor earns on an affiliate they brought in.
  *
- * Applied to the referred affiliate's own earnings — their share after their
- * commission rate — not to the network's gross, which no publisher is ever
- * shown. It costs the sponsor's referral nothing: the reward is paid by the
- * network on top, it is not deducted from what they earn.
+ * A share of the gross the referred affiliate generates, taken out of that
+ * affiliate's own cut — not out of the network's margin. So on $30 gross with
+ * a referred affiliate on 50 %: the network keeps its $15, the sponsor takes
+ * $3, and the affiliate is left with $12.
  */
 export const REFERRAL_RATE = 0.1;
+
+/**
+ * What an affiliate actually keeps per dollar of gross.
+ *
+ * Their commission rate, less the referral share if someone brought them in.
+ * Floored at zero so an affiliate on terms below the referral rate can never
+ * come out negative — in that case the sponsor is simply capped at whatever
+ * the affiliate's side was worth.
+ */
+export function payoutRate(
+  commissionRate: number,
+  isReferred: boolean,
+): number {
+  return isReferred ? Math.max(0, commissionRate - REFERRAL_RATE) : commissionRate;
+}
 
 // ---------------------------------------------------------------------------
 // Prize ladder
