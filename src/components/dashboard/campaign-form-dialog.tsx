@@ -144,7 +144,10 @@ export function CampaignFormDialog({ campaign }: CampaignFormDialogProps) {
                 onValueChange={(v) => v && setForm({ ...form, status: v })}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {STATUSES.find((s) => s.value === form.status)?.label ??
+                      form.status}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {STATUSES.map((s) => (

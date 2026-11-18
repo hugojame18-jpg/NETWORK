@@ -330,7 +330,10 @@ export function OfferFormDialog({ offer, campaigns }: OfferFormDialogProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue />
+                  <SelectValue>
+                    {campaigns.find((c) => c.id === form.campaignId)?.name ??
+                      "Aucune"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Aucune</SelectItem>

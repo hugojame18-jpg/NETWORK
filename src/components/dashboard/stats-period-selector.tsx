@@ -57,7 +57,12 @@ export function StatsPeriodSelector({
           onValueChange={(v) => v && updateParam("period", v)}
         >
           <SelectTrigger className="w-56">
-            <SelectValue />
+            {/* Base UI renders the raw value when Value has no child, so the
+                trigger used to read "last_30_days" at the top of the page. */}
+            <SelectValue>
+              {PRESETS.find((p) => p.value === period)?.label ??
+                "Choisir une période"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {PRESETS.map((p) => (

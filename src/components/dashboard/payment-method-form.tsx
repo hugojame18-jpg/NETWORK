@@ -88,7 +88,9 @@ export function PaymentMethodForm({ method, details }: PaymentMethodFormProps) {
           }}
         >
           <SelectTrigger className="w-full">
-            <SelectValue />
+            <SelectValue>
+              {METHODS.find((m) => m.value === selected)?.label ?? selected}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {METHODS.map((m) => (

@@ -107,7 +107,9 @@ export function RequestPaymentForm({
               onValueChange={(value) => value && setMethod(value)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue />
+                <SelectValue>
+                  {METHODS.find((m) => m.value === method)?.label ?? method}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {METHODS.map((m) => (
