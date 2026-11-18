@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { UserStatusMenu } from "@/components/dashboard/admin/user-status-menu";
-import { ApplicationStatusActions } from "@/components/dashboard/admin/application-status-actions";
 import { ApplicationDetails } from "@/components/dashboard/admin/application-details";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { PageHeader } from "@/components/dashboard/page-header";
@@ -27,15 +26,6 @@ const STATUS_VARIANT: Record<string, "default" | "secondary" | "destructive"> =
     SUSPENDED: "secondary",
     BANNED: "destructive",
   };
-
-const APPLICATION_VARIANT: Record<
-  string,
-  "default" | "secondary" | "destructive"
-> = {
-  APPROVED: "default",
-  PENDING: "secondary",
-  REJECTED: "destructive",
-};
 
 export default async function AdminAffiliatesPage() {
   const publishers = await getPublishersAdminList();
@@ -61,7 +51,6 @@ export default async function AdminAffiliatesPage() {
                 <TableRow>
                   <TableHead>ID</TableHead>
                   <TableHead>Publisher</TableHead>
-                  <TableHead>Candidature</TableHead>
                   <TableHead>Statut compte</TableHead>
                   <TableHead className="text-right">Conv. totales</TableHead>
                   <TableHead className="text-right">Revenu total</TableHead>
@@ -89,20 +78,6 @@ export default async function AdminAffiliatesPage() {
                         tiktokLinks={publisher.tiktokLinks}
                         website={publisher.website}
                       />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant={
-                            APPLICATION_VARIANT[publisher.applicationStatus]
-                          }
-                        >
-                          {publisher.applicationStatus}
-                        </Badge>
-                        {/* Always available: a decision can be reversed, and access
-                          to an approved account can be revoked. */}
-                        <ApplicationStatusActions publisherId={publisher.id} />
-                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge variant={STATUS_VARIANT[publisher.user.status]}>
