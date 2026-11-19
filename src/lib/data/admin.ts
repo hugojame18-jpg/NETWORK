@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
 import { getAffiliateLedgers } from "@/lib/data/ledger";
 import { flowConfig, lastSync } from "@/lib/flow";
+import { REVERSED_NOTE } from "@/lib/postback-booking";
 
 export async function getPublishersAdminList() {
   const [publishers, statTotals] = await Promise.all([
@@ -33,6 +34,34 @@ export async function getPublishersAdminList() {
       },
     };
   });
+}
+
+/**
+ * Gross per day for every affiliate over the last `days`, oldest first.
+ *
+ * One query for the whole list, so a table of fifty affiliates does not cost
+ * fifty round trips to draw fifty small lines.
+ */
+export async function getAffiliateSparks(
+  days = 14,
+): Promise<Map<string, number[]>> {
+  const today = startOfTodayLocalAsUtc();
+  const since = new Date(today.getTime() - (days - 1) * DAY_MS);
+
+  const rows = await prisma.publisherDailyStat.findMany({
+    where: { date: { gte: since } },
+    select: { publisherId: true, date: true, revenue: true },
+  });
+
+  const sparks = new Map<string, number[]>();
+  for (const row of rows) {
+    const index = Math.round((row.date.getTime() - since.getTime()) / DAY_MS);
+    if (index < 0 || index >= days) continue;
+    const series = sparks.get(row.publisherId) ?? new Array<number>(days).fill(0);
+    series[index] = toNumber(row.revenue);
+    sparks.set(row.publisherId, series);
+  }
+  return sparks;
 }
 
 /**
@@ -413,32 +442,108 @@ export async function getNetworkSeries(days = 90) {
   const today = startOfTodayLocalAsUtc();
   const since = new Date(today.getTime() - (days - 1) * DAY_MS);
 
-  const grouped = await prisma.publisherDailyStat.groupBy({
-    by: ["date"],
-    where: { date: { gte: since } },
-    _sum: { revenue: true, conversions: true, clicks: true },
-  });
-  const byDay = new Map(
-    grouped.map((group) => [group.date.toISOString().slice(0, 10), group._sum]),
+  // Grouped by affiliate as well as by day: the margin depends on each
+  // affiliate's own rate, so it cannot be derived from a day's grand total.
+  const [grouped, rates] = await Promise.all([
+    prisma.publisherDailyStat.groupBy({
+      by: ["date", "publisherId"],
+      where: { date: { gte: since } },
+      _sum: { revenue: true, conversions: true, clicks: true },
+    }),
+    prisma.publisher.findMany({ select: { id: true, commissionRate: true } }),
+  ]);
+  const rateById = new Map(
+    rates.map((rate) => [rate.id, toNumber(rate.commissionRate)]),
   );
 
-  const points: {
+  // A type alias rather than an interface, so a point can be handed to the
+  // chart as a plain record without a cast.
+  type Point = {
     date: string;
     clicks: number;
     conversions: number;
+    /** Gross billed that day. */
     revenue: number;
-  }[] = [];
+    /** What the network keeps of it. */
+    margin: number;
+    /** Affiliates with any activity that day. */
+    active: number;
+  };
+
+  const byDay = new Map<string, Point>();
   for (let t = since.getTime(); t <= today.getTime(); t += DAY_MS) {
     const key = new Date(t).toISOString().slice(0, 10);
-    const sums = byDay.get(key);
-    points.push({
+    byDay.set(key, {
       date: key,
-      clicks: sums?.clicks ?? 0,
-      conversions: sums?.conversions ?? 0,
-      revenue: toNumber(sums?.revenue),
+      clicks: 0,
+      conversions: 0,
+      revenue: 0,
+      margin: 0,
+      active: 0,
     });
   }
-  return points;
+
+  for (const group of grouped) {
+    const point = byDay.get(group.date.toISOString().slice(0, 10));
+    if (!point) continue;
+    const gross = toNumber(group._sum.revenue);
+    const clicks = group._sum.clicks ?? 0;
+    const conversions = group._sum.conversions ?? 0;
+    point.clicks += clicks;
+    point.conversions += conversions;
+    point.revenue += gross;
+    point.margin += gross * (1 - (rateById.get(group.publisherId) ?? 0.5));
+    if (clicks > 0 || conversions > 0) point.active += 1;
+  }
+
+  return [...byDay.values()];
+}
+
+export interface NetworkConversion {
+  id: string;
+  at: Date;
+  affiliate: string;
+  publisherId: string | null;
+  /** The network's full name for the offer — this is the admin's own view. */
+  offer: string | null;
+  /** Gross the network was paid. */
+  amount: number;
+  reversed: boolean;
+}
+
+/** The latest conversions across the whole network, newest first. */
+export async function getRecentNetworkConversions(
+  take = 8,
+): Promise<NetworkConversion[]> {
+  const hits = await prisma.postbackHit.findMany({
+    where: {
+      OR: [
+        { status: "ACCEPTED" },
+        { status: "REVERSED", message: REVERSED_NOTE },
+      ],
+    },
+    orderBy: { createdAt: "desc" },
+    take,
+    select: {
+      id: true,
+      createdAt: true,
+      offerName: true,
+      amount: true,
+      status: true,
+      publisherId: true,
+      publisher: { select: { user: { select: { name: true } } } },
+    },
+  });
+
+  return hits.map((hit) => ({
+    id: hit.id,
+    at: hit.createdAt,
+    affiliate: hit.publisher?.user.name ?? "—",
+    publisherId: hit.publisherId,
+    offer: hit.offerName,
+    amount: toNumber(hit.amount),
+    reversed: hit.status === "REVERSED",
+  }));
 }
 
 /**

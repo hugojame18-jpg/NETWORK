@@ -88,8 +88,8 @@ function asDate(day: string): Date {
  * second series is allowed only when it shares the bars' unit, so there is one
  * axis and no figure has to be read against the wrong scale.
  *
- * The last bar is today, which is still filling up — it is drawn lighter so a
- * half-finished day is not mistaken for a collapse.
+ * Today's bar is still filling up, so it is drawn lighter: a half-finished day
+ * must not be mistaken for a collapse.
  */
 export function TrendChart({
   data,
@@ -109,7 +109,14 @@ export function TrendChart({
     [data, range, ranges],
   );
   const [hovered, setHovered] = useState<number | null>(null);
-  const lastIndex = visible.length - 1;
+  // Today, as the stats key it: the calendar day on the wall clock. Only that
+  // bar is drawn lighter — a range that ends last month has no day in
+  // progress, and dimming its last bar would invent one.
+  const todayKey = useMemo(() => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  }, []);
 
   const rows = [bars, ...(line ? [line] : []), ...details];
 
@@ -229,7 +236,7 @@ export function TrendChart({
                 fillOpacity={
                   hovered !== null && hovered !== index
                     ? 0.35
-                    : index === lastIndex
+                    : point.date === todayKey
                       ? 0.5
                       : 1
                 }

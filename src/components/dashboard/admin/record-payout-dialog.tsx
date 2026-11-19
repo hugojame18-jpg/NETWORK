@@ -34,6 +34,8 @@ interface RecordPayoutDialogProps {
   balance: number;
   /** The method the affiliate registered, used as the default. */
   defaultMethod?: string | null;
+  /** A short "Payer" button, for a row in a list rather than a page header. */
+  compact?: boolean;
 }
 
 function today(): string {
@@ -61,6 +63,7 @@ export function RecordPayoutDialog({
   publisherName,
   balance,
   defaultMethod,
+  compact = false,
 }: RecordPayoutDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -131,9 +134,9 @@ export function RecordPayoutDialog({
     >
       <DialogTrigger
         render={
-          <Button>
-            <BanknoteArrowUp className="h-4 w-4" />
-            Enregistrer un paiement
+          <Button size={compact ? "sm" : "default"}>
+            <BanknoteArrowUp className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
+            {compact ? "Payer" : "Enregistrer un paiement"}
           </Button>
         }
       />

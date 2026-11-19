@@ -140,7 +140,25 @@ function today(): Date {
   return new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
 }
 
+/**
+ * The local `prisma dev` proxy drops idle sockets, and the first query on a
+ * fresh pool can land on a dead one. Knock until it answers before doing
+ * anything that matters.
+ */
+async function warmUp() {
+  for (let attempt = 1; attempt <= 8; attempt += 1) {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      return;
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
+    }
+  }
+  throw new Error("The local database is not answering. Is `prisma dev` running?");
+}
+
 async function main() {
+  await warmUp();
   const passwordHash = await bcrypt.hash("Publisher123!", 12);
   const start = today();
 
@@ -149,6 +167,23 @@ async function main() {
   await prisma.payment.deleteMany();
   await prisma.publisherDailyStat.deleteMany();
   await prisma.publisherSub3.deleteMany();
+
+  // A local admin with a known password. The seeded one may have had its
+  // password changed on this machine since; this one is reset on every run so
+  // the admin screens can always be opened in development.
+  const adminHash = await bcrypt.hash("Admin123!", 12);
+  await prisma.user.upsert({
+    where: { email: "demo-admin@example.com" },
+    update: { passwordHash: adminHash, status: "ACTIVE", role: "ADMIN" },
+    create: {
+      email: "demo-admin@example.com",
+      name: "Admin Démo",
+      passwordHash: adminHash,
+      role: "ADMIN",
+      status: "ACTIVE",
+      emailVerified: new Date(),
+    },
+  });
 
   const idByEmail = new Map<string, string>();
 
@@ -341,11 +376,10 @@ async function main() {
       },
     },
   });
-  await prisma.setting.upsert({
-    where: { key: "flow.apiKey" },
-    update: {},
-    create: { key: "flow.apiKey", value: "local-demo-key-not-real" },
-  });
+  // No Flow API key is seeded, on purpose: with one in place the app would
+  // call the real network from a development machine every time a stats page
+  // is opened. Any key left from an earlier run is removed.
+  await prisma.setting.deleteMany({ where: { key: "flow.apiKey" } });
 
   const announcements = await prisma.announcement.count();
   if (announcements === 0) {
