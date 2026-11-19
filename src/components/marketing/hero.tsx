@@ -112,7 +112,7 @@ function LivePanel() {
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 mx-4 -mt-5 rounded-2xl border border-white/12 bg-[oklch(0.23_0.03_275)] p-4 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.9)] sm:absolute sm:-bottom-24 sm:-left-12 sm:mx-0 sm:mt-0 sm:w-64"
+        className="relative z-10 mx-4 -mt-5 rounded-2xl border border-white/12 bg-[oklch(0.23_0.03_275)] p-4 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.9)] sm:absolute sm:-bottom-[7.5rem] sm:-left-12 sm:mx-0 sm:mt-0 sm:w-64"
       >
         <p className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
           Solde à recevoir
@@ -227,7 +227,7 @@ export function Hero() {
           className="lg:pl-10"
         >
           <LivePanel />
-          <p className="mt-8 text-center text-xs text-muted-foreground sm:mt-32 lg:mt-6 lg:text-right">
+          <p className="mt-8 text-center text-xs text-muted-foreground sm:mt-36 lg:text-right">
             Aperçu du dashboard — les chiffres affichés sont un exemple.
           </p>
         </motion.div>
