@@ -150,7 +150,7 @@ function LivePanel() {
  */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-14 pb-24 sm:pt-24 lg:pb-32">
+    <section className="relative overflow-hidden pt-14 pb-24 sm:pt-24 lg:pt-32 lg:pb-32">
       <div className="landing-grid pointer-events-none absolute inset-0 -z-10" />
       <div
         className="pointer-events-none absolute -top-48 left-[12%] -z-10 h-[620px] w-[900px] rounded-full opacity-40 blur-3xl"
