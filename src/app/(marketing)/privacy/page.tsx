@@ -63,7 +63,7 @@ export default function PrivacyPage() {
       <p className="text-xs font-semibold tracking-wider text-primary uppercase">
         Confidentialité
       </p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+      <h1 className="display mt-3 text-4xl sm:text-5xl">
         Ce que nous savons de toi, et pourquoi
       </h1>
       <p className="mt-4 text-muted-foreground">

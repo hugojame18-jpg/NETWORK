@@ -62,7 +62,7 @@ export function ProductTour() {
   return (
     <section
       id="why"
-      className="theme-light bg-background py-28 text-foreground"
+      className="theme-light bg-background py-28 text-foreground sm:py-36"
     >
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
@@ -72,13 +72,14 @@ export function ProductTour() {
           transition={{ duration: 0.6 }}
           className="max-w-2xl"
         >
-          <p className="text-xs font-semibold tracking-wider text-primary uppercase">
+          <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] text-foreground/70 uppercase">
+            <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
             Ton dashboard
           </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h2 className="display text-4xl sm:text-5xl">
             Tu sais toujours où tu en es
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
             Pas de fichier à attendre en fin de mois, pas de chiffre à
             demander. Tout ce que ton trafic fait est sous tes yeux, depuis
             ton téléphone comme depuis ton ordinateur.

@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
+import { displayFont } from "@/lib/fonts";
 
 export default function MarketingLayout({
   children,
@@ -12,7 +13,9 @@ export default function MarketingLayout({
   // dark tokens for this subtree; the "Pourquoi nous" section still opts back
   // into light via its own `theme-light` wrapper.
   return (
-    <div className="dark bg-background text-foreground flex min-h-screen flex-col">
+    <div
+      className={`${displayFont.variable} dark bg-background text-foreground flex min-h-screen flex-col`}
+    >
       <Navbar />
       <main className="flex-1">{children}</main>
       <Footer />

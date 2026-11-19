@@ -37,35 +37,41 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how" className="bg-muted/30 py-28">
+    <section id="how" className="relative py-28 sm:py-36">
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
+          align="left"
           eyebrow="Comment ça marche"
           title="De l'inscription au premier paiement"
           description="Quatre étapes, et aucune ne te demande de configurer quoi que ce soit."
         />
 
-        <div className="relative mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="absolute top-8 right-[12%] left-[12%] hidden h-px bg-border lg:block" />
+        {/* One hairline grid rather than four floating cards: the steps are a
+            sequence, and a shared frame is what makes them read as one. The
+            lines are the gaps showing the frame's colour through, so they
+            stay right at every column count. */}
+        <ol className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, i) => (
-            <motion.div
+            <motion.li
               key={step.number}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className="relative flex flex-col items-start"
+              transition={{ duration: 0.5, delay: i * 0.08 }}
+              className="group relative bg-background p-7 sm:p-8"
             >
-              <div className="glass shadow-premium relative z-10 mb-5 flex h-16 w-16 items-center justify-center rounded-2xl text-xl font-semibold text-primary">
+              <p className="display text-outline text-6xl transition-colors duration-300 group-hover:text-signal group-hover:[-webkit-text-stroke:0px]">
                 {step.number}
-              </div>
-              <h3 className="text-base font-semibold">{step.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">
+              </p>
+              <h3 className="mt-8 text-lg font-semibold tracking-tight">
+                {step.title}
+              </h3>
+              <p className="mt-2.5 text-[15px] leading-relaxed text-muted-foreground">
                 {step.description}
               </p>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

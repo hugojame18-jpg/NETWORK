@@ -15,41 +15,55 @@ const LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-background">
-      <div className="mx-auto max-w-7xl px-6 py-14">
-        <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+    <footer className="relative overflow-hidden bg-background">
+      <div className="mx-auto max-w-6xl px-6 pt-16">
+        <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
+          <div className="max-w-xs">
             <Link href="/" aria-label="RevNetwork — accueil">
               <Logo />
             </Link>
-            <nav className="mt-5 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground sm:justify-start">
-              {LINKS.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="transition-colors hover:text-foreground"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </nav>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+              Le réseau d&apos;affiliation CC Submit où tu vois chaque
+              conversion et ce qu&apos;elle te rapporte.
+            </p>
           </div>
+
+          <nav className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm text-muted-foreground sm:grid-cols-1">
+            {LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="transition-colors hover:text-foreground"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
           <a
             href={SUPPORT_TELEGRAM}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground"
+            className="inline-flex h-11 items-center gap-2 self-start rounded-full border border-white/12 px-5 text-sm font-medium transition-colors hover:border-signal hover:text-signal"
           >
             <Send className="h-4 w-4" />
             Nous écrire sur Telegram
           </a>
         </div>
 
-        <div className="mt-12 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-14 border-t border-white/8 py-6 text-sm text-muted-foreground">
           {new Date().getFullYear()} © RevNetwork. Tous droits réservés.
-        </div>
+        </p>
       </div>
+
+      {/* The name, once, as large as the page allows — cut by the bottom edge
+          so it reads as a signature rather than as a banner. */}
+      <p
+        className="display text-outline pointer-events-none -mb-[0.16em] text-center text-[15.4vw] leading-none whitespace-nowrap select-none"
+        aria-hidden
+      >
+        RevNetwork
+      </p>
     </footer>
   );
 }

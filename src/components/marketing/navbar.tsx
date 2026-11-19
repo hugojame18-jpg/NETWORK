@@ -72,11 +72,12 @@ export function Navbar() {
           >
             Connexion
           </Link>
-          <Button
-            render={<Link href="/sign-up" />}
+          <Link
+            href="/sign-up"
+            className="inline-flex h-9 items-center rounded-full bg-signal px-4 text-sm font-semibold text-signal-foreground transition-transform hover:scale-[1.03]"
           >
             Créer mon compte
-          </Button>
+          </Link>
         </div>
 
         <button
@@ -112,11 +113,12 @@ export function Navbar() {
               <Button variant="outline" render={<Link href="/sign-in" />}>
                 Connexion
               </Button>
-              <Button
-                render={<Link href="/sign-up" />}
+              <Link
+                href="/sign-up"
+                className="inline-flex h-10 items-center justify-center rounded-full bg-signal px-4 text-sm font-semibold text-signal-foreground"
               >
                 Créer mon compte
-              </Button>
+              </Link>
             </div>
           </nav>
         </motion.div>

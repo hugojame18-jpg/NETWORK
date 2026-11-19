@@ -29,7 +29,10 @@ const CARDS = [
 
 export function Referral() {
   return (
-    <section id="referral" className="bg-muted/30 py-28">
+    <section
+      id="referral"
+      className="relative border-t border-white/8 py-28 sm:py-36"
+    >
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
           eyebrow="Avec ton compte"
@@ -37,7 +40,7 @@ export function Referral() {
           description="Des paliers à franchir, de quoi apprendre, et quelqu'un pour répondre."
         />
 
-        <div className="mt-14 grid gap-5 md:grid-cols-3">
+        <div className="mt-16 grid gap-5 md:grid-cols-3">
           {CARDS.map((card, i) => (
             <motion.div
               key={card.title}
@@ -45,13 +48,23 @@ export function Referral() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="glass rounded-2xl p-6"
+              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 transition-colors hover:border-white/20"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 text-primary">
+              {/* A little of the hero's light in each card's corner, so the
+                  section belongs to the same room. */}
+              <div
+                className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
+                style={{ background: "oklch(0.55 0.22 277)" }}
+              />
+              <span className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-signal text-signal-foreground">
                 <card.icon className="h-5 w-5" />
               </span>
-              <h3 className="mt-5 text-base font-semibold">{card.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{card.body}</p>
+              <h3 className="relative mt-7 text-xl font-semibold tracking-tight">
+                {card.title}
+              </h3>
+              <p className="relative mt-3 text-[15px] leading-relaxed text-muted-foreground">
+                {card.body}
+              </p>
             </motion.div>
           ))}
         </div>

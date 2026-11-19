@@ -1,4 +1,5 @@
 import { Hero } from "@/components/marketing/hero";
+import { BrandMarquee } from "@/components/marketing/brand-marquee";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { ProductTour } from "@/components/marketing/product-tour";
 import { Verticals } from "@/components/marketing/verticals";
@@ -15,6 +16,7 @@ export default function HomePage() {
   return (
     <>
       <Hero />
+      <BrandMarquee />
       <HowItWorks />
       <ProductTour />
       <Verticals />

@@ -26,48 +26,56 @@ const POINTS = [
 
 export function Verticals() {
   return (
-    <section id="offer" className="relative overflow-hidden py-28">
+    <section id="offer" className="relative overflow-hidden py-28 sm:py-36">
       <div className="mx-auto max-w-6xl px-6">
-        <p className="mb-14 text-right text-3xl font-bold tracking-widest text-muted-foreground/25 uppercase sm:text-4xl">
-          L&apos;offre
-        </p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.55 }}
-          className="grid gap-10 lg:grid-cols-[1fr_1.4fr]"
-        >
-          <div>
-            <h3 className="text-2xl font-bold tracking-tight uppercase">
-              CC Submit
-            </h3>
-            <p className="mt-4 text-sm text-muted-foreground">
+        <div className="grid gap-12 lg:grid-cols-[1fr_1.15fr] lg:gap-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6 }}
+          >
+            <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] text-foreground/70 uppercase">
+              <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
+              L&apos;offre
+            </p>
+            {/* The name of the vertical is the headline: one thing, said big. */}
+            <h2 className="display text-6xl sm:text-7xl lg:text-8xl">
+              CC
+              <br />
+              <span className="text-outline">Submit</span>
+            </h2>
+            <p className="mt-7 max-w-sm text-lg leading-relaxed text-muted-foreground">
               Une seule verticale, celle qu&apos;on connaît : des offres payées
               à la conversion, sur un pays ou sur plusieurs à la fois.
             </p>
-          </div>
+          </motion.div>
 
-          <ol className="relative space-y-8 border-t border-primary/40 pt-8 pl-6">
-            <span
-              className="absolute top-9 bottom-1 left-[3px] w-px bg-border"
-              aria-hidden
-            />
-            {POINTS.map((point) => (
-              <li key={point.title} className="relative">
-                <span
-                  className="absolute top-1.5 -left-6 h-2 w-2 rounded-full bg-primary"
-                  aria-hidden
-                />
-                <p className="text-sm font-semibold">{point.title}</p>
-                <p className="mt-1.5 text-sm text-muted-foreground">
-                  {point.body}
-                </p>
-              </li>
+          <ol className="divide-y divide-white/10 border-y border-white/10">
+            {POINTS.map((point, index) => (
+              <motion.li
+                key={point.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className="grid gap-x-6 gap-y-2 py-8 sm:grid-cols-[3rem_1fr]"
+              >
+                <span className="font-display text-sm font-bold text-signal">
+                  0{index + 1}
+                </span>
+                <div>
+                  <h3 className="text-lg font-semibold tracking-tight">
+                    {point.title}
+                  </h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
+                    {point.body}
+                  </p>
+                </div>
+              </motion.li>
             ))}
           </ol>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

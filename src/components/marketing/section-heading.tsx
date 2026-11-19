@@ -11,6 +11,11 @@ interface SectionHeadingProps {
   className?: string;
 }
 
+/**
+ * How every section of the landing opens: the signal dot and a short label,
+ * then the title in the display face. The same three marks in the same order
+ * each time, so the page reads as one voice from top to bottom.
+ */
 export function SectionHeading({
   eyebrow,
   title,
@@ -25,21 +30,26 @@ export function SectionHeading({
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        "mx-auto max-w-2xl",
-        align === "center" ? "text-center" : "text-left",
+        "max-w-2xl",
+        align === "center" ? "mx-auto text-center" : "text-left",
         className,
       )}
     >
       {eyebrow && (
-        <p className="mb-3 text-xs font-semibold tracking-wider text-primary uppercase">
+        <p
+          className={cn(
+            "mb-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] text-foreground/70 uppercase",
+          )}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
           {eyebrow}
         </p>
       )}
-      <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-        {title}
-      </h2>
+      <h2 className="display text-4xl sm:text-5xl">{title}</h2>
       {description && (
-        <p className="mt-4 text-muted-foreground">{description}</p>
+        <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
+          {description}
+        </p>
       )}
     </motion.div>
   );

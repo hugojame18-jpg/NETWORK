@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Radio, Send, Wallet } from "lucide-react";
 import { Logo } from "@/components/brand/logo-mark";
+import { displayFont } from "@/lib/fonts";
 
 /* Three things the product does, in the order an affiliate meets them. This
    panel used to open on a quoted testimonial from a named "partner" — a person
@@ -32,7 +33,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen w-full">
+    <div className={`${displayFont.variable} relative flex min-h-screen w-full`}>
       <div className="dark relative hidden w-1/2 overflow-hidden border-r border-border bg-background text-foreground lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="bg-grid pointer-events-none absolute inset-0 opacity-40" />
         <div
@@ -55,10 +56,10 @@ export default function AuthLayout({
         </Link>
 
         <div className="relative z-10 max-w-md space-y-10">
-          <h2 className="text-[34px] leading-[1.1] font-semibold tracking-tight">
+          <h2 className="display text-5xl xl:text-6xl">
             Ton trafic rapporte.
             <br />
-            <span className="text-gradient-brand">On te le paie.</span>
+            <span className="text-signal">On te le paie.</span>
           </h2>
 
           <div className="grid gap-6">

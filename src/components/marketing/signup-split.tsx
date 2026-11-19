@@ -1,61 +1,50 @@
 "use client";
 
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 /**
  * The closing call to action.
  *
  * It used to be split in two, Publisher on one side and Advertiser on the
  * other. The network has no advertiser side to sign up for, so there is one
- * door now, and it leads somewhere.
+ * door now, and it leads somewhere. It is the hero's promise said once more,
+ * at full size, with the same button — the page ends the way it started.
  */
 export function SignupSplit() {
   return (
-    <section id="join" className="relative">
-      {/* Scrolling watermark strip — pauses on hover (see `.marquee-group` rule). */}
-      <div className="marquee-group relative overflow-hidden border-t border-border bg-background py-24">
-        <div className="flex -rotate-3 flex-col gap-2 opacity-[0.06]">
-          {[0, 1, 2].map((row) => (
-            <div
-              key={row}
-              className="animate-marquee flex w-max"
-              style={{
-                animationDuration: `${26 + row * 8}s`,
-                animationDirection: row % 2 === 1 ? "reverse" : "normal",
-              }}
-            >
-              <span className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl">
-                {"Rejoindre · ".repeat(10)}
-              </span>
-              <span
-                aria-hidden
-                className="pr-4 text-5xl font-extrabold tracking-widest whitespace-nowrap uppercase sm:text-7xl"
-              >
-                {"Rejoindre · ".repeat(10)}
-              </span>
-            </div>
-          ))}
-        </div>
-        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-5 px-6 text-center">
-          <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-            Prêt à envoyer ton premier clic ?
-          </h2>
-          <p className="max-w-md text-sm text-muted-foreground">
-            Compte gratuit, dashboard ouvert tout de suite, payé à chaque
-            conversion.
-          </p>
-          <Button
-            size="lg"
-            className="pointer-events-auto h-12 px-8 text-base"
-            render={<Link href="/sign-up" />}
-          >
-            Créer mon compte
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
+    <section id="join" className="relative overflow-hidden px-4 py-10 sm:px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="relative mx-auto max-w-6xl overflow-hidden rounded-[40px] border border-white/10 px-6 py-24 text-center sm:py-32"
+        style={{
+          background:
+            "radial-gradient(120% 120% at 50% 0%, oklch(0.42 0.2 277) 0%, oklch(0.2 0.06 274) 55%, oklch(0.158 0.013 274) 100%)",
+        }}
+      >
+        <div className="landing-grid pointer-events-none absolute inset-0 opacity-70" />
+
+        <h2 className="display relative mx-auto max-w-4xl text-5xl sm:text-7xl lg:text-8xl">
+          Prêt à envoyer
+          <br />
+          ton premier clic&nbsp;?
+        </h2>
+        <p className="relative mx-auto mt-7 max-w-md text-lg text-foreground/70">
+          Compte gratuit, dashboard ouvert tout de suite, payé à chaque
+          conversion.
+        </p>
+        <Link
+          href="/sign-up"
+          className="glow-signal group relative mt-10 inline-flex h-14 items-center gap-2 rounded-full bg-signal px-9 text-base font-semibold text-signal-foreground transition-transform hover:scale-[1.03] active:scale-[0.98]"
+        >
+          Créer mon compte
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+        </Link>
+      </motion.div>
     </section>
   );
 }
