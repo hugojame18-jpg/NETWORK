@@ -34,6 +34,7 @@ import {
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { OnboardingTour } from "@/components/dashboard/onboarding-tour";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { Mascot } from "@/components/brand/mascot";
 import { TopPerformers } from "@/components/dashboard/top-performers";
 import { TrendChart } from "@/components/dashboard/trend-chart";
 import { CopyButton } from "@/components/dashboard/copy-button";
@@ -134,6 +135,7 @@ export default async function PublisherHomePage() {
       <PageHeader
         title={firstName ? `Salut ${firstName}` : "Salut 👋"}
         description={`${todayLabel} — voici où tu en es.`}
+        leading={<Mascot className="h-14 w-14 shrink-0" />}
         action={
           <Button variant="outline" render={<Link href="/dashboard/stats" />}>
             Toutes mes stats

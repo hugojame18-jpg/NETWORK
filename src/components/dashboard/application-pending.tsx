@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Clock, XCircle, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Mascot } from "@/components/brand/mascot";
 import { emailDeliveryEnabled } from "@/lib/email";
 
 /**
@@ -19,18 +20,19 @@ export function ApplicationPending({
     <div className="flex min-h-screen items-center justify-center bg-muted/20 p-4">
       <Card className="w-full max-w-lg">
         <CardContent className="space-y-5 pt-8 pb-8 text-center">
-          <div
-            className={`mx-auto flex h-14 w-14 items-center justify-center rounded-full ${
-              rejected
-                ? "bg-destructive/10 text-destructive"
-                : "bg-primary/10 text-primary"
-            }`}
-          >
-            {rejected ? (
-              <XCircle className="h-7 w-7" />
-            ) : (
-              <Clock className="h-7 w-7" />
-            )}
+          <div className="relative mx-auto w-fit">
+            <Mascot className="h-24 w-24" />
+            <span
+              className={`absolute -right-2 -bottom-1 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card shadow-sm ${
+                rejected ? "text-destructive" : "text-primary"
+              }`}
+            >
+              {rejected ? (
+                <XCircle className="h-4 w-4" />
+              ) : (
+                <Clock className="h-4 w-4" />
+              )}
+            </span>
           </div>
 
           {rejected ? (

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LifeBuoy, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { SidebarNav, type NavSection } from "./sidebar-nav";
 import { LogoMark } from "@/components/brand/logo-mark";
+import { Mascot } from "@/components/brand/mascot";
 import { cn } from "@/lib/utils";
 
 interface SidebarProps {
@@ -71,12 +72,21 @@ export function Sidebar({
             rel="noopener noreferrer"
             title={collapsed ? "Contacter l'équipe" : undefined}
             className={cn(
-              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-foreground",
-              collapsed && "justify-center px-0",
+              "flex items-center gap-3 rounded-xl border border-sidebar-border bg-background/70 p-2.5 transition-colors hover:border-primary/40",
+              collapsed && "justify-center border-transparent bg-transparent p-1",
             )}
           >
-            <LifeBuoy className="h-4 w-4 shrink-0" />
-            {!collapsed && <span className="truncate">Contacter l&apos;équipe</span>}
+            <Mascot className="h-10 w-10 shrink-0" />
+            {!collapsed && (
+              <span className="min-w-0 leading-tight">
+                <span className="block truncate text-sm font-medium">
+                  Une question ?
+                </span>
+                <span className="block truncate text-xs text-muted-foreground">
+                  Écris à l&apos;équipe
+                </span>
+              </span>
+            )}
           </a>
         )}
         <button

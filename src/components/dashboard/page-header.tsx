@@ -7,6 +7,8 @@ interface PageHeaderProps {
   description?: string;
   /** Primary action(s) for the page, right-aligned on wide screens. */
   action?: ReactNode;
+  /** Something to stand before the title — the mascot, on the home screen. */
+  leading?: ReactNode;
   className?: string;
 }
 
@@ -19,6 +21,7 @@ export function PageHeader({
   title,
   description,
   action,
+  leading,
   className,
 }: PageHeaderProps) {
   return (
@@ -28,15 +31,18 @@ export function PageHeader({
         className,
       )}
     >
-      <div className="min-w-0 space-y-1">
-        <h1 className="text-[22px] leading-tight font-semibold tracking-tight">
-          {title}
-        </h1>
-        {description && (
-          <p className="max-w-2xl text-sm text-muted-foreground">
-            {description}
-          </p>
-        )}
+      <div className="flex min-w-0 items-center gap-3.5">
+        {leading}
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-[22px] leading-tight font-semibold tracking-tight">
+            {title}
+          </h1>
+          {description && (
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              {description}
+            </p>
+          )}
+        </div>
       </div>
       {action && (
         <div className="flex shrink-0 flex-wrap items-center gap-2">

@@ -5,6 +5,7 @@ import { RewardsPanel } from "@/components/dashboard/rewards-panel";
 import { RewardLadder } from "@/components/dashboard/reward-ladder";
 import { computePrizes } from "@/lib/loyalty";
 import { PageHeader } from "@/components/dashboard/page-header";
+import { Mascot } from "@/components/brand/mascot";
 
 export const metadata: Metadata = { title: "Récompenses" };
 
@@ -20,6 +21,7 @@ export default async function RewardsPage() {
       <PageHeader
         title="Récompenses"
         description="Monte en palier, débloque des badges et parraine des affiliés pour gagner plus."
+        leading={<Mascot className="h-14 w-14 shrink-0" />}
       />
       <div>
         <RewardLadder

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Mascot } from "@/components/brand/mascot";
 
 interface Step {
   icon: string;
@@ -37,7 +38,7 @@ const STEPS: Step[] = [
   {
     icon: "📊",
     title: "3. Suis tes résultats",
-    body: "« Statistiques » affiche tes clics, conversions et revenus jour par jour. Ces chiffres sont saisis chaque soir par l'équipe : ce sont les mêmes que ceux qui servent à te payer.",
+    body: "« Statistiques » affiche tes clics, conversions et revenus jour par jour. Chaque conversion validée remonte toute seule : ce sont les mêmes chiffres que ceux qui servent à te payer.",
   },
   {
     icon: "🎁",
@@ -84,8 +85,14 @@ export function OnboardingTour() {
       <div className="w-full max-w-lg rounded-xl border border-border bg-popover shadow-2xl">
         <div className="flex items-start justify-between gap-4 border-b border-border p-5">
           <div className="flex items-center gap-3">
-            <span className="text-3xl" aria-hidden>
-              {step.icon}
+            <span className="relative shrink-0">
+              <Mascot className="h-14 w-14" />
+              <span
+                className="absolute -right-1.5 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full border border-border bg-popover text-xs"
+                aria-hidden
+              >
+                {step.icon}
+              </span>
             </span>
             <div>
               <p className="text-xs text-muted-foreground">
