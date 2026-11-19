@@ -56,7 +56,7 @@ export function Referral() {
                 className="pointer-events-none absolute -top-24 -right-24 h-48 w-48 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-60"
                 style={{ background: "oklch(0.55 0.22 277)" }}
               />
-              <span className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-signal text-signal-foreground">
+              <span className="relative flex h-11 w-11 items-center justify-center rounded-2xl brand-fill">
                 <card.icon className="h-5 w-5" />
               </span>
               <h3 className="relative mt-7 text-xl font-semibold tracking-tight">

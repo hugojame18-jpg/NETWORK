@@ -39,7 +39,7 @@ export function SignupSplit() {
         </p>
         <Link
           href="/sign-up"
-          className="glow-signal group relative mt-10 inline-flex h-14 items-center gap-2 rounded-full bg-signal px-9 text-base font-semibold text-signal-foreground transition-transform hover:scale-[1.03] active:scale-[0.98]"
+          className="glow-signal group relative mt-10 inline-flex h-14 items-center gap-2 rounded-full bg-white px-9 text-base font-semibold text-black transition-transform hover:scale-[1.03] active:scale-[0.98]"
         >
           Créer mon compte
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

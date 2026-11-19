@@ -74,7 +74,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/sign-up"
-            className="inline-flex h-9 items-center rounded-full bg-signal px-4 text-sm font-semibold text-signal-foreground transition-transform hover:scale-[1.03]"
+            className="inline-flex h-9 items-center rounded-full brand-fill px-4 text-sm font-semibold transition-transform hover:scale-[1.03]"
           >
             Créer mon compte
           </Link>
@@ -115,7 +115,7 @@ export function Navbar() {
               </Button>
               <Link
                 href="/sign-up"
-                className="inline-flex h-10 items-center justify-center rounded-full bg-signal px-4 text-sm font-semibold text-signal-foreground"
+                className="inline-flex h-10 items-center justify-center rounded-full brand-fill px-4 text-sm font-semibold"
               >
                 Créer mon compte
               </Link>

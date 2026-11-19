@@ -16,7 +16,7 @@ export const contentType = "image/png";
 
 const NIGHT = "#0b0c14";
 const INDIGO = "#5b5fe9";
-const SIGNAL = "#c5f53c";
+const SIGNAL = "#9a9dff";
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -35,7 +35,7 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          {/* The mark: an R whose counter is the lit signal dot. */}
+          {/* The mark: the white R on the brand's blue-violet. */}
           <div
             style={{
               width: 72,
@@ -61,7 +61,6 @@ export default function OpenGraphImage() {
                 strokeWidth="3.2"
                 strokeLinecap="round"
               />
-              <circle cx="16.3" cy="13.1" r="1.6" fill={SIGNAL} />
             </svg>
           </div>
           <div style={{ display: "flex", fontSize: 38, fontWeight: 700 }}>

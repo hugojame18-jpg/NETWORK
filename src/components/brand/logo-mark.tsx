@@ -3,13 +3,9 @@ import { cn } from "@/lib/utils";
 /**
  * The RevNetwork mark.
  *
- * An R on the brand's indigo, with one thing no other R has: the hole in its
- * bowl is a lit dot. That dot is the brand's idea in a single shape — the
- * signal that something just converted — and it is the same dot that marks a
- * live conversion in the product and pulses beside the headline on the
- * landing. Drawn as paths rather than set in type, so it keeps its weight at
- * any size and in any font stack; at favicon size the dot is still the first
- * thing the eye finds.
+ * A white R on the brand's blue-violet — the brand's whole palette in one
+ * tile: blue-violet, white, and the black it sits on. Drawn as paths rather
+ * than set in type, so it keeps its weight at any size and in any font stack.
  *
  * The original logo file was lost with the first project folder. This mark is
  * designed to stand as the logo in its own right — swap the artwork here if
@@ -40,7 +36,6 @@ export function LogoMark({ className }: { className?: string }) {
           strokeWidth="3.2"
           strokeLinecap="round"
         />
-        <circle cx="16.3" cy="13.1" r="1.6" fill="var(--signal)" />
       </svg>
     </span>
   );

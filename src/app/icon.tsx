@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 /**
- * The browser-tab icon: the mark itself — the R on indigo with its lit dot —
+ * The browser-tab icon: the mark itself — the white R on blue-violet —
  * drawn from the same paths as `LogoMark`, so the tab and the page show one
  * logo and not two approximations of it.
  */
@@ -36,7 +36,6 @@ export default function Icon() {
             strokeWidth="3.4"
             strokeLinecap="round"
           />
-          <circle cx="16.3" cy="13.1" r="1.8" fill="#c5f53c" />
         </svg>
       </div>
     ),

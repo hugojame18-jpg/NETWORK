@@ -123,10 +123,10 @@
   --success-foreground: oklch(0.99 0.01 165);
   --warning: oklch(0.69 0.115 72);
   --warning-foreground: oklch(0.26 0.03 72);
-  /* The brand's second colour: the "live" signal. On a light surface it is a
-     fill for dots and marks only — never text, where it would not be legible. */
-  --signal: oklch(0.82 0.21 132);
-  --signal-foreground: oklch(0.22 0.06 132);
+  /* The accent on public pages. It is the brand's own blue-violet, not a
+     second colour: RevNetwork is blue-violet, black and white, nothing else. */
+  --signal: oklch(0.52 0.172 272);
+  --signal-foreground: oklch(0.99 0.004 272);
 
   --destructive: oklch(0.56 0.19 25);
   --border: oklch(0.925 0.004 268);
@@ -182,10 +182,10 @@
   --success-foreground: oklch(0.15 0.02 158);
   --warning: oklch(0.79 0.15 78);
   --warning-foreground: oklch(0.18 0.02 78);
-  /* On the night background the signal is the loudest thing on the page, on
-     purpose: it marks what is live and what to press, and nothing else. */
-  --signal: oklch(0.91 0.21 128);
-  --signal-foreground: oklch(0.2 0.06 128);
+  /* On the night background the accent is the brand's blue-violet lifted
+     until it reads as text: it marks the promise, the dots and the numerals. */
+  --signal: oklch(0.74 0.16 277);
+  --signal-foreground: oklch(0.99 0.005 277);
 
   --destructive: oklch(0.65 0.21 22);
   --border: oklch(1 0 0 / 9%);
@@ -240,10 +240,10 @@
   --success-foreground: oklch(0.99 0.01 165);
   --warning: oklch(0.69 0.115 72);
   --warning-foreground: oklch(0.26 0.03 72);
-  /* The brand's second colour: the "live" signal. On a light surface it is a
-     fill for dots and marks only — never text, where it would not be legible. */
-  --signal: oklch(0.82 0.21 132);
-  --signal-foreground: oklch(0.22 0.06 132);
+  /* The accent on public pages. It is the brand's own blue-violet, not a
+     second colour: RevNetwork is blue-violet, black and white, nothing else. */
+  --signal: oklch(0.52 0.172 272);
+  --signal-foreground: oklch(0.99 0.004 272);
 
   --destructive: oklch(0.56 0.19 25);
   --border: oklch(0.925 0.004 268);
@@ -424,11 +424,24 @@
     );
   }
 
-  /* The signal's glow, for the one call to action on a screen. */
+  /* The call to action: the same blue-violet as the logo's tile, with white
+     type. One per screen. */
+  .brand-fill {
+    background-image: linear-gradient(
+      140deg,
+      oklch(0.66 0.19 278),
+      oklch(0.55 0.22 277) 55%,
+      oklch(0.45 0.21 272)
+    );
+    color: oklch(0.99 0.005 277);
+  }
+
+  /* Its glow. */
   .glow-signal {
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--signal) 60%, transparent),
-      0 8px 40px -8px color-mix(in srgb, var(--signal) 55%, transparent);
+      inset 0 1px 0 0 oklch(1 0 0 / 22%),
+      0 0 0 1px oklch(0.62 0.21 277 / 55%),
+      0 10px 44px -8px oklch(0.55 0.24 277 / 70%);
   }
 
   /* ---- Dashboard surface system -------------------------------------- */

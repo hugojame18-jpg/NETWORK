@@ -26,8 +26,8 @@ const rise = {
  *
  * Built from the brand's three elements and nothing else: the night
  * background with its indigo light, the display face for the two lines that
- * say what this is, and the signal colour on the only two things that matter
- * here — the promise and the button. Everything decorative that used to float
+ * say what this is, and the brand's blue-violet on the only two things that
+ * matter here — the promise and the button. Everything decorative that used to float
  * behind the headline is gone; the product itself, shown below, is the image.
  */
 export function Hero() {
@@ -83,7 +83,7 @@ export function Hero() {
         >
           <Link
             href="/sign-up"
-            className="glow-signal group inline-flex h-12 items-center gap-2 rounded-full bg-signal px-7 text-[15px] font-semibold text-signal-foreground transition-transform hover:scale-[1.03] active:scale-[0.98]"
+            className="glow-signal group inline-flex h-12 items-center gap-2 rounded-full brand-fill px-7 text-[15px] font-semibold transition-transform hover:scale-[1.03] active:scale-[0.98]"
           >
             Créer mon compte
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
