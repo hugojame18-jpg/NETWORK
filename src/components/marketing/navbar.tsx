@@ -11,8 +11,8 @@ import { Logo } from "@/components/brand/logo-mark";
 // "/#…" rather than "#…", so the links still work from the privacy page.
 const NAV_LINKS = [
   { href: "/#how", label: "Comment ça marche" },
-  { href: "/#why", label: "Pourquoi nous" },
-  { href: "/#referral", label: "Parrainage" },
+  { href: "/#why", label: "Ton dashboard" },
+  { href: "/#offer", label: "L'offre" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -43,7 +43,11 @@ export function Navbar() {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300",
-        scrolled ? "glass border-b" : "border-b border-transparent",
+        // Solid enough to stay legible over the light sections: the glass
+        // version turned grey over white and washed the links out.
+        scrolled
+          ? "border-b border-border bg-background/90 backdrop-blur-xl"
+          : "border-b border-transparent",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">

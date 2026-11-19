@@ -1,6 +1,6 @@
 import { Hero } from "@/components/marketing/hero";
 import { HowItWorks } from "@/components/marketing/how-it-works";
-import { WhyUs } from "@/components/marketing/why-us";
+import { ProductTour } from "@/components/marketing/product-tour";
 import { Verticals } from "@/components/marketing/verticals";
 import { Referral } from "@/components/marketing/referral";
 import { Faq } from "@/components/marketing/faq";
@@ -16,7 +16,7 @@ export default function HomePage() {
     <>
       <Hero />
       <HowItWorks />
-      <WhyUs />
+      <ProductTour />
       <Verticals />
       <Referral />
       <Faq />

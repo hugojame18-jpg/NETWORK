@@ -9,7 +9,7 @@ export default function ForgotPasswordPage() {
     <div>
       <AuthHeader
         title="Mot de passe oublié"
-        description="Entrez votre email, nous vous envoyons un lien de réinitialisation."
+        description="Indique ton email : on t'envoie un lien pour en choisir un nouveau."
       />
       <ForgotPasswordForm />
     </div>

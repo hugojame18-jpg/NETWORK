@@ -104,7 +104,7 @@ function TierCard({
           <div className="flex items-center gap-5">
             <TierMedallion gradient={current.gradient} label={current.label} />
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-muted-foreground">Votre palier</p>
+              <p className="text-sm text-muted-foreground">Ton palier</p>
               <p className={cn("text-2xl font-bold", current.accent)}>
                 {current.label}
               </p>
@@ -146,7 +146,7 @@ function TierCard({
           ) : (
             <div className="mt-6 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm text-primary">
               <Sparkles className="h-4 w-4" />
-              Palier maximum atteint — vous êtes au sommet du réseau.
+              Palier maximum atteint — tu es au sommet du réseau.
             </div>
           )}
         </CardContent>
@@ -227,8 +227,8 @@ function ReferralCard({
           Parrainage
         </CardTitle>
         <p className="mt-1 text-sm text-muted-foreground">
-          Gagnez {(REFERRAL_RATE * 100).toFixed(0)}% du chiffre d&apos;affaires
-          généré par chaque affilié que vous parrainez, à vie.
+          Gagne {(REFERRAL_RATE * 100).toFixed(0)} % du chiffre d&apos;affaires
+          généré par chaque affilié que tu parraines, à vie.
         </p>
       </CardHeader>
       <CardContent className="space-y-5">
@@ -246,7 +246,7 @@ function ReferralCard({
             </p>
           </div>
           <div className="rounded-xl border border-border bg-muted/40 p-3">
-            <p className="text-xs text-muted-foreground">Votre code</p>
+            <p className="text-xs text-muted-foreground">Ton code</p>
             <p className="text-xl font-semibold tracking-widest">
               {referralCode}
             </p>
@@ -255,7 +255,7 @@ function ReferralCard({
 
         <div>
           <p className="mb-1.5 text-xs font-medium text-muted-foreground">
-            Votre lien de parrainage
+            Ton lien de parrainage
           </p>
           <div className="flex items-center gap-2">
             <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-muted px-3 py-2 text-xs">
@@ -280,7 +280,7 @@ function ReferralCard({
                   <TableHead>Filleul</TableHead>
                   <TableHead>Inscrit le</TableHead>
                   <TableHead className="text-right">Conversions</TableHead>
-                  <TableHead className="text-right">Votre gain</TableHead>
+                  <TableHead className="text-right">Ton gain</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -310,7 +310,7 @@ function ReferralCard({
               Aucun filleul pour l&apos;instant
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Partagez votre lien pour recruter des affiliés et toucher des
+              Partage ton lien pour amener des affiliés et toucher des
               commissions récurrentes.
             </p>
           </div>

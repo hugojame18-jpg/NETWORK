@@ -1,24 +1,28 @@
 import Link from "next/link";
-import { ArrowUpRight, ShieldCheck, Zap, BarChart3 } from "lucide-react";
+import { ArrowLeft, Radio, Send, Wallet } from "lucide-react";
+import { Logo } from "@/components/brand/logo-mark";
 
+/* Three things the product does, in the order an affiliate meets them. This
+   panel used to open on a quoted testimonial from a named "partner" — a person
+   from the development seed data, not a customer. Nothing is quoted here that
+   nobody said. */
 const HIGHLIGHTS = [
   {
-    icon: Zap,
-    title: "Tracking en temps réel",
+    icon: Radio,
+    title: "Tes conversions en direct",
     description:
-      "Clics, leads et conversions remontent en quelques millisecondes.",
+      "Chaque conversion validée s'affiche aussitôt, avec ce qu'elle te rapporte.",
   },
   {
-    icon: BarChart3,
-    title: "Revenus transparents",
+    icon: Wallet,
+    title: "Ton solde toujours à jour",
     description:
-      "Commissions calculées automatiquement, sans surprise en fin de mois.",
+      "Ce qui t'est dû, ce qui t'a été versé, et la distance jusqu'au prochain retrait.",
   },
   {
-    icon: ShieldCheck,
-    title: "Paiements fiables",
-    description:
-      "Un suivi précis de chaque paiement, du statut en attente au virement.",
+    icon: Send,
+    title: "Une équipe à qui écrire",
+    description: "Une question ? Tu écris directement à l'équipe sur Telegram.",
   },
 ];
 
@@ -29,7 +33,7 @@ export default function AuthLayout({
 }) {
   return (
     <div className="relative flex min-h-screen w-full">
-      <div className="relative hidden w-1/2 overflow-hidden border-r border-border bg-[oklch(0.16_0.015_275)] lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <div className="dark relative hidden w-1/2 overflow-hidden border-r border-border bg-background text-foreground lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div className="bg-grid pointer-events-none absolute inset-0 opacity-40" />
         <div
           className="pointer-events-none absolute -top-32 -left-32 h-96 w-96 rounded-full opacity-30 blur-3xl"
@@ -39,43 +43,35 @@ export default function AuthLayout({
           }}
         />
         <div
-          className="pointer-events-none absolute -bottom-40 -right-20 h-96 w-96 rounded-full opacity-20 blur-3xl"
+          className="pointer-events-none absolute -right-20 -bottom-40 h-96 w-96 rounded-full opacity-20 blur-3xl"
           style={{
             background:
               "radial-gradient(circle, var(--chart-3), transparent 70%)",
           }}
         />
 
-        <Link
-          href="/"
-          className="relative z-10 flex items-center gap-2 text-lg font-semibold text-white"
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 text-sm font-bold">
-            CC
-          </span>
-          RevNetwork
+        <Link href="/" className="relative z-10" aria-label="RevNetwork — accueil">
+          <Logo />
         </Link>
 
-        <div className="relative z-10 space-y-10">
-          <blockquote className="max-w-md space-y-4">
-            <p className="text-2xl leading-snug font-medium text-white">
-              « Le réseau qui rend le tracking de nos campagnes enfin{" "}
-              <span className="text-gradient-brand">lisible</span>. »
-            </p>
-            <footer className="text-sm text-white/50">
-              Julia Chen — Chen Media Buying, publisher partenaire
-            </footer>
-          </blockquote>
+        <div className="relative z-10 max-w-md space-y-10">
+          <h2 className="text-[34px] leading-[1.1] font-semibold tracking-tight">
+            Ton trafic rapporte.
+            <br />
+            <span className="text-gradient-brand">On te le paie.</span>
+          </h2>
 
-          <div className="grid gap-5">
+          <div className="grid gap-6">
             {HIGHLIGHTS.map((item) => (
-              <div key={item.title} className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 text-white">
+              <div key={item.title} className="flex items-start gap-3.5">
+                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
                   <item.icon className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-white">{item.title}</p>
-                  <p className="text-sm text-white/50">{item.description}</p>
+                  <p className="text-sm font-medium">{item.title}</p>
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {item.description}
+                  </p>
                 </div>
               </div>
             ))}
@@ -84,14 +80,26 @@ export default function AuthLayout({
 
         <Link
           href="/"
-          className="relative z-10 inline-flex items-center gap-1 text-sm text-white/50 transition hover:text-white"
+          className="relative z-10 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition hover:text-foreground"
         >
-          Retour au site <ArrowUpRight className="h-3.5 w-3.5" />
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Retour au site
         </Link>
       </div>
 
       <div className="flex w-full flex-col items-center justify-center bg-background px-6 py-12 lg:w-1/2">
-        <div className="w-full max-w-sm">{children}</div>
+        <div className="w-full max-w-sm">
+          {/* On a phone the dark panel is hidden, so the brand has to live
+              above the form or the page is an anonymous login box. */}
+          <Link
+            href="/"
+            className="mb-10 flex justify-center lg:hidden"
+            aria-label="RevNetwork — accueil"
+          >
+            <Logo />
+          </Link>
+          {children}
+        </div>
       </div>
     </div>
   );

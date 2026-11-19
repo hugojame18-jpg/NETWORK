@@ -20,7 +20,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     <div>
       <AuthHeader
         title="Bon retour"
-        description="Connectez-vous pour accéder à votre espace."
+        description="Connecte-toi pour retrouver ton dashboard."
       />
       <SignInForm
         callbackUrl={params.callbackUrl ?? "/dashboard"}

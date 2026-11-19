@@ -1,20 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Gift, GraduationCap, Users } from "lucide-react";
+import { Gift, GraduationCap, Send } from "lucide-react";
 import { SectionHeading } from "./section-heading";
 
 /**
- * The three things an affiliate gets beyond the commission itself. Each maps
- * to a screen in the dashboard: Récompenses (referral code and ladder) and
- * Formation.
+ * What comes with the account beyond the numbers: the reward ladder, the
+ * training, and a person to write to. The referral programme has its own card
+ * in the product tour above, so it is not repeated here.
  */
 const CARDS = [
-  {
-    icon: Users,
-    title: "Parraine, touche 10 %",
-    body: "Tu as un code de parrainage dès l'inscription. Chaque affilié qui s'inscrit avec te rapporte 10 % du chiffre d'affaires qu'il génère, aussi longtemps qu'il tourne.",
-  },
   {
     icon: Gift,
     title: "Des paliers à débloquer",
@@ -25,6 +20,11 @@ const CARDS = [
     title: "On te montre comment faire",
     body: "Des vidéos de formation, dans l'ordre où il faut les regarder, pour lancer ton trafic sans tâtonner.",
   },
+  {
+    icon: Send,
+    title: "Une équipe à qui écrire",
+    body: "Une question, un lien à recevoir, un doute sur un chiffre : tu écris directement à l'équipe sur Telegram, sans ticket ni formulaire.",
+  },
 ];
 
 export function Referral() {
@@ -32,9 +32,9 @@ export function Referral() {
     <section id="referral" className="bg-muted/30 py-28">
       <div className="mx-auto max-w-6xl px-6">
         <SectionHeading
-          eyebrow="Au-delà de la commission"
-          title="Ce que tu gagnes en plus"
-          description="Ton trafic te paie. Ton réseau et ta régularité aussi."
+          eyebrow="Avec ton compte"
+          title="Tu n'es pas seul devant tes chiffres"
+          description="Des paliers à franchir, de quoi apprendre, et quelqu'un pour répondre."
         />
 
         <div className="mt-14 grid gap-5 md:grid-cols-3">

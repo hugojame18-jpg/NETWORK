@@ -15,15 +15,15 @@ import { signInSchema, type SignInInput } from "@/lib/validations/auth";
 
 const ERROR_MESSAGES: Record<string, string> = {
   account_suspended:
-    "Votre compte a été suspendu. Contactez le support pour plus d'informations.",
-  account_banned: "Votre compte a été banni de la plateforme.",
+    "Ton compte a été suspendu. Écris à l'équipe pour en savoir plus.",
+  account_banned: "Ton compte a été banni de la plateforme.",
   CredentialsSignin: "Email ou mot de passe incorrect.",
 };
 
 const NOTICE_MESSAGES: Record<string, string> = {
-  success: "Adresse email confirmée. Vous pouvez vous connecter.",
+  success: "Adresse email confirmée. Tu peux te connecter.",
   expired:
-    "Ce lien de confirmation a expiré. Reconnectez-vous puis redemandez un email.",
+    "Ce lien de confirmation a expiré. Connecte-toi puis redemande un email.",
   missing: "Lien de confirmation invalide.",
 };
 
@@ -97,7 +97,7 @@ export function SignInForm({
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="vous@exemple.com"
+          placeholder="toi@exemple.com"
           {...register("email")}
         />
         {errors.email && (

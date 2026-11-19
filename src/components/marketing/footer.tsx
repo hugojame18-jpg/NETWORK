@@ -7,8 +7,8 @@ import { SUPPORT_TELEGRAM } from "@/lib/contact";
    that 404'd and three social icons pointing at "#". */
 const LINKS = [
   { label: "Comment ça marche", href: "/#how" },
-  { label: "Pourquoi nous", href: "/#why" },
-  { label: "Parrainage", href: "/#referral" },
+  { label: "Ton dashboard", href: "/#why" },
+  { label: "L'offre", href: "/#offer" },
   { label: "FAQ", href: "/#faq" },
   { label: "Confidentialité", href: "/privacy" },
 ];

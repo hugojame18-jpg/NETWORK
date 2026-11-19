@@ -252,7 +252,7 @@ const BADGE_SPECS: BadgeSpec[] = [
   {
     key: "first-conversion",
     label: "Première conversion",
-    description: "Votre toute première conversion",
+    description: "Ta toute première conversion",
     icon: "zap",
     metric: "conversions",
     target: 1,
@@ -308,7 +308,7 @@ const BADGE_SPECS: BadgeSpec[] = [
   {
     key: "first-referral",
     label: "Premier filleul",
-    description: "Parrainez votre 1er affilié",
+    description: "Parraine ton 1er affilié",
     icon: "user-plus",
     metric: "referrals",
     target: 1,

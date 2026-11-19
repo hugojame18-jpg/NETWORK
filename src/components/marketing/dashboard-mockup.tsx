@@ -1,138 +1,204 @@
 "use client";
 
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import {
-  motion,
-  useMotionTemplate,
-  useMotionValue,
-  useSpring,
-} from "framer-motion";
-import { MousePointerClick, Percent, TrendingUp, Wallet } from "lucide-react";
+  BarChart3,
+  Gift,
+  GraduationCap,
+  LayoutDashboard,
+  Target,
+  Wallet,
+} from "lucide-react";
+import { LogoMark } from "@/components/brand/logo-mark";
 
-const BARS = [38, 52, 44, 61, 58, 70, 64, 78, 72, 88, 82, 95];
+/* Illustrative figures, kept modest and internally consistent: nine
+   conversions at 15 $ is the 135 $ shown for the day, and the balance bar is
+   165 of 250. The caption under the mock-up says they are an example. */
+const BARS = [42, 58, 49, 66, 54, 71, 63, 80, 69, 88, 76, 94, 83, 52];
 
-/* Illustrative figures, kept modest and internally consistent: 9 conversions
-   on 1 204 clicks is the 0,75 % shown beside them. The caption under the
-   mockup says they are an example. */
-const STATS = [
-  { label: "Tes gains aujourd'hui", value: "135 $", icon: Wallet },
-  { label: "Clics", value: "1 204", icon: MousePointerClick },
-  { label: "Conversions", value: "9", icon: TrendingUp },
-  { label: "Taux de conversion", value: "0,75 %", icon: Percent },
+const MENU = [
+  { label: "Accueil", icon: LayoutDashboard, active: true },
+  { label: "Statistiques", icon: BarChart3 },
+  { label: "Conversions", icon: Target },
+  { label: "Formation", icon: GraduationCap },
+  { label: "Récompenses", icon: Gift },
+  { label: "Paiements", icon: Wallet },
 ];
 
-/* The affiliate menu as it really is, so the picture matches what opens
-   after sign-up. */
-const MENU = ["Accueil", "Statistiques", "Formation", "Récompenses", "Paiements"];
+const FEED = [
+  { label: "FR · CC Submit", when: "il y a 4 min" },
+  { label: "BE · CC Submit", when: "il y a 22 min" },
+  { label: "MultiGeo · CC Submit", when: "il y a 1 h" },
+];
 
+/**
+ * The product, in miniature.
+ *
+ * Drawn light on the dark page because the real dashboard is light — the
+ * earlier mock-up was a dark panel with another domain in its address bar and
+ * a menu that no longer exists. Every block here is one an affiliate finds
+ * after signing up, in the place they find it: the balance and how far the
+ * next payout is, the day's figures, gains per day, the latest conversions.
+ */
 export function DashboardMockup() {
-  const ref = useRef<HTMLDivElement>(null);
-  const rotateX = useMotionValue(0);
-  const rotateY = useMotionValue(0);
-  const springX = useSpring(rotateX, { stiffness: 150, damping: 20 });
-  const springY = useSpring(rotateY, { stiffness: 150, damping: 20 });
-  const transform = useMotionTemplate`perspective(1200px) rotateX(${springX}deg) rotateY(${springY}deg)`;
-
-  function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    const px = (e.clientX - rect.left) / rect.width - 0.5;
-    const py = (e.clientY - rect.top) / rect.height - 0.5;
-    rotateY.set(px * 8);
-    rotateX.set(py * -8);
-  }
-
-  function handleMouseLeave() {
-    rotateX.set(0);
-    rotateY.set(0);
-  }
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      style={{ transform }}
-      ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className="glass-strong shadow-premium relative mx-auto w-full max-w-4xl rounded-2xl p-2"
-    >
-      <div className="flex items-center gap-1.5 px-3 py-2">
-        <span className="h-2.5 w-2.5 rounded-full bg-destructive/60" />
-        <span className="h-2.5 w-2.5 rounded-full bg-warning/60" />
-        <span className="h-2.5 w-2.5 rounded-full bg-success/60" />
-        <span className="ml-3 text-xs text-muted-foreground">
+    <div className="theme-light relative mx-auto w-full max-w-5xl overflow-hidden rounded-2xl border border-white/10 bg-background text-foreground shadow-[0_40px_120px_-20px_rgb(0_0_0/0.7)]">
+      {/* Window bar */}
+      <div className="flex items-center gap-1.5 border-b border-border bg-card px-4 py-2.5">
+        <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]/80" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]/80" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]/80" />
+        <span className="mx-auto rounded-md bg-muted px-3 py-0.5 text-[11px] text-muted-foreground">
           revnetwork.live/dashboard
         </span>
       </div>
 
-      <div className="grid grid-cols-[180px_1fr] gap-3 rounded-xl bg-background/60 p-3">
-        <div className="hidden flex-col gap-2 rounded-lg border border-border/60 bg-card/60 p-3 sm:flex">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-bold">
-              R
-            </span>
-            <span className="text-xs font-medium">RevNetwork</span>
+      <div className="grid text-left md:grid-cols-[176px_1fr]">
+        {/* Sidebar */}
+        <div className="hidden flex-col gap-0.5 border-r border-border bg-card p-3 md:flex">
+          <div className="mb-3 flex items-center gap-2 px-1">
+            <LogoMark className="h-7 w-7 rounded-lg [&_svg]:h-4 [&_svg]:w-4" />
+            <span className="text-[13px] font-semibold">RevNetwork</span>
           </div>
-          {MENU.map((item, i) => (
-            <div key={item} className={cnItem(i === 0)}>
-              {item}
+          {MENU.map((item) => (
+            <div
+              key={item.label}
+              className={
+                item.active
+                  ? "flex items-center gap-2 rounded-md bg-accent px-2 py-1.5 text-[12px] font-medium"
+                  : "flex items-center gap-2 rounded-md px-2 py-1.5 text-[12px] text-muted-foreground"
+              }
+            >
+              <item.icon
+                className={
+                  item.active ? "h-3.5 w-3.5 text-primary" : "h-3.5 w-3.5"
+                }
+              />
+              {item.label}
             </div>
           ))}
         </div>
 
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-            {STATS.map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + i * 0.08, duration: 0.5 }}
-                className="hover-lift rounded-lg border border-border/60 bg-card/80 p-3"
-              >
-                <stat.icon className="h-3.5 w-3.5 text-primary" />
-                <p className="mt-2 text-base font-semibold">{stat.value}</p>
-                <p className="text-[10px] text-muted-foreground">
-                  {stat.label}
-                </p>
-              </motion.div>
-            ))}
+        {/* Page */}
+        <div className="space-y-3 p-4 sm:p-5">
+          <div>
+            <p className="text-[15px] font-semibold tracking-tight">Salut Léa</p>
+            <p className="text-[11px] text-muted-foreground">
+              Voici où tu en es.
+            </p>
           </div>
 
-          <div className="rounded-lg border border-border/60 bg-card/80 p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs font-medium">
-                Tes gains sur 12 semaines
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="surface-brand p-4 sm:col-span-1">
+              <p className="text-[9px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                Solde à recevoir
               </p>
-              <span className="text-[10px] text-muted-foreground">USD</span>
-            </div>
-            <div className="flex h-28 items-end gap-1.5">
-              {BARS.map((h, i) => (
+              <p className="num mt-2 text-[26px] leading-none font-semibold">
+                165
+                <span className="text-[0.6em] font-medium opacity-55">
+                  ,00&nbsp;$
+                </span>
+              </p>
+              <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-muted">
                 <motion.div
-                  key={i}
-                  initial={{ height: 0 }}
-                  animate={{ height: `${h}%` }}
-                  transition={{
-                    delay: 0.6 + i * 0.04,
-                    duration: 0.5,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className="flex-1 rounded-t-sm bg-gradient-to-t from-primary/40 to-primary"
+                  initial={{ width: 0 }}
+                  animate={{ width: "66%" }}
+                  transition={{ duration: 1, delay: 0.7, ease: [0.16, 1, 0.3, 1] }}
+                  className="h-full rounded-full bg-primary"
                 />
-              ))}
+              </div>
+              <p className="mt-2 text-[10px] text-muted-foreground">
+                Encore 85,00 $ avant ton prochain retrait.
+              </p>
+            </div>
+
+            <div className="surface p-4">
+              <p className="text-[9px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                Aujourd&apos;hui
+              </p>
+              <p className="num mt-2 text-[22px] leading-none font-semibold">
+                135
+                <span className="text-[0.6em] font-medium opacity-55">
+                  ,00&nbsp;$
+                </span>
+              </p>
+              <p className="mt-2 text-[10px] text-muted-foreground">
+                9 conversions · 1 204 clics
+              </p>
+            </div>
+
+            <div className="surface p-4">
+              <p className="text-[9px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                7 derniers jours
+              </p>
+              <p className="num mt-2 text-[22px] leading-none font-semibold">
+                780
+                <span className="text-[0.6em] font-medium opacity-55">
+                  ,00&nbsp;$
+                </span>
+              </p>
+              <p className="mt-2 inline-flex items-center gap-1 rounded-md bg-success/12 px-1.5 py-0.5 text-[10px] font-medium text-success">
+                ↗ 12,4 %
+              </p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-5">
+            <div className="surface p-4 sm:col-span-3">
+              <p className="text-[12px] font-semibold">Tes gains par jour</p>
+              <div className="mt-4 flex h-24 items-end gap-1.5 sm:h-28">
+                {BARS.map((height, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ height: 0 }}
+                    animate={{ height: `${height}%` }}
+                    transition={{
+                      delay: 0.5 + index * 0.035,
+                      duration: 0.55,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className={
+                      index === BARS.length - 1
+                        ? "flex-1 rounded-t-[3px] bg-primary/45"
+                        : "flex-1 rounded-t-[3px] bg-primary"
+                    }
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="surface sm:col-span-2">
+              <p className="px-4 pt-4 text-[12px] font-semibold">
+                Dernières conversions
+              </p>
+              <ul className="mt-2 divide-y divide-border">
+                {FEED.map((item, index) => (
+                  <motion.li
+                    key={item.label}
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.9 + index * 0.15, duration: 0.4 }}
+                    className="flex items-center gap-2 px-4 py-2"
+                  >
+                    <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-success" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[11px] font-medium">
+                        {item.label}
+                      </span>
+                      <span className="block text-[9.5px] text-muted-foreground">
+                        {item.when}
+                      </span>
+                    </span>
+                    <span className="num text-[11px] font-semibold">
+                      +15,00 $
+                    </span>
+                  </motion.li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
-}
-
-function cnItem(active: boolean) {
-  return [
-    "rounded-md px-2 py-1.5 text-[11px]",
-    active ? "bg-primary/15 text-primary font-medium" : "text-muted-foreground",
-  ].join(" ");
 }
