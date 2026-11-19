@@ -17,6 +17,8 @@ const ERROR_MESSAGES: Record<string, string> = {
   account_suspended:
     "Ton compte a été suspendu. Écris à l'équipe pour en savoir plus.",
   account_banned: "Ton compte a été banni de la plateforme.",
+  too_many_attempts:
+    "Trop de tentatives. Patiente un quart d'heure avant de réessayer.",
   CredentialsSignin: "Email ou mot de passe incorrect.",
 };
 

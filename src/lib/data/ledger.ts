@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
-import { REFERRAL_RATE, payoutRate } from "@/lib/loyalty";
+import { REFERRAL_RATE, payoutRate, tierBonusBetween } from "@/lib/loyalty";
 import {
   composeLedger,
   emptyLedger,
@@ -163,6 +163,8 @@ export interface AffiliatePeriod {
   ownEarnings: number;
   /** Sponsor rewards earned that month. */
   referralEarnings: number;
+  /** Tier bonus earned that month on their own traffic. */
+  tierBonus: number;
   earned: number;
   /** Conversions per click, as a percentage. */
   conversionRate: number;
@@ -253,6 +255,7 @@ export async function getAffiliateMonths(
       gross: 0,
       ownEarnings: 0,
       referralEarnings: 0,
+      tierBonus: 0,
       earned: 0,
       conversionRate: 0,
     };
@@ -272,14 +275,26 @@ export async function getAffiliateMonths(
     bucket(row.date).referralEarnings += toNumber(row.revenue) * REFERRAL_RATE;
   }
 
-  return [...months.values()]
-    .map((month) => ({
+  // Walked oldest first: the bonus a month earns depends on how much had
+  // been earned before it, since that decides which tier its dollars fall in.
+  const chronological = [...months.values()].sort(
+    (a, b) => a.start.getTime() - b.start.getTime(),
+  );
+  let lifetime = 0;
+  const result = chronological.map((month) => {
+    const ownEarnings = month.gross * rate;
+    const bonus = tierBonusBetween(lifetime, lifetime + ownEarnings);
+    lifetime += ownEarnings;
+    return {
       ...month,
-      ownEarnings: month.gross * rate,
-      earned: month.gross * rate + month.referralEarnings,
+      ownEarnings,
+      tierBonus: bonus,
+      earned: ownEarnings + month.referralEarnings + bonus,
       conversionRate: rateOf(month.conversions, month.clicks),
-    }))
-    .sort((a, b) => b.start.getTime() - a.start.getTime());
+    };
+  });
+
+  return result.reverse();
 }
 
 /** The days of one month, newest first, with the affiliate's cut per day. */

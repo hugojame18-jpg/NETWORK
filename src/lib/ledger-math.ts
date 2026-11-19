@@ -1,4 +1,4 @@
-import { REFERRAL_RATE, payoutRate } from "@/lib/loyalty";
+import { REFERRAL_RATE, payoutRate, tierBonus } from "@/lib/loyalty";
 
 /**
  * The arithmetic of an affiliate's money, with nothing else in it.
@@ -22,7 +22,9 @@ export interface AffiliateLedger {
   ownEarnings: number;
   /** What they earn as a sponsor, on the gross their referrals generate. */
   referralEarnings: number;
-  /** Everything they have earned, ever. */
+  /** The tier bonus on their own earnings — paid by the network. */
+  tierBonus: number;
+  /** Everything they have earned, ever: traffic, referrals and bonus. */
   earned: number;
   /** Sum of the payouts marked as sent. */
   paid: number;
@@ -51,7 +53,10 @@ export function composeLedger(input: LedgerInput): AffiliateLedger {
   const rate = payoutRate(input.commissionRate, input.isReferred);
   const ownEarnings = input.gross * rate;
   const referralEarnings = input.referredGross * REFERRAL_RATE;
-  const earned = ownEarnings + referralEarnings;
+  // The bonus used to be shown on the rewards page and added to nothing. It
+  // is money owed like the rest, so it is counted here, where the balance is.
+  const bonus = tierBonus(ownEarnings);
+  const earned = ownEarnings + referralEarnings + bonus;
   const balance = earned - input.paid;
 
   return {
@@ -62,6 +67,7 @@ export function composeLedger(input: LedgerInput): AffiliateLedger {
     gross: input.gross,
     ownEarnings,
     referralEarnings,
+    tierBonus: bonus,
     earned,
     paid: input.paid,
     pending: input.pending,

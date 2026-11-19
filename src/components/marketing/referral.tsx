@@ -13,7 +13,7 @@ const CARDS = [
   {
     icon: Gift,
     title: "Des paliers à débloquer",
-    body: "Bronze, Argent, Or, Platine : ton palier monte avec tes gains cumulés et ne redescend jamais. Une échelle de récompenses t'attend dans ton dashboard.",
+    body: "Bronze, Argent, Or, Platine : ton palier monte avec tes gains cumulés et ne redescend jamais. À partir d'Argent, tes gains suivants sont majorés : +3 %, puis +5 %, puis +8 %.",
   },
   {
     icon: GraduationCap,

@@ -10,6 +10,8 @@ import {
   payoutRate,
   computeBadges,
   resolveTier,
+  tierBonus,
+  tierBonusBetween,
   type Badge,
   type TierProgress,
 } from "@/lib/loyalty";
@@ -420,7 +422,8 @@ export interface RewardsOverview {
   lifetimeRevenue: number;
   lifetimeConversions: number;
   monthRevenue: number;
-  /** Tier bonus applied to lifetime / month revenue (motivational display). */
+  /** Tier bonus earned so far, and the part of it earned this month. These
+   *  are the amounts the ledger pays — see `tierBonus` in @/lib/loyalty. */
   bonusLifetime: number;
   bonusThisMonth: number;
   badges: Badge[];
@@ -516,8 +519,11 @@ export async function getRewardsOverview(
     lifetimeRevenue,
     lifetimeConversions,
     monthRevenue,
-    bonusLifetime: lifetimeRevenue * tier.current.bonusRate,
-    bonusThisMonth: monthRevenue * tier.current.bonusRate,
+    bonusLifetime: tierBonus(lifetimeRevenue),
+    bonusThisMonth: tierBonusBetween(
+      lifetimeRevenue - monthRevenue,
+      lifetimeRevenue,
+    ),
     badges: computeBadges({
       conversions: lifetimeConversions,
       revenue: lifetimeRevenue,

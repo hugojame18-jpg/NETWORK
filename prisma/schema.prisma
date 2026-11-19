@@ -642,6 +642,18 @@ model Setting {
   updatedAt DateTime @updatedAt
 }
 
+/// A counter for the rate limiter, used when no Redis is configured. The
+/// limiter used to depend on Redis alone and switched itself off without it,
+/// which left sign-in open to unlimited guessing on any deployment that had
+/// not set one up. The database is always there, so the limit always is too.
+model RateLimit {
+  key     String   @id
+  count   Int
+  resetAt DateTime
+
+  @@index([resetAt])
+}
+
 model AuditLog {
   id      String  @id @default(cuid())
   actorId String?

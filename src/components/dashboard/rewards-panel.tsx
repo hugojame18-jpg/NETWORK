@@ -109,14 +109,22 @@ function TierCard({
                 {current.label}
               </p>
               <p className="mt-0.5 text-sm text-muted-foreground">
-                Bonus de payout&nbsp;
-                <span className="font-semibold text-foreground">
-                  +{(current.bonusRate * 100).toFixed(0)}%
-                </span>
+                {current.bonusRate > 0 ? (
+                  <>
+                    Tes gains à ce palier sont majorés de&nbsp;
+                    <span className="font-semibold text-foreground">
+                      {(current.bonusRate * 100).toFixed(0)}&nbsp;%
+                    </span>
+                  </>
+                ) : (
+                  "Pas encore de bonus : il commence au palier suivant."
+                )}
               </p>
             </div>
             <div className="hidden text-right sm:block">
-              <p className="text-xs text-muted-foreground">Bonus cumulé</p>
+              <p className="text-xs text-muted-foreground">
+                Bonus gagné, inclus dans ton solde
+              </p>
               <p className="text-xl font-semibold text-success">
                 {formatCurrency(bonusLifetime)}
               </p>
@@ -135,7 +143,8 @@ function TierCard({
                     {next.label}
                   </span>{" "}
                   (+
-                  {(next.bonusRate * 100).toFixed(0)}%)
+                  {(next.bonusRate * 100).toFixed(0)}&nbsp;% sur tes gains
+                  suivants)
                 </span>
                 <span className="font-medium">
                   {formatCurrency(remaining)} restants

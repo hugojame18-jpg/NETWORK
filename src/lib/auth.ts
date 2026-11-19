@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { authConfig } from "./auth.config";
 import { prisma } from "./prisma";
 import { signInSchema } from "./validations/auth";
+import { rateLimit } from "./rate-limit";
+import { getClientIp, hashIp } from "./ip";
 
 export class AccountSuspendedError extends CredentialsSignin {
   code = "account_suspended";
@@ -12,6 +14,15 @@ export class AccountSuspendedError extends CredentialsSignin {
 export class AccountBannedError extends CredentialsSignin {
   code = "account_banned";
 }
+
+export class TooManyAttemptsError extends CredentialsSignin {
+  code = "too_many_attempts";
+}
+
+/** Sign-in attempts allowed per window, for one account and for one address. */
+const SIGN_IN_WINDOW_SECONDS = 15 * 60;
+const SIGN_IN_PER_ACCOUNT = 10;
+const SIGN_IN_PER_ADDRESS = 40;
 
 /** How often a live session re-reads role/status from the database. */
 const TOKEN_REFRESH_MS = 60_000;
@@ -60,9 +71,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Mot de passe", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const parsed = signInSchema.safeParse(credentials);
         if (!parsed.success) return null;
+
+        // Sign-in was the one door with no limit on it: a password could be
+        // guessed at as fast as the server would answer. Two counters, since
+        // they stop different things — one per account, against someone
+        // working on a single password, and one per address, against someone
+        // trying one password on many accounts. Both keys are hashed, so the
+        // table of counters holds no email and no address.
+        const [byAccount, byAddress] = await Promise.all([
+          rateLimit(`sign-in:account:${hashIp(parsed.data.email)}`, {
+            limit: SIGN_IN_PER_ACCOUNT,
+            windowSeconds: SIGN_IN_WINDOW_SECONDS,
+          }),
+          rateLimit(
+            `sign-in:address:${hashIp(getClientIp(request.headers))}`,
+            {
+              limit: SIGN_IN_PER_ADDRESS,
+              windowSeconds: SIGN_IN_WINDOW_SECONDS,
+            },
+          ),
+        ]);
+        if (!byAccount.success || !byAddress.success) {
+          throw new TooManyAttemptsError();
+        }
 
         const user = await prisma.user.findUnique({
           where: { email: parsed.data.email },

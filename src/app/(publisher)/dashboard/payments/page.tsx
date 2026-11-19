@@ -108,6 +108,21 @@ export default async function PaymentsPage() {
               <p className="mt-3 text-2xl leading-none font-semibold tracking-tight">
                 <Money value={ledger.earned} />
               </p>
+              {/* Only when there is something beyond the traffic itself, so
+                  the line explains a total rather than decorating it. */}
+              {(ledger.referralEarnings > 0 || ledger.tierBonus > 0) && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  dont{" "}
+                  {[
+                    ledger.referralEarnings > 0 &&
+                      `${formatCurrency(ledger.referralEarnings)} de parrainage`,
+                    ledger.tierBonus > 0 &&
+                      `${formatCurrency(ledger.tierBonus)} de bonus de palier`,
+                  ]
+                    .filter(Boolean)
+                    .join(" et ")}
+                </p>
+              )}
             </div>
             <div className="surface p-5">
               <p className="eyebrow">Déjà versé</p>

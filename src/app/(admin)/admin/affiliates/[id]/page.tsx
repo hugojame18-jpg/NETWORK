@@ -295,6 +295,13 @@ export default async function AdminAffiliateDetailPage({
                   {sub3.length > 0 ? sub3.join(" · ") : "—"}
                 </span>
               </Fact>
+              {ledger.tierBonus > 0 && (
+                <Fact label="Bonus de palier">
+                  <span className="num">
+                    {formatCurrency(ledger.tierBonus)} gagnés
+                  </span>
+                </Fact>
+              )}
               {publisher.referredBy && (
                 <Fact label="Parrainé par">
                   <Link

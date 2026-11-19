@@ -4,6 +4,7 @@ import { toNumber } from "@/lib/format";
 import { getAffiliateLedgers } from "@/lib/data/ledger";
 import { flowConfig, lastSync } from "@/lib/flow";
 import { REVERSED_NOTE } from "@/lib/postback-booking";
+import { payoutRate, tierBonusBetween } from "@/lib/loyalty";
 
 export async function getPublishersAdminList() {
   const [publishers, statTotals] = await Promise.all([
@@ -304,10 +305,64 @@ function dateFilter(range: PeriodRange) {
     : { date: { lt: range.to } };
 }
 
+/**
+ * The tier bonus each affiliate earned inside a range.
+ *
+ * The bonus is paid by the network, on top of the affiliate's rate, so it has
+ * to come off the margin wherever a margin is shown — otherwise the admin
+ * reads a profit that includes money already owed to someone else.
+ *
+ * It depends on how much an affiliate had earned before the range started,
+ * since that decides which tier the range's dollars fall in; hence the two
+ * cumulative sums rather than one sum over the range.
+ */
+async function tierBonusByPublisher(
+  range: PeriodRange,
+): Promise<Map<string, number>> {
+  const [publishers, before, through] = await Promise.all([
+    prisma.publisher.findMany({
+      select: { id: true, commissionRate: true, referredById: true },
+    }),
+    range.from
+      ? prisma.publisherDailyStat.groupBy({
+          by: ["publisherId"],
+          where: { date: { lt: range.from } },
+          _sum: { revenue: true },
+        })
+      : Promise.resolve([]),
+    prisma.publisherDailyStat.groupBy({
+      by: ["publisherId"],
+      where: { date: { lt: range.to } },
+      _sum: { revenue: true },
+    }),
+  ]);
+
+  const beforeById = new Map(
+    before.map((group) => [group.publisherId, toNumber(group._sum.revenue)]),
+  );
+  const throughById = new Map(
+    through.map((group) => [group.publisherId, toNumber(group._sum.revenue)]),
+  );
+
+  const bonuses = new Map<string, number>();
+  for (const publisher of publishers) {
+    const rate = payoutRate(
+      toNumber(publisher.commissionRate),
+      publisher.referredById != null,
+    );
+    const bonus = tierBonusBetween(
+      (beforeById.get(publisher.id) ?? 0) * rate,
+      (throughById.get(publisher.id) ?? 0) * rate,
+    );
+    if (bonus > 0) bonuses.set(publisher.id, bonus);
+  }
+  return bonuses;
+}
+
 export interface RevenueTotals {
   /** Gross billed to advertisers, before the affiliates' share. */
   revenue: number;
-  /** Sum owed to affiliates, each at their own commission rate. */
+  /** Sum owed to affiliates: each one's rate, plus any tier bonus. */
   affiliateShare: number;
   /** What the network keeps: gross minus the affiliates' share. */
   margin: number;
@@ -323,7 +378,7 @@ export async function getNetworkRevenue(
 ): Promise<RevenueTotals> {
   const where = dateFilter(range);
 
-  const [totals, perPublisher, rates, days] = await Promise.all([
+  const [totals, perPublisher, rates, days, bonuses] = await Promise.all([
     prisma.publisherDailyStat.aggregate({
       where,
       _sum: { revenue: true, conversions: true, clicks: true, hosts: true },
@@ -341,17 +396,21 @@ export async function getNetworkRevenue(
       select: { date: true },
       distinct: ["date"],
     }),
+    tierBonusByPublisher(range),
   ]);
 
   const rateById = new Map(
     rates.map((r) => [r.id, toNumber(r.commissionRate)]),
   );
-  const affiliateShare = perPublisher.reduce(
+  const rateShare = perPublisher.reduce(
     (sum, group) =>
       sum +
       toNumber(group._sum.revenue) * (rateById.get(group.publisherId) ?? 0.5),
     0,
   );
+  let bonusShare = 0;
+  for (const bonus of bonuses.values()) bonusShare += bonus;
+  const affiliateShare = rateShare + bonusShare;
   const revenue = toNumber(totals._sum.revenue);
 
   return {
@@ -367,11 +426,14 @@ export async function getNetworkRevenue(
 
 /** Revenue per affiliate over the range, best first. */
 export async function getRevenueByPublisher(range: PeriodRange) {
-  const grouped = await prisma.publisherDailyStat.groupBy({
-    by: ["publisherId"],
-    where: dateFilter(range),
-    _sum: { revenue: true, conversions: true, clicks: true, hosts: true },
-  });
+  const [grouped, bonuses] = await Promise.all([
+    prisma.publisherDailyStat.groupBy({
+      by: ["publisherId"],
+      where: dateFilter(range),
+      _sum: { revenue: true, conversions: true, clicks: true, hosts: true },
+    }),
+    tierBonusByPublisher(range),
+  ]);
 
   if (grouped.length === 0) return [];
 
@@ -393,6 +455,7 @@ export async function getRevenueByPublisher(range: PeriodRange) {
       const publisher = byId.get(group.publisherId);
       const revenue = toNumber(group._sum.revenue);
       const rate = toNumber(publisher?.commissionRate ?? 0.5);
+      const bonus = bonuses.get(group.publisherId) ?? 0;
       return {
         publisherId: group.publisherId,
         memberId: publisher?.memberId ?? 0,
@@ -400,8 +463,10 @@ export async function getRevenueByPublisher(range: PeriodRange) {
         email: publisher?.user.email ?? "",
         revenue,
         rate,
-        affiliateShare: revenue * rate,
-        margin: revenue * (1 - rate),
+        /** Tier bonus earned over the range, already inside `affiliateShare`. */
+        tierBonus: bonus,
+        affiliateShare: revenue * rate + bonus,
+        margin: revenue * (1 - rate) - bonus,
         conversions: group._sum.conversions ?? 0,
         clicks: group._sum.clicks ?? 0,
         hosts: group._sum.hosts ?? 0,
@@ -444,16 +509,39 @@ export async function getNetworkSeries(days = 90) {
 
   // Grouped by affiliate as well as by day: the margin depends on each
   // affiliate's own rate, so it cannot be derived from a day's grand total.
-  const [grouped, rates] = await Promise.all([
+  const [grouped, rates, earlier] = await Promise.all([
     prisma.publisherDailyStat.groupBy({
       by: ["date", "publisherId"],
       where: { date: { gte: since } },
       _sum: { revenue: true, conversions: true, clicks: true },
+      // Oldest first: the tier bonus of a day depends on what was earned
+      // before it, so each affiliate's days have to be walked in order.
+      orderBy: { date: "asc" },
     }),
-    prisma.publisher.findMany({ select: { id: true, commissionRate: true } }),
+    prisma.publisher.findMany({
+      select: { id: true, commissionRate: true, referredById: true },
+    }),
+    prisma.publisherDailyStat.groupBy({
+      by: ["publisherId"],
+      where: { date: { lt: since } },
+      _sum: { revenue: true },
+    }),
   ]);
   const rateById = new Map(
     rates.map((rate) => [rate.id, toNumber(rate.commissionRate)]),
+  );
+  const payoutById = new Map(
+    rates.map((rate) => [
+      rate.id,
+      payoutRate(toNumber(rate.commissionRate), rate.referredById != null),
+    ]),
+  );
+  // Each affiliate's own earnings up to the start of the window.
+  const lifetimeById = new Map(
+    earlier.map((group) => [
+      group.publisherId,
+      toNumber(group._sum.revenue) * (payoutById.get(group.publisherId) ?? 0.5),
+    ]),
   );
 
   // A type alias rather than an interface, so a point can be handed to the
@@ -492,7 +580,14 @@ export async function getNetworkSeries(days = 90) {
     point.clicks += clicks;
     point.conversions += conversions;
     point.revenue += gross;
-    point.margin += gross * (1 - (rateById.get(group.publisherId) ?? 0.5));
+
+    const lifetime = lifetimeById.get(group.publisherId) ?? 0;
+    const earned = gross * (payoutById.get(group.publisherId) ?? 0.5);
+    const bonus = tierBonusBetween(lifetime, lifetime + earned);
+    lifetimeById.set(group.publisherId, lifetime + earned);
+
+    point.margin +=
+      gross * (1 - (rateById.get(group.publisherId) ?? 0.5)) - bonus;
     if (clicks > 0 || conversions > 0) point.active += 1;
   }
 

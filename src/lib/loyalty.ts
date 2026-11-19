@@ -63,6 +63,43 @@ export const TIERS: Tier[] = [
 ];
 
 /**
+ * The tier bonus owed on a given amount of lifetime earnings.
+ *
+ * Each tier's rate applies to what is earned while the affiliate is in that
+ * tier — the first 1 000 $ at Bronze's 0 %, the next 4 000 $ at Silver's 3 %,
+ * and so on — like tax brackets, upside down.
+ *
+ * Not the current tier's rate on everything ever earned. That reading pays a
+ * lump sum the instant a threshold is crossed (reaching Gold would be worth
+ * 100 $ for a single dollar of traffic), and it makes every past month's
+ * figures change after the fact, so no period could ever be closed. This one
+ * gives each dollar a bonus that is known the day it is earned and never
+ * moves again.
+ *
+ * `earnings` is the affiliate's own share of their own traffic. Referral
+ * rewards do not count toward a tier and earn no bonus.
+ */
+export function tierBonus(earnings: number): number {
+  if (!Number.isFinite(earnings) || earnings <= 0) return 0;
+  let bonus = 0;
+  for (let i = 0; i < TIERS.length; i += 1) {
+    const floor = TIERS[i].minRevenue;
+    if (earnings <= floor) break;
+    const ceiling = TIERS[i + 1]?.minRevenue ?? Number.POSITIVE_INFINITY;
+    bonus += (Math.min(earnings, ceiling) - floor) * TIERS[i].bonusRate;
+  }
+  return bonus;
+}
+
+/**
+ * The bonus earned while lifetime earnings moved from `before` to `after` —
+ * what a day, a month or any other period contributed.
+ */
+export function tierBonusBetween(before: number, after: number): number {
+  return Math.max(0, tierBonus(after) - tierBonus(before));
+}
+
+/**
  * Referral reward: what a sponsor earns on an affiliate they brought in.
  *
  * A share of the gross the referred affiliate generates, taken out of that
