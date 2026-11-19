@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
 import {
-  MARK_BOWL,
-  MARK_LEG,
-  MARK_STEM,
+  MARK_MITER,
+  MARK_PATH,
+  MARK_STROKE,
+  MARK_TRANSFORM,
   MARK_VIEWBOX,
 } from "@/components/brand/logo-mark";
 
@@ -41,7 +42,7 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          {/* The mark: the white three-piece R on the brand's blue-violet. */}
+          {/* The mark: the white RN monogram on the brand's blue-violet. */}
           <div
             style={{
               width: 72,
@@ -53,10 +54,16 @@ export default function OpenGraphImage() {
               justifyContent: "center",
             }}
           >
-            <svg width="48" height="48" viewBox={MARK_VIEWBOX} fill="#ffffff">
-              <rect {...MARK_STEM} />
-              <path d={MARK_BOWL} />
-              <path d={MARK_LEG} />
+            <svg width="52" height="52" viewBox={MARK_VIEWBOX} fill="none">
+              <g transform={MARK_TRANSFORM}>
+                <path
+                  d={MARK_PATH}
+                  stroke="#ffffff"
+                  strokeWidth={MARK_STROKE}
+                  strokeLinejoin="miter"
+                  strokeMiterlimit={MARK_MITER}
+                />
+              </g>
             </svg>
           </div>
           <div style={{ display: "flex", fontSize: 38, fontWeight: 700 }}>
