@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, Radio, Send, Wallet } from "lucide-react";
 import { Logo } from "@/components/brand/logo-mark";
-import { Mascot } from "@/components/brand/mascot";
+import { MascotFull } from "@/components/brand/mascot";
 import { displayFont } from "@/lib/fonts";
 
 /* Three things the product does, in the order an affiliate meets them. This
@@ -57,7 +57,7 @@ export default function AuthLayout({
         </Link>
 
         <div className="relative z-10 max-w-md space-y-10">
-          <Mascot className="h-24 w-24" />
+          <MascotFull className="h-40 w-auto" />
           <h2 className="display text-4xl xl:text-5xl">
             Envoie ton trafic.
             <br />

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { Mascot } from "@/components/brand/mascot";
+import { MascotFull } from "@/components/brand/mascot";
 
 /**
  * The closing call to action.
@@ -29,7 +29,7 @@ export function SignupSplit() {
       >
         <div className="landing-grid pointer-events-none absolute inset-0 opacity-70" />
 
-        <Mascot className="relative mx-auto mb-8 h-28 w-28 drop-shadow-[0_18px_40px_oklch(0.2_0.1_275/0.7)] sm:h-36 sm:w-36" />
+        <MascotFull className="relative mx-auto mb-6 h-44 w-auto sm:h-56" />
         <h2 className="display relative mx-auto max-w-4xl text-5xl sm:text-7xl lg:text-8xl">
           Prêt à envoyer
           <br />

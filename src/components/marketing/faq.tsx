@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Send } from "lucide-react";
+import { MascotFull } from "@/components/brand/mascot";
 import { SUPPORT_TELEGRAM } from "@/lib/contact";
 import { MIN_PAYOUT_USD, dollars } from "@/lib/public-terms";
 import { SectionHeading } from "./section-heading";
@@ -76,6 +77,7 @@ export function Faq() {
             <Send className="h-4 w-4" />
             Une autre question ? Écris-nous sur Telegram
           </a>
+          <MascotFull className="mt-12 hidden h-52 w-auto lg:block" />
         </div>
 
         <Accordion className="w-full">
