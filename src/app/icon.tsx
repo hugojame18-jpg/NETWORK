@@ -1,14 +1,14 @@
 import { ImageResponse } from "next/og";
 import {
-  MARK_MITER,
-  MARK_PATH,
-  MARK_STROKE,
+  MARK_LEG,
+  MARK_LEG_OPACITY,
+  MARK_TOP,
   MARK_TRANSFORM,
   MARK_VIEWBOX,
 } from "@/components/brand/logo-mark";
 
 /**
- * The browser-tab icon: the mark itself — the white RN monogram on the
+ * The browser-tab icon: the mark itself — the white italic R on the
  * brand's blue-violet — drawn from the same shapes as `LogoMark`, so the tab
  * and the page show one logo and not two approximations of it.
  */
@@ -29,15 +29,10 @@ export default function Icon() {
           background: "linear-gradient(140deg, #8286fb, #5b5fe9 55%, #3f37c9)",
         }}
       >
-        <svg width="46" height="46" viewBox={MARK_VIEWBOX} fill="none">
+        <svg width="46" height="46" viewBox={MARK_VIEWBOX} fill="#ffffff">
           <g transform={MARK_TRANSFORM}>
-            <path
-              d={MARK_PATH}
-              stroke="#ffffff"
-              strokeWidth={MARK_STROKE}
-              strokeLinejoin="miter"
-              strokeMiterlimit={MARK_MITER}
-            />
+            <path d={MARK_TOP} fillRule="evenodd" />
+            <path d={MARK_LEG} opacity={MARK_LEG_OPACITY} />
           </g>
         </svg>
       </div>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Check } from "lucide-react";
+import { MascotPeek } from "@/components/brand/mascot";
 import { MIN_PAYOUT_USD, dollars } from "@/lib/public-terms";
 
 const PROOFS = [
@@ -44,7 +45,13 @@ function LivePanel() {
         }}
       />
 
-      <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-2 shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)] backdrop-blur">
+      {/* The mascot, looking over the edge of the panel it watches. */}
+      <MascotPeek
+        delay={1}
+        className="absolute right-12 bottom-full z-10 w-32 sm:w-40"
+      />
+
+      <div className="relative rounded-[28px] border border-white/10 bg-white/[0.04] p-2 shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)] backdrop-blur">
         <div className="overflow-hidden rounded-[22px] border border-white/8 bg-[oklch(0.185_0.018_274)]">
           <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
             <p className="flex items-center gap-2.5 text-sm font-semibold">
@@ -143,7 +150,7 @@ function LivePanel() {
  */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-14 pb-24 sm:pt-20 lg:pb-32">
+    <section className="relative overflow-hidden pt-14 pb-24 sm:pt-24 lg:pb-32">
       <div className="landing-grid pointer-events-none absolute inset-0 -z-10" />
       <div
         className="pointer-events-none absolute -top-48 left-[12%] -z-10 h-[620px] w-[900px] rounded-full opacity-40 blur-3xl"
