@@ -57,7 +57,7 @@ export default function AuthLayout({
         </Link>
 
         <div className="relative z-10 max-w-md space-y-10">
-          <MascotFull className="h-40 w-auto" />
+          <MascotFull pose="wave" className="h-40 w-auto" />
           <h2 className="display text-4xl xl:text-5xl">
             Envoie ton trafic.
             <br />

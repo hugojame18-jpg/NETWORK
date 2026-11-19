@@ -29,7 +29,7 @@ export function SignupSplit() {
       >
         <div className="landing-grid pointer-events-none absolute inset-0 opacity-70" />
 
-        <MascotFull className="relative mx-auto mb-6 h-44 w-auto sm:h-56" />
+        <MascotFull pose="cheer" className="relative mx-auto mb-6 h-44 w-auto sm:h-56" />
         <h2 className="display relative mx-auto max-w-4xl text-5xl sm:text-7xl lg:text-8xl">
           Prêt à envoyer
           <br />

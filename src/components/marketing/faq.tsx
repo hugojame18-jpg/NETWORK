@@ -77,7 +77,7 @@ export function Faq() {
             <Send className="h-4 w-4" />
             Une autre question ? Écris-nous sur Telegram
           </a>
-          <MascotFull className="mt-12 hidden h-52 w-auto lg:block" />
+          <MascotFull pose="wave" className="mt-12 hidden h-52 w-auto lg:block" />
         </div>
 
         <Accordion className="w-full">

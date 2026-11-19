@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { MascotFull } from "@/components/brand/mascot";
 import { MIN_PAYOUT_USD, PAYOUT_METHODS, dollars } from "@/lib/public-terms";
 import { SectionHeading } from "./section-heading";
 
@@ -48,6 +49,8 @@ export function Payouts() {
               </li>
             ))}
           </ul>
+
+          <MascotFull pose="coin" className="mt-10 hidden h-48 w-auto lg:block" />
         </div>
 
         <motion.div

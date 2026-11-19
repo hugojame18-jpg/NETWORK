@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Clock, XCircle, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mascot } from "@/components/brand/mascot";
+import { MascotFull } from "@/components/brand/mascot";
 import { emailDeliveryEnabled } from "@/lib/email";
 
 /**
@@ -21,7 +21,10 @@ export function ApplicationPending({
       <Card className="w-full max-w-lg">
         <CardContent className="space-y-5 pt-8 pb-8 text-center">
           <div className="relative mx-auto w-fit">
-            <Mascot className="h-24 w-24" />
+            <MascotFull
+              pose={rejected ? "sit" : "sleep"}
+              className="h-32 w-auto"
+            />
             <span
               className={`absolute -right-2 -bottom-1 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card shadow-sm ${
                 rejected ? "text-destructive" : "text-primary"

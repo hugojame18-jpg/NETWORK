@@ -189,6 +189,7 @@ export default async function PaymentsPage() {
         {payments.length === 0 ? (
           <EmptyState
             icon={<Wallet />}
+            pose="coin"
             title="Aucun versement pour l'instant"
             description="Dès qu'un paiement t'est envoyé, il apparaît ici avec son moyen et sa référence."
           />

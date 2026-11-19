@@ -135,7 +135,7 @@ export default async function PublisherHomePage() {
       <PageHeader
         title={firstName ? `Salut ${firstName}` : "Salut 👋"}
         description={`${todayLabel} — voici où tu en es.`}
-        leading={<Mascot className="h-14 w-14 shrink-0" />}
+        leading={<Mascot wink className="h-14 w-14 shrink-0" />}
         action={
           <Button variant="outline" render={<Link href="/dashboard/stats" />}>
             Toutes mes stats
