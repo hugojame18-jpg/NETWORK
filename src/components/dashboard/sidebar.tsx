@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LifeBuoy, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { SidebarNav, type NavSection } from "./sidebar-nav";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,8 @@ interface SidebarProps {
   brandHref: string;
   /** Shown under the wordmark — tells an admin at a glance which panel they're in. */
   brandSuffix?: string;
+  /** Where "need help?" leads. Omitted on the admin side, which is the help. */
+  supportHref?: string;
 }
 
 export function Sidebar({
@@ -20,6 +22,7 @@ export function Sidebar({
   brandLabel,
   brandHref,
   brandSuffix,
+  supportHref,
 }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -27,7 +30,7 @@ export function Sidebar({
     <aside
       className={cn(
         "sticky top-0 hidden h-screen shrink-0 flex-col border-r border-sidebar-border bg-sidebar transition-[width] duration-300 ease-out lg:flex",
-        collapsed ? "w-[72px]" : "w-[248px]",
+        collapsed ? "w-[72px]" : "w-[252px]",
       )}
     >
       <div
@@ -60,7 +63,22 @@ export function Sidebar({
         <SidebarNav sections={sections} collapsed={collapsed} />
       </div>
 
-      <div className="shrink-0 border-t border-sidebar-border p-2">
+      <div className="shrink-0 space-y-1 border-t border-sidebar-border p-2">
+        {supportHref && (
+          <a
+            href={supportHref}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={collapsed ? "Contacter l'équipe" : undefined}
+            className={cn(
+              "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-foreground",
+              collapsed && "justify-center px-0",
+            )}
+          >
+            <LifeBuoy className="h-4 w-4 shrink-0" />
+            {!collapsed && <span className="truncate">Contacter l&apos;équipe</span>}
+          </a>
+        )}
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}

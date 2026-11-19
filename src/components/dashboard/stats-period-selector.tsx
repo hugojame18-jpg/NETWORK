@@ -50,13 +50,12 @@ export function StatsPeriodSelector({
 
   return (
     <div className="flex flex-wrap items-end gap-3">
-      <div className="space-y-2">
-        <Label>Période</Label>
+      <div>
         <Select
           value={period}
           onValueChange={(v) => v && updateParam("period", v)}
         >
-          <SelectTrigger className="w-56">
+          <SelectTrigger className="w-56" aria-label="Période">
             {/* Base UI renders the raw value when Value has no child, so the
                 trigger used to read "last_30_days" at the top of the page. */}
             <SelectValue>

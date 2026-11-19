@@ -1,205 +1,150 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Target } from "lucide-react";
 import { requireRole } from "@/lib/rbac";
 import {
+  getConversionJournal,
+  getPerformanceSeries,
   getPublisherByUserId,
-  getClickHistory,
-  getConversionHistory,
 } from "@/lib/data/publisher";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { formatCurrency, formatDateTime } from "@/lib/format";
+import { compareWindows, sumWindow, tail } from "@/lib/trend";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { History } from "lucide-react";
+import { StatTile } from "@/components/dashboard/kit";
+import { formatCalendarDate, formatCurrency, formatNumber } from "@/lib/format";
 
-export const metadata: Metadata = { title: "Historique" };
+export const metadata: Metadata = { title: "Conversions" };
 
-const PAGE_SIZE = 15;
+// A conversion that just landed has to be here on the next refresh.
+export const dynamic = "force-dynamic";
 
-interface HistoryPageProps {
-  searchParams: Promise<{ tab?: string; page?: string }>;
-}
+const timeFormatter = new Intl.DateTimeFormat("fr-FR", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
 
-const CONVERSION_LABELS: Record<
-  string,
-  { label: string; variant: "default" | "secondary" | "destructive" }
-> = {
-  APPROVED: { label: "Approuvée", variant: "default" },
-  PENDING: { label: "En attente", variant: "secondary" },
-  REJECTED: { label: "Refusée", variant: "destructive" },
-};
-
-export default async function HistoryPage({ searchParams }: HistoryPageProps) {
+/**
+ * Every conversion, one line each, newest first.
+ *
+ * This screen used to list clicks and leads from the old tracking tables,
+ * which nothing fills any more — it was an empty page with two tabs. What an
+ * affiliate actually wants from a "history" is the answer to "what converted,
+ * and when", so that is what it shows.
+ */
+export default async function ConversionsPage() {
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
-  const { tab = "clicks", page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
-  const isClicks = tab !== "conversions";
 
-  const clickData = isClicks
-    ? await getClickHistory(publisher.id, { page, pageSize: PAGE_SIZE })
-    : null;
-  const conversionData = !isClicks
-    ? await getConversionHistory(publisher.id, { page, pageSize: PAGE_SIZE })
-    : null;
+  const [journal, series] = await Promise.all([
+    getConversionJournal(publisher.id),
+    getPerformanceSeries(publisher.id, 60),
+  ]);
 
-  const total = clickData?.total ?? conversionData?.total ?? 0;
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const count = (day: (typeof series)[number]) => day.conversions;
+  const today = sumWindow(series, count, 1);
+  const yesterday = sumWindow(series, count, 1, 1);
+  const week = compareWindows(series, count, 7);
+  const month = compareWindows(series, count, 30);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Historique"
-        description="Le détail brut : chaque clic et chaque conversion, ligne par ligne."
+        title="Conversions"
+        description="Chaque conversion validée, une par une, avec ce qu'elle t'a rapporté."
       />
 
-      {/* Segmented control rather than two buttons: it reads as one choice. */}
-      <div className="inline-flex items-center gap-0.5 rounded-lg border border-border bg-muted/40 p-0.5">
-        {[
-          { tab: "clicks", label: "Clics", on: isClicks },
-          { tab: "conversions", label: "Conversions", on: !isClicks },
-        ].map((entry) => (
-          <Link
-            key={entry.tab}
-            href={`/dashboard/history?tab=${entry.tab}`}
-            className={cn(
-              "rounded-[6px] px-3.5 py-1.5 text-sm font-medium transition-colors",
-              entry.on
-                ? "bg-card text-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {entry.label}
-          </Link>
-        ))}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatTile
+          label="Aujourd'hui"
+          value={<span className="num">{formatNumber(today)}</span>}
+          hint={`hier : ${formatNumber(yesterday)}`}
+          spark={tail(series, 14).map(count)}
+        />
+        <StatTile
+          label="7 derniers jours"
+          value={<span className="num">{formatNumber(week.current)}</span>}
+          delta={week.delta}
+          hint="vs les 7 jours d'avant"
+          spark={tail(series, 30).map(count)}
+        />
+        <StatTile
+          label="30 derniers jours"
+          value={<span className="num">{formatNumber(month.current)}</span>}
+          delta={month.delta}
+          hint="vs les 30 jours d'avant"
+          spark={tail(series, 60).map(count)}
+        />
       </div>
 
-      <Card>
-        <CardContent className="px-0">
-          {total > 0 && clickData && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Offre</TableHead>
-                  <TableHead>Device</TableHead>
-                  <TableHead>Pays</TableHead>
-                  <TableHead>Référent</TableHead>
-                  <TableHead className="text-right">Statut</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clickData.items.map((click) => (
-                  <TableRow key={click.id}>
-                    <TableCell className="text-muted-foreground">
-                      {formatDateTime(click.createdAt)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {click.offer.name}
-                    </TableCell>
-                    <TableCell>{click.device}</TableCell>
-                    <TableCell>{click.country ?? "—"}</TableCell>
-                    <TableCell className="max-w-[200px] truncate text-muted-foreground">
-                      {click.referrer ?? "—"}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {click.isFraud ? (
-                        <Badge variant="destructive">Fraude</Badge>
-                      ) : (
-                        <Badge variant="secondary">Valide</Badge>
+      {journal.length === 0 ? (
+        <div className="surface">
+          <EmptyState
+            icon={<Target />}
+            title="Aucune conversion pour l'instant"
+            description="Dès qu'une conversion est validée par l'annonceur, elle apparaît ici avec son heure et son montant."
+          />
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {journal.map((day) => (
+            <section key={day.day} className="surface overflow-hidden">
+              <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border bg-muted/30 px-5 py-3">
+                <h2 className="text-sm font-semibold">
+                  {formatCalendarDate(day.day)}
+                </h2>
+                <p className="text-[13px] text-muted-foreground">
+                  <span className="num font-medium text-foreground">
+                    {formatNumber(day.count)}
+                  </span>{" "}
+                  conversion{day.count > 1 ? "s" : ""} ·{" "}
+                  <span className="num font-semibold text-foreground">
+                    {formatCurrency(day.total)}
+                  </span>
+                </p>
+              </header>
+              <ul className="divide-y divide-border">
+                {day.items.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex items-center gap-4 px-5 py-2.5"
+                  >
+                    <span className="num w-12 shrink-0 text-[13px] text-muted-foreground">
+                      {timeFormatter.format(item.at)}
+                    </span>
+                    <span
+                      className={
+                        item.reversed
+                          ? "h-1.5 w-1.5 shrink-0 rounded-full bg-muted-foreground/40"
+                          : "h-1.5 w-1.5 shrink-0 rounded-full bg-success"
+                      }
+                      aria-hidden
+                    />
+                    <span className="min-w-0 flex-1 truncate text-sm">
+                      {item.offer}
+                      {item.reversed && (
+                        <span className="ml-2 rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground">
+                          Annulée par l&apos;annonceur
+                        </span>
                       )}
-                    </TableCell>
-                  </TableRow>
+                    </span>
+                    <span
+                      className={
+                        item.reversed
+                          ? "num text-sm text-muted-foreground line-through"
+                          : "num text-sm font-semibold"
+                      }
+                    >
+                      {!item.reversed && "+"}
+                      {formatCurrency(item.earnings)}
+                    </span>
+                  </li>
                 ))}
-              </TableBody>
-            </Table>
-          )}
-
-          {total > 0 && conversionData && (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Offre</TableHead>
-                  <TableHead>Montant</TableHead>
-                  <TableHead className="text-right">Statut</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {conversionData.items.map((conversion) => (
-                  <TableRow key={conversion.id}>
-                    <TableCell className="text-muted-foreground">
-                      {formatDateTime(conversion.createdAt)}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {conversion.offer.name}
-                    </TableCell>
-                    <TableCell className="num">
-                      {formatCurrency(conversion.payout)}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        variant={CONVERSION_LABELS[conversion.status].variant}
-                      >
-                        {CONVERSION_LABELS[conversion.status].label}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-
-          {total === 0 && (
-            <EmptyState
-              icon={<History />}
-              title={
-                isClicks
-                  ? "Aucun clic enregistré"
-                  : "Aucune conversion enregistrée"
-              }
-              description="Dès que ton trafic démarre, chaque ligne apparaît ici en temps réel."
-            />
-          )}
-        </CardContent>
-      </Card>
-
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <span>
-            Page {page} sur {totalPages}
-          </span>
-          <div className="flex gap-2">
-            <Link
-              href={`/dashboard/history?tab=${tab}&page=${Math.max(1, page - 1)}`}
-              className={cn(page <= 1 && "pointer-events-none opacity-50")}
-            >
-              <Button variant="outline" size="sm">
-                Précédent
-              </Button>
-            </Link>
-            <Link
-              href={`/dashboard/history?tab=${tab}&page=${Math.min(totalPages, page + 1)}`}
-              className={cn(
-                page >= totalPages && "pointer-events-none opacity-50",
-              )}
-            >
-              <Button variant="outline" size="sm">
-                Suivant
-              </Button>
-            </Link>
-          </div>
+              </ul>
+            </section>
+          ))}
+          <p className="text-center text-xs text-muted-foreground">
+            Les 200 dernières conversions sont affichées. Pour une période plus
+            ancienne, les totaux par jour sont dans Statistiques.
+          </p>
         </div>
       )}
     </div>

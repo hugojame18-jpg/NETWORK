@@ -4,7 +4,9 @@ import { getUnreadNotifications } from "@/lib/data/notifications";
 import { Sidebar } from "@/components/dashboard/sidebar";
 import { Topbar } from "@/components/dashboard/topbar";
 import { ApplicationPending } from "@/components/dashboard/application-pending";
-import { publisherNavSections } from "./nav-items";
+import { MobileTabBar } from "@/components/dashboard/mobile-tab-bar";
+import { SUPPORT_TELEGRAM } from "@/lib/contact";
+import { publisherNavSections, publisherTabs } from "./nav-items";
 
 export default async function PublisherDashboardLayout({
   children,
@@ -38,6 +40,7 @@ export default async function PublisherDashboardLayout({
         brandLabel="RevNetwork"
         brandHref="/dashboard"
         brandSuffix="Espace affilié"
+        supportHref={SUPPORT_TELEGRAM}
       />
       <div className="flex min-h-screen flex-1 flex-col">
         <Topbar
@@ -56,11 +59,14 @@ export default async function PublisherDashboardLayout({
         <main className="flex-1">
           {/* Capped width: a table stretched across a 27-inch screen is
               unreadable, and the whitespace is what makes it feel composed. */}
-          <div className="mx-auto w-full max-w-[1360px] space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+          {/* Extra room at the bottom on phones, where the tab bar sits over
+              the page and would otherwise cover its last row. */}
+          <div className="mx-auto w-full max-w-[1280px] space-y-6 px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pb-10">
             {children}
           </div>
         </main>
       </div>
+      <MobileTabBar items={publisherTabs} />
     </div>
   );
 }

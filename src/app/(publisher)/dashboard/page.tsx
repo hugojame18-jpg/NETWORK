@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Send, Wallet } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  MousePointerClick,
+  Send,
+  Sun,
+  Target,
+  TrendingUp,
+  Users,
+  Wallet,
+} from "lucide-react";
 import { requireRole } from "@/lib/rbac";
 import {
   getPublisherByUserId,
@@ -8,22 +18,32 @@ import {
   getPerformanceSeries,
   getMonthlyLeaderboard,
   getActiveAnnouncements,
-  getPublisherSnapshot,
   getRecentConversions,
+  getRewardsOverview,
 } from "@/lib/data/publisher";
 import { getAffiliateLedger } from "@/lib/data/ledger";
+import { appUrl } from "@/lib/app-url";
 import { SUPPORT_TELEGRAM } from "@/lib/contact";
+import {
+  compareWindows,
+  conversionRate,
+  progressToward,
+  sumWindow,
+  tail,
+} from "@/lib/trend";
 import { AnnouncementBanner } from "@/components/dashboard/announcement-banner";
 import { OnboardingTour } from "@/components/dashboard/onboarding-tour";
-import { EarningsHero } from "@/components/dashboard/next-step";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { TopPerformers } from "@/components/dashboard/top-performers";
+import { TrendChart } from "@/components/dashboard/trend-chart";
+import { CopyButton } from "@/components/dashboard/copy-button";
 import {
-  PerformanceChart,
-  type ChartSeriesConfig,
-} from "@/components/dashboard/performance-chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+  Money,
+  ProgressBar,
+  Section,
+  StatTile,
+} from "@/components/dashboard/kit";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -33,56 +53,55 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  formatCurrency,
   formatCalendarDate,
-  formatDateTime,
+  formatCurrency,
   formatNumber,
+  formatPercent,
+  formatRelative,
+  toNumber,
 } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Accueil" };
 
-// Clicks and conversions live on wildly different scales from euros, so the
-// home chart shows the two the affiliate steers on. The full breakdown is one
-// click away in Statistiques.
-const HOME_SERIES: ChartSeriesConfig[] = [
-  {
-    key: "conversions",
-    label: "Conversions",
-    color: "var(--chart-4)",
-    fill: false,
-  },
-  {
-    key: "revenue",
-    label: "Gains ($)",
-    color: "var(--chart-1)",
-    axis: "right",
-  },
-];
-
 /** A ranking of one or two people is not a ranking. */
 const MIN_RANKED_FOR_LEADERBOARD = 3;
+
+const todayFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
 
 export default async function PublisherHomePage() {
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
 
-  const [
-    revenue,
-    series,
-    leaderboard,
-    announcements,
-    snapshot,
-    ledger,
-    conversions,
-  ] = await Promise.all([
-    getRevenueSummary(publisher.id),
-    getPerformanceSeries(publisher.id, 30),
-    getMonthlyLeaderboard(publisher.id),
-    getActiveAnnouncements(),
-    getPublisherSnapshot(publisher.id),
-    getAffiliateLedger(publisher.id),
-    getRecentConversions(publisher.id),
-  ]);
+  const [revenue, series, leaderboard, announcements, ledger, conversions, rewards] =
+    await Promise.all([
+      getRevenueSummary(publisher.id),
+      getPerformanceSeries(publisher.id, 90),
+      getMonthlyLeaderboard(publisher.id),
+      getActiveAnnouncements(),
+      getAffiliateLedger(publisher.id),
+      getRecentConversions(publisher.id, 7),
+      getRewardsOverview(publisher.id),
+    ]);
+
+  const hasActivity = series.some(
+    (day) => day.clicks > 0 || day.conversions > 0 || day.revenue > 0,
+  );
+
+  // Every figure below is read off the same ninety days, so the tiles, the
+  // chart and the table cannot disagree with one another.
+  const gains = (day: (typeof series)[number]) => day.revenue;
+  const week = compareWindows(series, gains, 7);
+  const yesterday = sumWindow(series, gains, 1, 1);
+  const clicks30 = sumWindow(series, (day) => day.clicks, 30);
+  const conversions30 = sumWindow(series, (day) => day.conversions, 30);
+  const clicksPrev30 = sumWindow(series, (day) => day.clicks, 30, 30);
+  const conversionsPrev30 = sumWindow(series, (day) => day.conversions, 30, 30);
+  const rate30 = conversionRate(conversions30, clicks30);
+  const ratePrev30 = conversionRate(conversionsPrev30, clicksPrev30);
 
   const recentDays = [...series]
     .reverse()
@@ -90,6 +109,9 @@ export default async function PublisherHomePage() {
     .slice(0, 7);
 
   const firstName = (user.name ?? "").split(" ")[0];
+  const minPayout = toNumber(publisher.minPayout);
+  const canRequest = ledger.available >= minPayout && minPayout > 0;
+  const missing = Math.max(0, minPayout - ledger.balance);
 
   const paymentDetails =
     (publisher.paymentDetails as Record<string, string> | null) ?? {};
@@ -97,24 +119,30 @@ export default async function PublisherHomePage() {
     (value) => typeof value === "string" && value.trim() !== "",
   );
 
+  const referralLink = `${appUrl()}/sign-up?ref=${rewards.referralCode}`;
+  // Shown without the scheme: it is the part nobody reads, and it is what
+  // pushes the code off the end of a narrow card.
+  const referralDisplay = referralLink.split("://").pop() ?? referralLink;
+
+  const today = todayFormatter.format(new Date());
+  const todayLabel = today.charAt(0).toUpperCase() + today.slice(1);
+
   return (
     <div className="space-y-6">
       {publisher.onboardingSeenAt === null && <OnboardingTour />}
 
       <PageHeader
         title={firstName ? `Salut ${firstName}` : "Salut 👋"}
-        description="Voici où tu en es aujourd'hui."
+        description={`${todayLabel} — voici où tu en es.`}
+        action={
+          <Button variant="outline" render={<Link href="/dashboard/stats" />}>
+            Toutes mes stats
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        }
       />
 
       <AnnouncementBanner announcements={announcements} />
-
-      <EarningsHero
-        month={revenue.month}
-        today={revenue.today}
-        total={revenue.total}
-        balance={ledger.balance}
-        formatValue={formatCurrency}
-      />
 
       {/* Money is owed and there is nowhere to send it: the one thing that
           would hold up a payout, said before it holds one up. */}
@@ -142,9 +170,97 @@ export default async function PublisherHomePage() {
         </Link>
       )}
 
+      <div className="grid gap-4 lg:grid-cols-12">
+        {/* What they are owed, and how far the next payout is. The question an
+            affiliate opens the app with, so it gets the first seat. */}
+        <div className="surface-brand flex flex-col p-6 lg:col-span-4">
+          <p className="eyebrow">Solde à recevoir</p>
+          <p className="mt-3 text-[44px] leading-none font-semibold tracking-tight">
+            <Money value={ledger.balance} />
+          </p>
+
+          <div className="mt-6">
+            <ProgressBar value={progressToward(ledger.balance, minPayout)} />
+            <p className="mt-2.5 text-[13px] text-muted-foreground">
+              {canRequest ? (
+                <span className="font-medium text-success">
+                  Tu as atteint le minimum de retrait.
+                </span>
+              ) : (
+                <>
+                  Encore{" "}
+                  <span className="num font-medium text-foreground">
+                    {formatCurrency(missing)}
+                  </span>{" "}
+                  avant de pouvoir demander ton paiement
+                  <span className="num"> ({formatCurrency(minPayout)})</span>.
+                </>
+              )}
+            </p>
+          </div>
+
+          <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-primary/15 pt-5 text-[13px]">
+            <div>
+              <dt className="text-muted-foreground">Gagné au total</dt>
+              <dd className="num mt-1 font-semibold">
+                {formatCurrency(ledger.earned)}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-muted-foreground">Déjà versé</dt>
+              <dd className="num mt-1 font-semibold">
+                {formatCurrency(ledger.paid)}
+              </dd>
+            </div>
+          </dl>
+
+          <div className="mt-auto pt-6">
+            <Button
+              className="w-full"
+              variant={canRequest ? "default" : "outline"}
+              render={<Link href="/dashboard/payments" />}
+            >
+              {canRequest ? "Demander mon paiement" : "Voir mes paiements"}
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-8">
+          <StatTile
+            label="Aujourd'hui"
+            value={<Money value={revenue.today} />}
+            hint={`hier : ${formatCurrency(yesterday)}`}
+            spark={tail(series, 14).map(gains)}
+            icon={<Sun />}
+          />
+          <StatTile
+            label="7 derniers jours"
+            value={<Money value={week.current} />}
+            delta={week.delta}
+            hint="vs les 7 jours d'avant"
+            spark={tail(series, 30).map(gains)}
+            icon={<TrendingUp />}
+          />
+          <StatTile
+            label="Ce mois-ci"
+            value={<Money value={revenue.month} />}
+            hint={`${formatCurrency(revenue.total)} depuis le début`}
+            icon={<CalendarDays />}
+          />
+          <StatTile
+            label="Taux de conversion · 30 j"
+            value={<span className="num">{formatPercent(rate30)}</span>}
+            delta={ratePrev30 > 0 ? ((rate30 - ratePrev30) / ratePrev30) * 100 : null}
+            hint={`${formatNumber(conversions30)} conv. sur ${formatNumber(clicks30)} clics`}
+            icon={<Target />}
+          />
+        </div>
+      </div>
+
       {/* Nothing has happened yet: say what happens next instead of showing
           a page of zeros. */}
-      {snapshot.statDays === 0 && (
+      {!hasActivity && (
         <div className="surface flex flex-wrap items-start gap-5 p-5 sm:p-6">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
             <Send className="h-5 w-5" />
@@ -159,123 +275,205 @@ export default async function PublisherHomePage() {
               tout seuls. Tu ne l&apos;as pas encore reçu ? Écris-nous.
             </p>
           </div>
-          <a
-            href={SUPPORT_TELEGRAM}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition hover:brightness-110"
+          <Button
+            render={
+              <a href={SUPPORT_TELEGRAM} target="_blank" rel="noopener noreferrer" />
+            }
           >
             Demander mon lien
             <ArrowRight className="h-3.5 w-3.5" />
-          </a>
+          </Button>
         </div>
       )}
 
-      {/* Charts and tables only earn their place once there is data to show. */}
-      {snapshot.statDays > 0 && (
+      {hasActivity && (
         <>
-          <Card>
-            <CardHeader>
-              <CardTitle>Ton activité</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PerformanceChart data={series} series={HOME_SERIES} />
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 lg:grid-cols-12">
+            <Section
+              title="Tes gains par jour"
+              description="Ce que chaque journée t'a rapporté. Le dernier jour est encore en cours."
+              className="lg:col-span-8"
+            >
+              <TrendChart
+                data={series}
+                bars={{ key: "revenue", label: "Tes gains", kind: "money" }}
+                details={[
+                  { key: "conversions", label: "Conversions", kind: "count" },
+                  { key: "clicks", label: "Clics", kind: "count" },
+                ]}
+                ranges={[7, 30, 90]}
+                defaultRange={30}
+              />
+            </Section>
 
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Card>
-              <CardHeader>
-                <CardTitle>Tes dernières conversions</CardTitle>
-              </CardHeader>
-              <CardContent className="px-0">
-                {conversions.length === 0 ? (
-                  <p className="px-6 py-8 text-center text-sm text-muted-foreground">
-                    Tes conversions apparaîtront ici une par une, dès
-                    qu&apos;elles sont validées.
-                  </p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Reçue le</TableHead>
-                        <TableHead>Offre</TableHead>
-                        <TableHead className="text-right">Ton gain</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {conversions.map((conversion) => (
-                        <TableRow key={conversion.id}>
-                          <TableCell className="whitespace-nowrap text-muted-foreground">
-                            {formatDateTime(conversion.at)}
-                          </TableCell>
-                          <TableCell className="max-w-[220px] truncate">
-                            {conversion.offer ?? "—"}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {conversion.reversed ? (
-                              <span className="inline-flex items-center gap-2">
-                                <span className="num text-muted-foreground line-through">
-                                  {formatCurrency(conversion.earnings)}
-                                </span>
-                                <Badge variant="secondary">Annulée</Badge>
-                              </span>
-                            ) : (
-                              <span className="num font-medium">
-                                +{formatCurrency(conversion.earnings)}
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </CardContent>
-            </Card>
+            <Section
+              title="Dernières conversions"
+              description="Une par une, dès qu'elles sont validées."
+              action={
+                <Link
+                  href="/dashboard/history"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                >
+                  Tout voir
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              }
+              className="lg:col-span-4"
+              flush
+            >
+              {conversions.length === 0 ? (
+                <p className="px-5 pb-6 text-sm text-muted-foreground">
+                  Tes conversions apparaîtront ici dès la première.
+                </p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {conversions.map((conversion) => (
+                    <li
+                      key={conversion.id}
+                      className="flex items-center gap-3 px-5 py-3"
+                    >
+                      <span
+                        className={
+                          conversion.reversed
+                            ? "h-2 w-2 shrink-0 rounded-full bg-muted-foreground/40"
+                            : "h-2 w-2 shrink-0 rounded-full bg-success"
+                        }
+                        aria-hidden
+                      />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
+                          {conversion.offer}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatRelative(conversion.at)}
+                          {conversion.reversed && " · annulée"}
+                        </p>
+                      </div>
+                      <span
+                        className={
+                          conversion.reversed
+                            ? "num text-sm text-muted-foreground line-through"
+                            : "num text-sm font-semibold"
+                        }
+                      >
+                        {!conversion.reversed && "+"}
+                        {formatCurrency(conversion.earnings)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Section>
+          </div>
 
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle>Tes dernières journées</CardTitle>
-                  <Link
-                    href="/dashboard/stats"
-                    className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                  >
-                    Tout voir
-                    <ArrowRight className="h-3 w-3" />
-                  </Link>
-                </div>
-              </CardHeader>
-              <CardContent className="px-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead className="text-right">Clics</TableHead>
-                      <TableHead className="text-right">Conversions</TableHead>
-                      <TableHead className="text-right">Tes gains</TableHead>
+          <div className="grid gap-4 lg:grid-cols-12">
+            <Section
+              title="Tes dernières journées"
+              action={
+                <Link
+                  href="/dashboard/stats"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                >
+                  Toutes les journées
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              }
+              className="lg:col-span-8"
+              flush
+            >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="pl-5">Date</TableHead>
+                    <TableHead className="text-right">Clics</TableHead>
+                    <TableHead className="text-right">Conversions</TableHead>
+                    <TableHead className="hidden text-right sm:table-cell">Taux</TableHead>
+                    <TableHead className="pr-5 text-right">Tes gains</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentDays.map((day) => (
+                    <TableRow key={day.date}>
+                      <TableCell className="pl-5 font-medium">
+                        {formatCalendarDate(day.date)}
+                      </TableCell>
+                      <TableCell className="num text-right text-muted-foreground">
+                        {formatNumber(day.clicks)}
+                      </TableCell>
+                      <TableCell className="num text-right">
+                        {formatNumber(day.conversions)}
+                      </TableCell>
+                      <TableCell className="num hidden text-right text-muted-foreground sm:table-cell">
+                        {formatPercent(conversionRate(day.conversions, day.clicks))}
+                      </TableCell>
+                      <TableCell className="num pr-5 text-right font-semibold">
+                        {formatCurrency(day.revenue)}
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {recentDays.map((day) => (
-                      <TableRow key={day.date}>
-                        <TableCell>{formatCalendarDate(day.date)}</TableCell>
-                        <TableCell className="num text-right">
-                          {formatNumber(day.clicks)}
-                        </TableCell>
-                        <TableCell className="num text-right">
-                          {formatNumber(day.conversions)}
-                        </TableCell>
-                        <TableCell className="num text-right font-medium">
-                          {formatCurrency(day.revenue)}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+                  ))}
+                </TableBody>
+              </Table>
+            </Section>
+
+            <Section
+              title="Parraine, gagne 10 %"
+              description="Du chiffre d'affaires de chaque affilié qui s'inscrit avec ton lien."
+              className="lg:col-span-4"
+            >
+              <div className="flex items-center gap-2">
+                <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-muted/40 px-3 py-2 font-mono text-xs">
+                  {referralDisplay}
+                </code>
+                <CopyButton value={referralLink} />
+              </div>
+
+              <dl className="mt-5 grid grid-cols-2 gap-3">
+                <div className="rounded-xl border border-border p-3.5">
+                  <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <Users className="h-3.5 w-3.5" />
+                    Filleuls
+                  </dt>
+                  <dd className="num mt-1.5 text-xl font-semibold">
+                    {formatNumber(rewards.referralCount)}
+                  </dd>
+                </div>
+                <div className="rounded-xl border border-border p-3.5">
+                  <dt className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <MousePointerClick className="h-3.5 w-3.5" />
+                    Gagné grâce à eux
+                  </dt>
+                  <dd className="mt-1.5 text-xl font-semibold">
+                    <Money value={rewards.referralEarnings} />
+                  </dd>
+                </div>
+              </dl>
+
+              <div className="mt-5 border-t border-border pt-4">
+                <div className="flex items-center justify-between text-[13px]">
+                  <span className="font-medium">
+                    Palier {rewards.tier.current.label}
+                  </span>
+                  {rewards.tier.next ? (
+                    <span className="text-muted-foreground">
+                      {rewards.tier.next.label} dans{" "}
+                      <span className="num">
+                        {formatCurrency(rewards.tier.remaining)}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">Palier maximum</span>
+                  )}
+                </div>
+                <ProgressBar value={rewards.tier.progress / 100} className="mt-2.5" />
+                <Link
+                  href="/dashboard/rewards"
+                  className="mt-3.5 inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+                >
+                  Voir mes récompenses
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            </Section>
           </div>
 
           {leaderboard.totalRanked >= MIN_RANKED_FOR_LEADERBOARD && (

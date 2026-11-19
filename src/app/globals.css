@@ -135,7 +135,7 @@
 
   --radius: 0.75rem;
 
-  --sidebar: oklch(0.969 0.004 268);
+  --sidebar: oklch(1 0 0);
   --sidebar-foreground: oklch(0.25 0.014 268);
   --sidebar-primary: oklch(0.52 0.172 272);
   --sidebar-primary-foreground: oklch(0.99 0.004 272);

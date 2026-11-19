@@ -45,7 +45,7 @@ export function Topbar({
   const current = locate(navSections, pathname);
 
   return (
-    <header className="glass sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border px-4 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between gap-4 border-b border-border bg-background/90 px-4 backdrop-blur-md sm:px-6 lg:px-8">
       <div className="flex min-w-0 items-center gap-2">
         <MobileSidebar sections={navSections} brandLabel={brandLabel} />
 

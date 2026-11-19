@@ -49,7 +49,7 @@ const METRICS = [
   },
   {
     key: "hosts",
-    label: "Hosts",
+    label: "Visiteurs",
     format: formatNumber,
     axisFormat: compactNumber,
   },
@@ -61,7 +61,7 @@ const METRICS = [
   },
   {
     key: "revenue",
-    label: "Revenus",
+    label: "Tes gains",
     format: formatCurrency,
     axisFormat: compactMoney,
   },

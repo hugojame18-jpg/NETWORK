@@ -3,6 +3,8 @@ import { randomInt } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { toNumber } from "@/lib/format";
 import { REVERSED_NOTE } from "@/lib/postback-booking";
+import { publicOfferLabel } from "@/lib/offer-label";
+import { bookingDay } from "@/lib/postback-params";
 import {
   REFERRAL_RATE,
   payoutRate,
@@ -749,8 +751,8 @@ export async function getPendingCommissionsTotal(publisherId: string) {
 export interface RecentConversion {
   id: string;
   at: Date;
-  /** The offer as the network named it, when it sent a name. */
-  offer: string | null;
+  /** Country and kind only — never the network's own name for the offer. */
+  offer: string;
   /** The affiliate's share of this conversion. */
   earnings: number;
   /** True when the network cancelled it after it had been counted. */
@@ -795,8 +797,44 @@ export async function getRecentConversions(
   return hits.map((hit) => ({
     id: hit.id,
     at: hit.createdAt,
-    offer: hit.offerName,
+    offer: publicOfferLabel(hit.offerName),
     earnings: toNumber(hit.amount) * rate,
     reversed: hit.status === "REVERSED",
   }));
+}
+
+export interface JournalDay {
+  /** "2026-11-18" — the day the conversions were booked on. */
+  day: string;
+  /** Conversions still counted that day (cancelled ones excluded). */
+  count: number;
+  /** What those conversions earned the affiliate. */
+  total: number;
+  items: RecentConversion[];
+}
+
+/**
+ * The affiliate's conversions, grouped by the day they were booked on.
+ *
+ * Grouped with the same rule the stats use to place a conversion on a day, so
+ * a day's header here and the same day in Statistiques add up to one figure.
+ */
+export async function getConversionJournal(
+  publisherId: string,
+  take = 200,
+): Promise<JournalDay[]> {
+  const items = await getRecentConversions(publisherId, take);
+
+  const days = new Map<string, JournalDay>();
+  for (const item of items) {
+    const key = bookingDay(item.at).toISOString().slice(0, 10);
+    const day = days.get(key) ?? { day: key, count: 0, total: 0, items: [] };
+    day.items.push(item);
+    if (!item.reversed) {
+      day.count += 1;
+      day.total += item.earnings;
+    }
+    days.set(key, day);
+  }
+  return [...days.values()];
 }

@@ -2,13 +2,14 @@ import {
   BarChart3,
   Gift,
   GraduationCap,
-  History,
   LayoutDashboard,
   Settings,
+  Target,
   User,
   Wallet,
 } from "lucide-react";
 import type { NavSection } from "@/components/dashboard/sidebar-nav";
+import type { TabItem } from "@/components/dashboard/mobile-tab-bar";
 
 /**
  * Grouped by what the affiliate is trying to do, in the order they do it:
@@ -36,7 +37,7 @@ export const publisherNavSections: NavSection[] = [
     title: "Performance",
     items: [
       { href: "/dashboard/stats", label: "Statistiques", icon: <BarChart3 /> },
-      { href: "/dashboard/history", label: "Historique", icon: <History /> },
+      { href: "/dashboard/history", label: "Conversions", icon: <Target /> },
     ],
   },
   {
@@ -58,4 +59,17 @@ export const publisherNavSections: NavSection[] = [
       { href: "/dashboard/settings", label: "Paramètres", icon: <Settings /> },
     ],
   },
+];
+
+/**
+ * The five screens an affiliate opens from a phone, in the order of the
+ * question they answer: how am I doing, in detail, what converted, what am I
+ * owed, what can I unlock. Everything else stays in the drawer.
+ */
+export const publisherTabs: TabItem[] = [
+  { href: "/dashboard", label: "Accueil", icon: <LayoutDashboard />, exact: true },
+  { href: "/dashboard/stats", label: "Stats", icon: <BarChart3 /> },
+  { href: "/dashboard/history", label: "Conversions", icon: <Target /> },
+  { href: "/dashboard/payments", label: "Paiements", icon: <Wallet /> },
+  { href: "/dashboard/rewards", label: "Bonus", icon: <Gift /> },
 ];
