@@ -23,7 +23,7 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl()),
   title: {
-    default: "RevNetwork — Ton trafic rapporte, on te le paie",
+    default: "RevNetwork — Réseau d'affiliation CC Submit",
     template: "%s · RevNetwork",
   },
   description: DESCRIPTION,
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "RevNetwork",
     locale: "fr_FR",
-    title: "RevNetwork — Ton trafic rapporte, on te le paie",
+    title: "RevNetwork — Réseau d'affiliation CC Submit",
     description: DESCRIPTION,
   },
   twitter: { card: "summary_large_image" },

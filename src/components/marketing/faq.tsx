@@ -6,7 +6,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Send } from "lucide-react";
 import { SUPPORT_TELEGRAM } from "@/lib/contact";
+import { MIN_PAYOUT_USD, dollars } from "@/lib/public-terms";
 import { SectionHeading } from "./section-heading";
 
 /**
@@ -35,7 +37,12 @@ const FAQS = [
   {
     question: "Comment et quand suis-je payé ?",
     answer:
-      "Tu renseignes ton moyen de paiement dans ton profil — PayPal, virement bancaire, crypto ou Payoneer. Quand ton solde atteint le minimum de retrait indiqué dans ton dashboard, tu demandes ton paiement. Chaque versement apparaît dans ton historique.",
+      `Tu renseignes ton moyen de paiement dans ton profil — PayPal, virement bancaire, crypto ou Payoneer. Quand ton solde atteint ${dollars(MIN_PAYOUT_USD)}, tu demandes ton paiement depuis ton dashboard. Chaque versement apparaît dans ton historique.`,
+  },
+  {
+    question: "Y a-t-il des bonus ?",
+    answer:
+      "Oui. Tes gains cumulés te font passer des paliers — Argent, Or, Platine — et chaque palier ajoute un bonus sur ce que tu gagnes à partir de là. Un palier atteint reste acquis.",
   },
   {
     question: "Comment fonctionne le parrainage ?",
@@ -52,40 +59,37 @@ const FAQS = [
 export function Faq() {
   return (
     <section id="faq" className="border-t border-white/8 py-28 sm:py-36">
-      <div className="mx-auto max-w-3xl px-6">
-        <SectionHeading
-          eyebrow="FAQ"
-          title="Questions fréquentes"
-          description="Ce qu'il faut savoir avant de commencer."
-        />
-
-        <div className="mt-12">
-          <Accordion className="w-full">
-            {FAQS.map((faq, i) => (
-              <AccordionItem key={i} value={`item-${i}`}>
-                <AccordionTrigger className="text-left text-base">
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-
-        <p className="mt-10 text-center text-sm text-muted-foreground">
-          Une autre question ?{" "}
+      <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div className="lg:sticky lg:top-28 lg:self-start">
+          <SectionHeading
+            align="left"
+            eyebrow="FAQ"
+            title="Les questions qu'on nous pose"
+            description="Ce qu'il faut savoir avant d'envoyer ton premier clic."
+          />
           <a
             href={SUPPORT_TELEGRAM}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-foreground underline-offset-4 hover:underline"
+            className="mt-8 inline-flex h-12 items-center gap-2.5 rounded-full border border-white/14 px-6 text-sm font-medium transition-colors hover:border-signal hover:text-signal"
           >
-            Écris-nous sur Telegram
+            <Send className="h-4 w-4" />
+            Une autre question ? Écris-nous sur Telegram
           </a>
-          .
-        </p>
+        </div>
+
+        <Accordion className="w-full">
+          {FAQS.map((faq, i) => (
+            <AccordionItem key={i} value={`item-${i}`}>
+              <AccordionTrigger className="font-display py-6 text-left text-lg font-bold tracking-tight">
+                {faq.question}
+              </AccordionTrigger>
+              <AccordionContent className="pb-6 text-[15px] leading-relaxed text-muted-foreground">
+                {faq.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </section>
   );

@@ -1,17 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DashboardMockup } from "./dashboard-mockup";
 
 /**
- * What an affiliate actually gets, shown rather than listed.
+ * Tracking, shown rather than listed.
  *
- * This replaces a block of adjectives set at an angle. Four cards, each a
- * piece of the real dashboard drawn small, each answering one question a
- * visitor has before signing up: will I see my sales, will I know what I'm
- * owed, can I follow my days, is there more to earn. The figures are examples
- * and the section says so.
+ * The dashboard an affiliate opens after signing up, drawn whole, then three
+ * of its pieces drawn close: will I see my conversions, will I know what I'm
+ * owed, can I follow my days. The figures are examples and the section says
+ * so.
  */
 
 const FEED = [
@@ -43,7 +42,7 @@ function Card({
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.5, delay: index * 0.07 }}
       className={cn(
-        "flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-[0_1px_2px_rgb(0_0_0/0.04),0_12px_32px_-12px_rgb(0_0_0/0.10)]",
+        "flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.025]",
         className,
       )}
     >
@@ -60,24 +59,21 @@ function Card({
 
 export function ProductTour() {
   return (
-    <section
-      id="why"
-      className="theme-light bg-background py-28 text-foreground sm:py-36"
-    >
-      <div className="mx-auto max-w-6xl px-6">
+    <section id="tracking" className="relative border-t border-white/8 py-28 sm:py-36">
+      <div className="mx-auto max-w-7xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
-          className="max-w-2xl"
+          className="mx-auto max-w-2xl text-center"
         >
           <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] text-foreground/70 uppercase">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-            Ton dashboard
+            <span className="h-1.5 w-1.5 rounded-full bg-signal" aria-hidden />
+            Tracking
           </p>
           <h2 className="display text-4xl sm:text-5xl">
-            Tu sais toujours où tu en es
+            Chaque conversion suivie, de ton lien à ton solde
           </h2>
           <p className="mt-5 text-lg leading-relaxed text-muted-foreground">
             Pas de fichier à attendre en fin de mois, pas de chiffre à
@@ -86,21 +82,37 @@ export function ProductTour() {
           </p>
         </motion.div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="relative mt-14"
+        >
+          <div
+            className="pointer-events-none absolute inset-x-0 top-10 bottom-0 -z-10 rounded-[48px] opacity-60 blur-3xl"
+            style={{
+              background:
+                "radial-gradient(ellipse at 50% 40%, oklch(0.55 0.22 277 / 0.5), transparent 68%)",
+            }}
+          />
+          <DashboardMockup />
+        </motion.div>
+
+        <div className="mt-8 grid gap-5 lg:grid-cols-3">
           <Card
             index={0}
-            className="lg:col-span-2"
             title="Chaque conversion, dès qu'elle tombe"
             body="Une conversion validée par l'annonceur apparaît aussitôt, une ligne chacune, avec le pays et ce qu'elle te rapporte."
           >
-            <ul className="divide-y divide-border rounded-2xl border border-border bg-background">
+            <ul className="divide-y divide-white/8 rounded-2xl border border-white/10 bg-black/20">
               {FEED.map((item) => (
                 <li key={item.label + item.when} className="flex items-center gap-3 px-4 py-3">
                   <span className="relative flex h-2 w-2 shrink-0">
                     {item.fresh && (
-                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-60" />
                     )}
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-medium">
@@ -151,7 +163,7 @@ export function ProductTour() {
             title="Tes journées, une par une"
             body="Clics, conversions, taux et gains, jour par jour et sur la période que tu veux."
           >
-            <div className="flex h-36 items-end gap-2 rounded-2xl border border-border bg-background p-4">
+            <div className="flex h-36 items-end gap-2 rounded-2xl border border-white/10 bg-black/20 p-4">
               {BARS.map((height, index) => (
                 <motion.div
                   key={index}
@@ -166,42 +178,6 @@ export function ProductTour() {
                   className="flex-1 rounded-t-[4px] bg-primary"
                 />
               ))}
-            </div>
-          </Card>
-
-          <Card
-            index={3}
-            className="lg:col-span-2"
-            title="Un lien de parrainage qui travaille pour toi"
-            body="Chaque affilié qui s'inscrit avec ton lien te rapporte 10 % du chiffre d'affaires qu'il génère, aussi longtemps qu'il tourne."
-          >
-            <div className="grid gap-4 sm:grid-cols-[1.4fr_1fr]">
-              <div className="rounded-2xl border border-border bg-background p-4">
-                <p className="text-[10px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
-                  Ton lien
-                </p>
-                <div className="mt-2.5 flex items-center gap-2">
-                  <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-card px-3 py-2 font-mono text-xs">
-                    revnetwork.live/sign-up?ref=TONCODE
-                  </code>
-                  <span className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-border bg-card px-3 text-xs font-medium">
-                    <Copy className="h-3.5 w-3.5" />
-                    Copier
-                  </span>
-                </div>
-              </div>
-              <ul className="space-y-2.5 rounded-2xl border border-border bg-background p-4 text-sm">
-                {["Ton code dès l'inscription", "Tes filleuls et leurs gains suivis", "Versé avec ton solde"].map(
-                  (line) => (
-                    <li key={line} className="flex items-start gap-2">
-                      <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-primary/12 text-primary">
-                        <Check className="h-2.5 w-2.5" />
-                      </span>
-                      <span className="text-muted-foreground">{line}</span>
-                    </li>
-                  ),
-                )}
-              </ul>
             </div>
           </Card>
         </div>

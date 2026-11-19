@@ -1,42 +1,55 @@
 import { cn } from "@/lib/utils";
 
 /**
+ * The three shapes the mark is built from, on a 48 × 48 grid: a stem, a half
+ * disc and a diagonal leg, set apart by the same gap. Exported so the tab icon
+ * and the share card — which cannot render this component — draw the very
+ * same R instead of an approximation of it.
+ */
+export const MARK_VIEWBOX = "0 0 48 48";
+export const MARK_STEM = { x: 10.5, y: 9, width: 9, height: 30 };
+export const MARK_BOWL = "M22.5 9H27a9.25 9.25 0 0 1 0 18.5h-4.5z";
+export const MARK_LEG = "M22.5 30.3h8.1L37.5 39h-8.1z";
+
+/**
+ * The R on its own, in whatever colour the text around it has. Used bare on
+ * dark and light surfaces; `LogoMark` puts it on the brand's tile.
+ */
+export function MarkGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox={MARK_VIEWBOX}
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <rect {...MARK_STEM} />
+      <path d={MARK_BOWL} />
+      <path d={MARK_LEG} />
+    </svg>
+  );
+}
+
+/**
  * The RevNetwork mark.
  *
- * A white R on the brand's blue-violet — the brand's whole palette in one
- * tile: blue-violet, white, and the black it sits on. Drawn as paths rather
- * than set in type, so it keeps its weight at any size and in any font stack.
- *
- * The original logo file was lost with the first project folder. This mark is
- * designed to stand as the logo in its own right — swap the artwork here if
- * the original comes back, and every screen follows.
+ * An R assembled from three separate pieces rather than drawn in one stroke:
+ * a network is parts that work together, and the gaps between them are what
+ * make this R recognisable at sixteen pixels as well as at six hundred. White
+ * on the brand's blue-violet — the whole palette in one tile.
  */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]",
-        "bg-[linear-gradient(140deg,oklch(0.64_0.2_278),oklch(0.44_0.2_268))]",
+        "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] text-white",
+        "bg-[linear-gradient(140deg,oklch(0.66_0.19_278),oklch(0.55_0.22_277)_55%,oklch(0.45_0.21_272))]",
         "shadow-[inset_0_1px_0_0_oklch(1_0_0_/_28%),0_1px_2px_oklch(0.2_0.1_270_/_35%)]",
         className,
       )}
       aria-hidden
     >
-      <svg viewBox="0 0 32 32" fill="none" className="h-[72%] w-[72%]">
-        <path
-          d="M11 23.5V8.5h6a4.6 4.6 0 0 1 0 9.2h-6"
-          stroke="white"
-          strokeWidth="3.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-        <path
-          d="m16.4 17.7 4.9 5.8"
-          stroke="white"
-          strokeWidth="3.2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <MarkGlyph className="h-[66%] w-[66%]" />
     </span>
   );
 }
@@ -57,9 +70,9 @@ export function Logo({
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
       <LogoMark />
-      <span className="font-display truncate text-[17px] leading-none font-bold tracking-tight">
+      <span className="font-display truncate text-[18px] leading-none font-extrabold tracking-[-0.04em]">
         {head}
-        {tail && <span className="font-medium opacity-65">{tail}</span>}
+        {tail && <span className="font-bold opacity-60">{tail}</span>}
       </span>
     </span>
   );

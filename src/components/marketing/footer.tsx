@@ -6,9 +6,11 @@ import { SUPPORT_TELEGRAM } from "@/lib/contact";
 /* Every link here goes somewhere. The footer used to carry a privacy link
    that 404'd and three social icons pointing at "#". */
 const LINKS = [
-  { label: "Comment ça marche", href: "/#how" },
-  { label: "Ton dashboard", href: "/#why" },
-  { label: "L'offre", href: "/#offer" },
+  { label: "Offres", href: "/#offers" },
+  { label: "Fonctionnement", href: "/#how" },
+  { label: "Tracking", href: "/#tracking" },
+  { label: "Paiements", href: "/#payouts" },
+  { label: "Programme", href: "/#program" },
   { label: "FAQ", href: "/#faq" },
   { label: "Confidentialité", href: "/privacy" },
 ];
@@ -16,7 +18,7 @@ const LINKS = [
 export function Footer() {
   return (
     <footer className="relative overflow-hidden bg-background">
-      <div className="mx-auto max-w-6xl px-6 pt-16">
+      <div className="mx-auto max-w-7xl px-6 pt-16">
         <div className="flex flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-xs">
             <Link href="/" aria-label="RevNetwork — accueil">
@@ -28,7 +30,7 @@ export function Footer() {
             </p>
           </div>
 
-          <nav className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm text-muted-foreground sm:grid-cols-1">
+          <nav className="grid grid-cols-2 gap-x-12 gap-y-3 text-sm text-muted-foreground">
             {LINKS.map((link) => (
               <Link
                 key={link.href}

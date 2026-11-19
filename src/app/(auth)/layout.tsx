@@ -56,10 +56,10 @@ export default function AuthLayout({
         </Link>
 
         <div className="relative z-10 max-w-md space-y-10">
-          <h2 className="display text-5xl xl:text-6xl">
-            Ton trafic rapporte.
+          <h2 className="display text-4xl xl:text-5xl">
+            Envoie ton trafic.
             <br />
-            <span className="text-signal">On te le paie.</span>
+            <span className="text-signal">Encaisse chaque conversion.</span>
           </h2>
 
           <div className="grid gap-6">

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SectionHeading } from "./section-heading";
+import { MIN_PAYOUT_USD, dollars } from "@/lib/public-terms";
 
 /**
  * The path an affiliate really takes, step for step. There is no catalogue to
@@ -17,9 +17,9 @@ const STEPS = [
   },
   {
     number: "02",
-    title: "On te donne ton lien",
+    title: "On te remet ton lien",
     description:
-      "L'équipe te remet ton lien de tracking, prêt à être partagé. Il porte ton identifiant : tout ce qui passe par lui est à toi.",
+      "L'équipe te donne ton lien de tracking, prêt à être partagé. Il porte ton identifiant : tout ce qui passe par lui est à toi.",
   },
   {
     number: "03",
@@ -30,40 +30,57 @@ const STEPS = [
   {
     number: "04",
     title: "Tu demandes ton paiement",
-    description:
-      "Ton solde se met à jour à chaque conversion. Dès qu'il atteint le minimum de retrait, tu demandes ton virement.",
+    description: `Ton solde monte à chaque conversion. Dès qu'il atteint ${dollars(MIN_PAYOUT_USD)}, tu demandes ton versement depuis ton dashboard.`,
   },
 ];
 
+/**
+ * The one light section of the page: four steps on a single line, joined by
+ * the path they describe. Set on white so the page has a breath in its middle
+ * and the steps read like a notice, not like a pitch.
+ */
 export function HowItWorks() {
   return (
-    <section id="how" className="relative py-28 sm:py-36">
-      <div className="mx-auto max-w-6xl px-6">
-        <SectionHeading
-          align="left"
-          eyebrow="Comment ça marche"
-          title="De l'inscription au premier paiement"
-          description="Quatre étapes, et aucune ne te demande de configurer quoi que ce soit."
-        />
+    <section
+      id="how"
+      className="theme-light bg-background py-28 text-foreground sm:py-36"
+    >
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+          <div className="max-w-2xl">
+            <p className="mb-4 inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] text-foreground/70 uppercase">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
+              Fonctionnement
+            </p>
+            <h2 className="display text-4xl sm:text-5xl">
+              De l&apos;inscription au premier paiement
+            </h2>
+          </div>
+          <p className="max-w-sm text-lg leading-relaxed text-muted-foreground">
+            Quatre étapes, et aucune ne te demande de configurer quoi que ce
+            soit.
+          </p>
+        </div>
 
-        {/* One hairline grid rather than four floating cards: the steps are a
-            sequence, and a shared frame is what makes them read as one. The
-            lines are the gaps showing the frame's colour through, so they
-            stay right at every column count. */}
-        <ol className="mt-16 grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((step, i) => (
+        <ol className="relative mt-16 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          {/* The path the four steps sit on. */}
+          <span
+            className="pointer-events-none absolute top-6 right-[22%] left-6 hidden h-px bg-[linear-gradient(90deg,var(--primary),color-mix(in_srgb,var(--primary)_25%,transparent))] lg:block"
+            aria-hidden
+          />
+          {STEPS.map((step, index) => (
             <motion.li
               key={step.number}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              className="group relative bg-background p-7 sm:p-8"
+              transition={{ duration: 0.5, delay: index * 0.09 }}
+              className="relative"
             >
-              <p className="display text-outline text-6xl transition-colors duration-300 group-hover:text-signal group-hover:[-webkit-text-stroke:0px]">
+              <span className="font-display relative flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-sm font-extrabold text-background ring-8 ring-background">
                 {step.number}
-              </p>
-              <h3 className="mt-8 text-lg font-semibold tracking-tight">
+              </span>
+              <h3 className="font-display mt-6 text-xl font-bold tracking-tight">
                 {step.title}
               </h3>
               <p className="mt-2.5 text-[15px] leading-relaxed text-muted-foreground">

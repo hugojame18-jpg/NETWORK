@@ -2,18 +2,24 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { DashboardMockup } from "./dashboard-mockup";
+import { ArrowRight, Check } from "lucide-react";
+import { MIN_PAYOUT_USD, dollars } from "@/lib/public-terms";
 
-/**
- * Three facts, each one something the product actually does. The commission
- * split is deliberately not among them: what an affiliate is paid is shown to
- * them in their dashboard, in dollars, and is not advertised as a percentage.
- */
-const FACTS = [
-  { value: "Gratuit", label: "inscription et accès immédiats" },
-  { value: "En direct", label: "chaque conversion, dès qu'elle est validée" },
-  { value: "10 %", label: "du chiffre de chaque affilié que tu parraines" },
+const PROOFS = [
+  "Inscription gratuite",
+  "Dashboard ouvert tout de suite",
+  "Une équipe sur Telegram",
+];
+
+/* Illustrative figures, internally consistent: nine conversions at 15 $ is
+   the 135 $ of the day, and the balance bar is 165 of 250. The caption under
+   the panel says they are an example. */
+const FEED = [
+  { geo: "FR", when: "à l'instant", fresh: true },
+  { geo: "BE", when: "il y a 6 min" },
+  { geo: "CH", when: "il y a 19 min" },
+  { geo: "BE", when: "il y a 41 min" },
+  { geo: "FR", when: "il y a 1 h" },
 ];
 
 const rise = {
@@ -22,117 +28,209 @@ const rise = {
 };
 
 /**
+ * What the network looks like from the inside, in one panel: conversions
+ * arriving one by one, the balance they add up to, and the distance to the
+ * next withdrawal. It stands where a stock illustration would — the product
+ * is the picture.
+ */
+function LivePanel() {
+  return (
+    <div className="relative mx-auto w-full max-w-[520px]">
+      <div
+        className="pointer-events-none absolute -inset-10 -z-10 rounded-full opacity-70 blur-3xl"
+        style={{
+          background:
+            "radial-gradient(closest-side, oklch(0.55 0.22 277 / 0.55), transparent 75%)",
+        }}
+      />
+
+      <div className="rounded-[28px] border border-white/10 bg-white/[0.04] p-2 shadow-[0_40px_120px_-30px_rgb(0_0_0/0.9)] backdrop-blur">
+        <div className="overflow-hidden rounded-[22px] border border-white/8 bg-[oklch(0.185_0.018_274)]">
+          <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
+            <p className="flex items-center gap-2.5 text-sm font-semibold">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-70" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
+              </span>
+              Conversions en direct
+            </p>
+            <p className="text-xs text-muted-foreground">Aujourd&apos;hui</p>
+          </div>
+
+          <ul>
+            {FEED.map((row, index) => (
+              <motion.li
+                key={row.geo + row.when}
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 + index * 0.12 }}
+                className="flex items-center gap-3.5 border-b border-white/6 px-5 py-3.5 last:border-b-0"
+              >
+                <span className="font-display flex h-9 w-11 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-xs font-bold tracking-wide">
+                  {row.geo}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium">CC Submit</span>
+                  <span className="block text-xs text-muted-foreground">
+                    Validée · {row.when}
+                  </span>
+                </span>
+                <span
+                  className={
+                    row.fresh
+                      ? "num text-sm font-semibold text-signal"
+                      : "num text-sm font-semibold"
+                  }
+                >
+                  +15,00&nbsp;$
+                </span>
+              </motion.li>
+            ))}
+          </ul>
+
+          <div className="grid grid-cols-2 border-t border-white/8 bg-white/[0.025]">
+            <div className="border-r border-white/8 px-5 py-4">
+              <p className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+                Conversions
+              </p>
+              <p className="font-display mt-1 text-2xl font-bold">9</p>
+            </div>
+            <div className="px-5 py-4">
+              <p className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+                Gains du jour
+              </p>
+              <p className="font-display mt-1 text-2xl font-bold">
+                135,00&nbsp;$
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* The balance, overlapping the panel: what the feed adds up to. */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 mx-4 -mt-5 rounded-2xl border border-white/12 bg-[oklch(0.23_0.03_275)] p-4 shadow-[0_24px_60px_-20px_rgb(0_0_0/0.9)] sm:absolute sm:-bottom-9 sm:-left-12 sm:mx-0 sm:mt-0 sm:w-64"
+      >
+        <p className="text-[11px] font-semibold tracking-[0.1em] text-muted-foreground uppercase">
+          Solde à recevoir
+        </p>
+        <p className="font-display mt-1 text-3xl font-bold">165,00&nbsp;$</p>
+        <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "66%" }}
+            transition={{ duration: 1.1, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
+            className="brand-fill h-full rounded-full"
+          />
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Retrait dès {dollars(MIN_PAYOUT_USD)}
+        </p>
+      </motion.div>
+    </div>
+  );
+}
+
+/**
  * The first screen.
  *
- * Built from the brand's three elements and nothing else: the night
- * background with its indigo light, the display face for the two lines that
- * say what this is, and the brand's blue-violet on the only two things that
- * matter here — the promise and the button. Everything decorative that used to float
- * behind the headline is gone; the product itself, shown below, is the image.
+ * Laid out the way an affiliate network presents itself: what it is and what
+ * to do on the left, the proof — conversions landing — on the right. The
+ * headline says the two halves of the deal and nothing else.
  */
 export function Hero() {
   return (
-    <section className="relative overflow-hidden pt-16 pb-24 sm:pt-24">
-      {/* The room: a faint floor, and light coming from above. */}
+    <section className="relative overflow-hidden pt-14 pb-24 sm:pt-20 lg:pb-32">
       <div className="landing-grid pointer-events-none absolute inset-0 -z-10" />
       <div
-        className="pointer-events-none absolute -top-40 left-1/2 -z-10 h-[620px] w-[1100px] -translate-x-1/2 rounded-full opacity-45 blur-3xl"
+        className="pointer-events-none absolute -top-48 left-[12%] -z-10 h-[620px] w-[900px] rounded-full opacity-40 blur-3xl"
         style={{
           background:
             "radial-gradient(closest-side, oklch(0.55 0.22 277), transparent 72%)",
         }}
       />
 
-      <div className="relative mx-auto max-w-7xl px-6 text-center">
-        <motion.p
-          {...rise}
-          transition={{ duration: 0.5 }}
-          className="mx-auto mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] py-1.5 pr-4 pl-3 text-[13px] font-medium text-foreground/80 backdrop-blur"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-signal opacity-70" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-signal" />
-          </span>
-          Réseau d&apos;affiliation CC Submit
-        </motion.p>
+      <div className="mx-auto grid max-w-7xl items-center gap-16 px-6 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10">
+        <div>
+          <motion.p
+            {...rise}
+            transition={{ duration: 0.5 }}
+            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] py-1.5 pr-4 pl-3 text-[13px] font-medium text-foreground/80"
+          >
+            <span className="h-2 w-2 rounded-full bg-signal" />
+            Réseau d&apos;affiliation · CC Submit
+          </motion.p>
 
-        <motion.h1
-          {...rise}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="display text-[clamp(3rem,8.2vw,6.75rem)]"
-        >
-          Ton trafic rapporte.
-          <br />
-          <span className="text-signal">On te le paie.</span>
-        </motion.h1>
+          <motion.h1
+            {...rise}
+            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            className="display text-[clamp(2.6rem,5.1vw,4.6rem)]"
+          >
+            Envoie ton trafic.
+            <br />
+            <span className="text-signal">Encaisse chaque conversion.</span>
+          </motion.h1>
 
-        <motion.p
-          {...rise}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mx-auto mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground"
-        >
-          Tu reçois ton lien, tu envoies ton trafic. Chaque conversion validée
-          s&apos;affiche aussitôt dans ton dashboard, avec ce qu&apos;elle te
-          rapporte.
-        </motion.p>
+          <motion.p
+            {...rise}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="mt-7 max-w-xl text-lg leading-relaxed text-muted-foreground"
+          >
+            Des offres CC Submit par pays, un lien de tracking à ton nom, tes
+            conversions en direct dans ton dashboard et un paiement à la
+            demande dès {dollars(MIN_PAYOUT_USD)}.
+          </motion.p>
+
+          <motion.div
+            {...rise}
+            transition={{ duration: 0.6, delay: 0.18 }}
+            className="mt-9 flex flex-col gap-3 sm:flex-row"
+          >
+            <Link
+              href="/sign-up"
+              className="glow-signal brand-fill group inline-flex h-13 items-center justify-center gap-2 rounded-full px-8 text-[15px] font-semibold transition-transform hover:scale-[1.03] active:scale-[0.98]"
+            >
+              Devenir affilié
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <a
+              href="#offers"
+              className="inline-flex h-13 items-center justify-center rounded-full border border-white/14 px-8 text-[15px] font-medium text-foreground/90 transition-colors hover:border-white/30 hover:bg-white/[0.04]"
+            >
+              Voir les offres
+            </a>
+          </motion.div>
+
+          <motion.ul
+            {...rise}
+            transition={{ duration: 0.6, delay: 0.26 }}
+            className="mt-9 flex flex-col gap-x-7 gap-y-2.5 text-sm text-foreground/75 sm:flex-row sm:flex-wrap"
+          >
+            {PROOFS.map((proof) => (
+              <li key={proof} className="flex items-center gap-2">
+                <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full bg-signal/18 text-signal">
+                  <Check className="h-3 w-3" strokeWidth={3} />
+                </span>
+                {proof}
+              </li>
+            ))}
+          </motion.ul>
+        </div>
 
         <motion.div
-          {...rise}
-          transition={{ duration: 0.6, delay: 0.18 }}
-          className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row"
-        >
-          <Link
-            href="/sign-up"
-            className="glow-signal group inline-flex h-12 items-center gap-2 rounded-full brand-fill px-7 text-[15px] font-semibold transition-transform hover:scale-[1.03] active:scale-[0.98]"
-          >
-            Créer mon compte
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-          <a
-            href="#how"
-            className="inline-flex h-12 items-center rounded-full border border-white/12 px-7 text-[15px] font-medium text-foreground/85 transition-colors hover:border-white/25 hover:bg-white/[0.04]"
-          >
-            Comment ça marche
-          </a>
-        </motion.div>
-
-        <motion.dl
-          {...rise}
-          transition={{ duration: 0.6, delay: 0.26 }}
-          className="mx-auto mt-14 flex max-w-3xl flex-col divide-y divide-white/8 text-left sm:flex-row sm:divide-x sm:divide-y-0"
-        >
-          {FACTS.map((fact) => (
-            <div key={fact.value} className="flex-1 px-6 py-4 sm:py-1">
-              <dt className="font-display text-2xl font-bold tracking-tight">
-                {fact.value}
-              </dt>
-              <dd className="mt-1 text-sm text-muted-foreground">
-                {fact.label}
-              </dd>
-            </div>
-          ))}
-        </motion.dl>
-      </div>
-
-      {/* The product is the picture. */}
-      <div className="relative mx-auto mt-16 max-w-6xl px-4 sm:px-6">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-8 bottom-0 -z-10 rounded-[48px] opacity-60 blur-3xl"
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 40%, oklch(0.55 0.22 277 / 0.55), transparent 68%)",
-          }}
-        />
-        <motion.div
-          initial={{ opacity: 0, y: 48, scale: 0.97 }}
+          initial={{ opacity: 0, y: 36, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.9, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:pl-10"
         >
-          <DashboardMockup />
+          <LivePanel />
+          <p className="mt-8 text-center text-xs text-muted-foreground sm:mt-14 lg:text-right">
+            Aperçu du dashboard — les chiffres affichés sont un exemple.
+          </p>
         </motion.div>
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          Aperçu du dashboard affilié — les chiffres affichés sont un exemple.
-        </p>
       </div>
     </section>
   );

@@ -10,9 +10,11 @@ import { Logo } from "@/components/brand/logo-mark";
 
 // "/#…" rather than "#…", so the links still work from the privacy page.
 const NAV_LINKS = [
-  { href: "/#how", label: "Comment ça marche" },
-  { href: "/#why", label: "Ton dashboard" },
-  { href: "/#offer", label: "L'offre" },
+  { href: "/#offers", label: "Offres" },
+  { href: "/#how", label: "Fonctionnement" },
+  { href: "/#tracking", label: "Tracking" },
+  { href: "/#payouts", label: "Paiements" },
+  { href: "/#program", label: "Programme" },
   { href: "/#faq", label: "FAQ" },
 ];
 
@@ -76,7 +78,7 @@ export function Navbar() {
             href="/sign-up"
             className="inline-flex h-9 items-center rounded-full brand-fill px-4 text-sm font-semibold transition-transform hover:scale-[1.03]"
           >
-            Créer mon compte
+            Devenir affilié
           </Link>
         </div>
 
@@ -117,7 +119,7 @@ export function Navbar() {
                 href="/sign-up"
                 className="inline-flex h-10 items-center justify-center rounded-full brand-fill px-4 text-sm font-semibold"
               >
-                Créer mon compte
+                Devenir affilié
               </Link>
             </div>
           </nav>
