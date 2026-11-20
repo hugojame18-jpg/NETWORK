@@ -36,3 +36,32 @@ export const changePasswordSchema = z
     message: "Les mots de passe ne correspondent pas",
     path: ["confirmPassword"],
   });
+
+// ---------------------------------------------------------------------------
+// Generated sites
+// ---------------------------------------------------------------------------
+
+const headline = z
+  .string()
+  .trim()
+  .min(4, "Titre trop court")
+  .max(90, "Titre : 90 caractères au plus");
+
+export const createSiteSchema = z.object({
+  name: z.string().trim().min(2, "Donne un nom à ton site").max(60),
+  headline,
+});
+
+export const updateSiteSchema = z.object({ headline });
+
+// A bare host name, no scheme, no path: it is handed to Netlify as it is.
+export const siteDomainSchema = z.object({
+  domain: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(
+      /^(?=.{4,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}$/,
+      "Domaine invalide (exemple : monsite.site)",
+    ),
+});

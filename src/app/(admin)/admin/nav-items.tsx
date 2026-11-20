@@ -3,6 +3,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Megaphone,
+  MonitorSmartphone,
   RefreshCw,
   ScrollText,
   Settings,
@@ -59,6 +60,7 @@ export const adminNavSections: NavSection[] = [
     items: [
       { href: "/admin/training", label: "Formation", icon: <GraduationCap /> },
       { href: "/admin/announcements", label: "Messages", icon: <Megaphone /> },
+      { href: "/admin/sites", label: "Sites des affiliés", icon: <MonitorSmartphone /> },
     ],
   },
   {

@@ -277,6 +277,7 @@ model Publisher {
   payments       Payment[]
   dailyStats     PublisherDailyStat[]
   siteRequests   SiteRequest[]
+  sites          AffiliateSite[]
   postbackHits   PostbackHit[]
 
   createdAt DateTime @default(now())
@@ -739,4 +740,33 @@ model PostbackHit {
   @@index([publisherId, createdAt])
   @@index([status, createdAt])
   @@index([publisherId, transactionId])
+}
+
+/// A page an affiliate generated from the network's template. Each one carries
+/// its own sub3 (stored here and as a PublisherSub3, so the postback finds the
+/// account) which is what lets the admin see which site a sale came from.
+/// The page's text is rebuilt from this row and the offer settings every time
+/// it is downloaded or deployed — nothing generated is stored.
+model AffiliateSite {
+  id          String    @id @default(cuid())
+  publisherId String
+  publisher   Publisher @relation(fields: [publisherId], references: [id], onDelete: Cascade)
+
+  name    String
+  /// The sub3 this site's visitors carry.
+  sub3    String @unique
+  /// What the site's own heading says; the affiliate's, within limits.
+  headline String
+
+  netlifySiteId String?
+  /// The address Netlify gave it (name.netlify.app), without the scheme.
+  netlifyHost   String?
+  /// A custom domain the affiliate attached, without the scheme.
+  domain        String?
+  deployedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([publisherId])
 }

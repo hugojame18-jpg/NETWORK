@@ -3,6 +3,7 @@ import {
   Gift,
   GraduationCap,
   LayoutDashboard,
+  MonitorSmartphone,
   Settings,
   Target,
   User,
@@ -49,6 +50,16 @@ export const publisherNavSections: NavSection[] = [
         icon: <GraduationCap />,
       },
       { href: "/dashboard/rewards", label: "Récompenses", icon: <Gift /> },
+    ],
+  },
+  {
+    title: "Mes sites",
+    items: [
+      {
+        href: "/dashboard/les-sites",
+        label: "Les sites",
+        icon: <MonitorSmartphone />,
+      },
     ],
   },
   {
