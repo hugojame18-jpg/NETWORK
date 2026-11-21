@@ -46,12 +46,12 @@ export function ApplicationPending({
                 retenue cette fois-ci. Si tu penses qu&apos;il s&apos;agit
                 d&apos;une erreur, écris à{" "}
                 <a
-                  href="https://t.me/solangerev"
+                  href="https://t.me/revaffi"
                   target="_blank"
                   rel="noreferrer"
                   className="font-semibold text-primary hover:underline"
                 >
-                  @solangerev
+                  @revaffi
                 </a>{" "}
                 sur Telegram et nous la réexaminerons.
               </p>
@@ -79,12 +79,12 @@ export function ApplicationPending({
                 <p className="mt-1 text-muted-foreground">
                   Envoie un message à{" "}
                   <a
-                    href="https://t.me/solangerev"
+                    href="https://t.me/revaffi"
                     target="_blank"
                     rel="noreferrer"
                     className="font-semibold text-primary hover:underline"
                   >
-                    @solangerev
+                    @revaffi
                   </a>{" "}
                   sur Telegram en précisant ton adresse email.
                 </p>

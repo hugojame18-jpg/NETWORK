@@ -54,7 +54,7 @@ const STEPS: Step[] = [
   {
     pose: "wave",
     title: "Une question ?",
-    body: "Écris à @solangerev sur Telegram. On répond vite — et on préfère largement une question de trop qu'un affilié bloqué.",
+    body: "Écris à @revaffi sur Telegram. On répond vite — et on préfère largement une question de trop qu'un affilié bloqué.",
   },
 ];
 
