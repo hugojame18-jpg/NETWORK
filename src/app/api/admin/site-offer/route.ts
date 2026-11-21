@@ -8,6 +8,9 @@ import { siteOfferSchema, SITE_OFFER_KEY } from "@/lib/validations/site-offer";
 export async function PUT(request: Request) {
   try {
     const admin = await requireApiRole("ADMIN");
+    // Section withdrawn: hidden, code kept.
+    const withdrawn = true as boolean;
+    if (withdrawn) throw new ApiAuthError(403, "Cette section n'existe plus.");
     const parsed = siteOfferSchema.safeParse(
       await request.json().catch(() => null),
     );

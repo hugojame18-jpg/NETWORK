@@ -3,7 +3,6 @@ import {
   Gift,
   GraduationCap,
   LayoutDashboard,
-  MonitorSmartphone,
   Settings,
   Target,
   User,
@@ -53,16 +52,6 @@ export const publisherNavSections: NavSection[] = [
     ],
   },
   {
-    title: "Mes sites",
-    items: [
-      {
-        href: "/dashboard/les-sites",
-        label: "Les sites",
-        icon: <MonitorSmartphone />,
-      },
-    ],
-  },
-  {
     title: "Mon compte",
     items: [
       { href: "/dashboard/payments", label: "Paiements", icon: <Wallet /> },
@@ -75,12 +64,12 @@ export const publisherNavSections: NavSection[] = [
 /**
  * The five screens an affiliate opens from a phone, in the order of the
  * question they answer: how am I doing, in detail, what converted, what am I
- * owed, which sites do I run. Everything else stays in the drawer.
+ * owed, what can I unlock. Everything else stays in the drawer.
  */
 export const publisherTabs: TabItem[] = [
   { href: "/dashboard", label: "Accueil", icon: <LayoutDashboard />, exact: true },
   { href: "/dashboard/stats", label: "Stats", icon: <BarChart3 /> },
   { href: "/dashboard/history", label: "Conversions", icon: <Target /> },
   { href: "/dashboard/payments", label: "Paiements", icon: <Wallet /> },
-  { href: "/dashboard/les-sites", label: "Sites", icon: <MonitorSmartphone /> },
+  { href: "/dashboard/rewards", label: "Bonus", icon: <Gift /> },
 ];

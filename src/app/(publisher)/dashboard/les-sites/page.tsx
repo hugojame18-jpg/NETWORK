@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { MonitorSmartphone } from "lucide-react";
 import { requireRole } from "@/lib/rbac";
 import { getPublisherByUserId } from "@/lib/data/publisher";
@@ -13,6 +14,8 @@ export const metadata: Metadata = { title: "Les sites" };
 export const dynamic = "force-dynamic";
 
 export default async function LesSitesPage() {
+  // Section withdrawn: hidden, code kept.
+  notFound();
   const user = await requireRole("PUBLISHER");
   const publisher = await getPublisherByUserId(user.id);
 

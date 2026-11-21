@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { SiteOfferForm } from "@/components/dashboard/admin/site-offer-form";
@@ -11,6 +12,8 @@ export const metadata: Metadata = { title: "Sites des affiliés" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminSitesPage() {
+  // Section withdrawn: hidden, code kept.
+  notFound();
   const [draft, complete, sites] = await Promise.all([
     getSiteOfferDraft(),
     getSiteOffer(),

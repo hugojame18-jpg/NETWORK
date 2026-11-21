@@ -9,6 +9,9 @@ export async function ownedSite(
   siteId?: string,
   opts: { mutation?: boolean } = {},
 ) {
+  // Section withdrawn: the routes answer as if they did not exist.
+  const withdrawn = true as boolean;
+  if (withdrawn) throw new ApiAuthError(403, "Cette section n'existe plus.");
   const user = await requireApiRole("PUBLISHER");
   if (opts.mutation && !(await checkMutationRateLimit(user.id))) {
     throw new ApiAuthError(403, "Trop de requêtes, réessaie dans une minute.");
