@@ -75,12 +75,12 @@ export const publisherNavSections: NavSection[] = [
 /**
  * The five screens an affiliate opens from a phone, in the order of the
  * question they answer: how am I doing, in detail, what converted, what am I
- * owed, what can I unlock. Everything else stays in the drawer.
+ * owed, which sites do I run. Everything else stays in the drawer.
  */
 export const publisherTabs: TabItem[] = [
   { href: "/dashboard", label: "Accueil", icon: <LayoutDashboard />, exact: true },
   { href: "/dashboard/stats", label: "Stats", icon: <BarChart3 /> },
   { href: "/dashboard/history", label: "Conversions", icon: <Target /> },
   { href: "/dashboard/payments", label: "Paiements", icon: <Wallet /> },
-  { href: "/dashboard/rewards", label: "Bonus", icon: <Gift /> },
+  { href: "/dashboard/les-sites", label: "Sites", icon: <MonitorSmartphone /> },
 ];
