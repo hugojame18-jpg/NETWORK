@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,8 @@ export interface NavItem {
   exact?: boolean;
   /** Small count on the right, for queues that need clearing. */
   badge?: number;
+  /** An address outside the app: opens in a new tab and is never "active". */
+  external?: boolean;
 }
 
 export interface NavSection {
@@ -59,13 +62,18 @@ export function SidebarNav({
             ))}
 
           {section.items.map((item) => {
-            const active = item.exact
+            const active = !item.external && (item.exact
               ? pathname === item.href
-              : pathname.startsWith(item.href);
+              : pathname.startsWith(item.href));
+            const Tag = item.external ? "a" : Link;
+            const externalProps = item.external
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {};
             return (
-              <Link
+              <Tag
                 key={item.href}
                 href={item.href}
+                {...externalProps}
                 title={collapsed ? item.label : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
@@ -95,6 +103,9 @@ export function SidebarNav({
                 {!collapsed && (
                   <>
                     <span className="truncate">{item.label}</span>
+                    {item.external && (
+                      <ExternalLink className="ml-auto h-3.5 w-3.5 opacity-60" aria-hidden />
+                    )}
                     {item.badge !== undefined && item.badge > 0 && (
                       <span className="num ml-auto rounded-md bg-primary/15 px-1.5 py-0.5 text-[11px] font-medium text-primary">
                         {item.badge}
@@ -102,7 +113,7 @@ export function SidebarNav({
                     )}
                   </>
                 )}
-              </Link>
+              </Tag>
             );
           })}
         </div>

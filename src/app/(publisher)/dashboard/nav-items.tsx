@@ -3,6 +3,7 @@ import {
   Gift,
   GraduationCap,
   LayoutDashboard,
+  Play,
   Settings,
   Target,
   User,
@@ -49,6 +50,17 @@ export const publisherNavSections: NavSection[] = [
         icon: <GraduationCap />,
       },
       { href: "/dashboard/rewards", label: "Récompenses", icon: <Gift /> },
+    ],
+  },
+  {
+    title: "Streaming",
+    items: [
+      {
+        href: "https://watch.nebule.site/partenaire",
+        label: "Streaming",
+        icon: <Play />,
+        external: true,
+      },
     ],
   },
   {
