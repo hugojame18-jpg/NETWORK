@@ -53,3 +53,14 @@ test("the offer settings are refused while any field is empty", () => {
     false,
   );
 });
+
+test("the affiliate's own link is used, with the sub3, and the conditions stay", () => {
+  const html = renderSite(
+    { headline: "Titre", sub3: "abc123", offerUrl: "https://mon.lien/x?a=1" },
+    offer,
+  );
+  assert.ok(html.includes("https://mon.lien/x?a=1&amp;sub3=abc123"));
+  assert.ok(!html.includes("t.example.com"));
+  assert.ok(html.includes("Conditions de l'offre"));
+  assert.ok(html.includes(offer.cancellation));
+});

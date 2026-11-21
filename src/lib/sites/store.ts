@@ -35,6 +35,7 @@ export async function createAffiliateSite(args: {
   publisherId: string;
   name: string;
   headline: string;
+  offerUrl?: string;
 }) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const sub3 = randomBytes(6).toString("hex");
@@ -48,7 +49,9 @@ export async function createAffiliateSite(args: {
         await tx.publisherSub3.create({
           data: { publisherId: args.publisherId, token: sub3 },
         });
-        return tx.affiliateSite.create({ data: { ...args, sub3 } });
+        return tx.affiliateSite.create({
+          data: { ...args, offerUrl: args.offerUrl || null, sub3 },
+        });
       });
     } catch {
       // A collision on a 48-bit value: draw another.

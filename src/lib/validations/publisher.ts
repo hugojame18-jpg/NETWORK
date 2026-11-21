@@ -47,12 +47,31 @@ const headline = z
   .min(4, "Titre trop court")
   .max(90, "Titre : 90 caractères au plus");
 
+// The affiliate's own link: https only, empty means the offer's default link.
+const offerUrl = z
+  .string()
+  .trim()
+  .max(500, "Lien trop long")
+  .refine((u) => {
+    if (u === "") return true;
+    try {
+      return new URL(u).protocol === "https:";
+    } catch {
+      return false;
+    }
+  }, "Le lien doit commencer par https://");
+
 export const createSiteSchema = z.object({
   name: z.string().trim().min(2, "Donne un nom à ton site").max(60),
   headline,
+  offerUrl: offerUrl.optional(),
 });
 
-export const updateSiteSchema = z.object({ headline });
+export const updateSiteSchema = z
+  .object({ headline: headline.optional(), offerUrl: offerUrl.optional() })
+  .refine((d) => d.headline !== undefined || d.offerUrl !== undefined, {
+    message: "Rien à modifier",
+  });
 
 // A bare host name, no scheme, no path: it is handed to Netlify as it is.
 export const siteDomainSchema = z.object({

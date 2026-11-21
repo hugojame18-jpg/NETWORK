@@ -51,6 +51,7 @@ export default async function LesSitesPage() {
                 id: s.id,
                 name: s.name,
                 headline: s.headline,
+                offerUrl: s.offerUrl,
                 sub3: s.sub3,
                 netlifySiteId: s.netlifySiteId,
                 netlifyHost: s.netlifyHost,

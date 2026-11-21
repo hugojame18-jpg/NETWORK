@@ -757,6 +757,9 @@ model AffiliateSite {
   sub3    String @unique
   /// What the site's own heading says; the affiliate's, within limits.
   headline String
+  /// The affiliate's own link for the button; the sub3 is always put on it.
+  /// Empty: the offer's link from the admin settings.
+  offerUrl String?
 
   netlifySiteId String?
   /// The address Netlify gave it (name.netlify.app), without the scheme.

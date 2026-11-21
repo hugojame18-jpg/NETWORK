@@ -17,7 +17,7 @@ export async function GET(_request: Request, { params }: Ctx) {
       );
     }
     const zip = buildSiteZip(
-      { headline: site!.headline, sub3: site!.sub3 },
+      { headline: site!.headline, sub3: site!.sub3, offerUrl: site!.offerUrl },
       offer,
     );
     return new NextResponse(zip as unknown as BodyInit, {

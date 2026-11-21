@@ -7,12 +7,14 @@ import type { SiteOffer } from "@/lib/validations/site-offer";
  * offer is — the facts come from the admin's offer settings, never from the
  * affiliate — and its button leads to the offer with this site's sub3 on it.
  * The conditions block sits above the button and cannot be removed: the
- * affiliate edits only the headline.
+ * affiliate edits only the headline and the button's link.
  */
 
 export interface SiteInput {
   headline: string;
   sub3: string;
+  /** The affiliate's own link for the button; falls back to the offer's. */
+  offerUrl?: string | null;
 }
 
 const ESCAPES: Record<string, string> = {
@@ -36,7 +38,7 @@ export function offerLink(trackingUrl: string, sub3: string): string {
 
 export function renderSite(input: SiteInput, offer: SiteOffer): string {
   const e = escapeHtml;
-  const href = e(offerLink(offer.trackingUrl, input.sub3));
+  const href = e(offerLink(input.offerUrl || offer.trackingUrl, input.sub3));
 
   return `<!doctype html>
 <html lang="fr">

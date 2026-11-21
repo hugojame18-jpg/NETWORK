@@ -5,7 +5,7 @@ import { apiError, ownedSite } from "@/lib/sites/api";
 
 type Ctx = { params: Promise<{ id: string }> };
 
-/** Changes the heading. The conditions block is not the affiliate's to edit. */
+/** Changes the heading and the button's link. The conditions block is not the affiliate's to edit. */
 export async function PATCH(request: Request, { params }: Ctx) {
   try {
     const { id } = await params;
@@ -21,7 +21,10 @@ export async function PATCH(request: Request, { params }: Ctx) {
     }
     await prisma.affiliateSite.update({
       where: { id: site!.id },
-      data: parsed.data,
+      data: {
+        ...(parsed.data.headline !== undefined && { headline: parsed.data.headline }),
+        ...(parsed.data.offerUrl !== undefined && { offerUrl: parsed.data.offerUrl || null }),
+      },
     });
     return NextResponse.json({ success: true });
   } catch (error) {

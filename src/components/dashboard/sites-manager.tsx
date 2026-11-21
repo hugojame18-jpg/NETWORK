@@ -13,6 +13,7 @@ export interface SiteRow {
   id: string;
   name: string;
   headline: string;
+  offerUrl: string | null;
   sub3: string;
   netlifySiteId: string | null;
   netlifyHost: string | null;
@@ -35,16 +36,18 @@ export function CreateSiteForm({ open }: { open: boolean }) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [headline, setHeadline] = useState("");
+  const [offerUrl, setOfferUrl] = useState("");
   const [isPending, startTransition] = useTransition();
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     startTransition(async () => {
       try {
-        await call("/api/publisher/sites", "POST", { name, headline });
+        await call("/api/publisher/sites", "POST", { name, headline, offerUrl });
         toast.success("Site généré, avec son sub3 à lui.");
         setName("");
         setHeadline("");
+        setOfferUrl("");
         router.refresh();
       } catch (err) {
         toast.error((err as Error).message);
@@ -75,6 +78,16 @@ export function CreateSiteForm({ open }: { open: boolean }) {
           />
         </div>
       </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="site-url">Ton lien (optionnel)</Label>
+        <Input
+          id="site-url"
+          value={offerUrl}
+          onChange={(e) => setOfferUrl(e.target.value)}
+          placeholder="https://… (vide : le lien de l'offre)"
+          disabled={!open}
+        />
+      </div>
       <Button type="submit" disabled={!open || isPending}>
         {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
         Générer le mien
@@ -98,6 +111,7 @@ export function SiteCard({
 }) {
   const router = useRouter();
   const [headline, setHeadline] = useState(site.headline);
+  const [offerUrl, setOfferUrl] = useState(site.offerUrl ?? "");
   const [domain, setDomain] = useState(site.domain ?? "");
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -128,6 +142,14 @@ export function SiteCard({
       await call(`/api/publisher/sites/${site.id}`, "PATCH", { headline });
       toast.success(
         site.deployed ? "Titre enregistré. Remets le site en ligne pour l'appliquer." : "Titre enregistré.",
+      );
+    });
+
+  const saveUrl = () =>
+    run("url", async () => {
+      await call(`/api/publisher/sites/${site.id}`, "PATCH", { offerUrl });
+      toast.success(
+        site.deployed ? "Lien enregistré. Remets le site en ligne pour l'appliquer." : "Lien enregistré.",
       );
     });
 
@@ -186,6 +208,29 @@ export function SiteCard({
         <p className="text-xs text-muted-foreground">
           Le reste de la page (offre, prix, prélèvements, résiliation) est fixé par l&apos;équipe et
           ne se modifie pas.
+        </p>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor={`u-${site.id}`}>Ton lien (le bouton de la page)</Label>
+        <div className="flex gap-2">
+          <Input
+            id={`u-${site.id}`}
+            value={offerUrl}
+            onChange={(e) => setOfferUrl(e.target.value)}
+            placeholder="https://… (vide : le lien de l'offre)"
+          />
+          <Button
+            variant="outline"
+            onClick={saveUrl}
+            disabled={busy !== null || offerUrl.trim() === (site.offerUrl ?? "")}
+          >
+            {busy === "url" && <Loader2 className="h-4 w-4 animate-spin" />}
+            Enregistrer
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Ton sub3 est ajouté automatiquement à ce lien.
         </p>
       </div>
 

@@ -48,7 +48,10 @@ export async function POST(_request: Request, { params }: Ctx) {
 
     await deployZip(
       netlifySiteId,
-      buildSiteZip({ headline: site!.headline, sub3: site!.sub3 }, offer),
+      buildSiteZip(
+        { headline: site!.headline, sub3: site!.sub3, offerUrl: site!.offerUrl },
+        offer,
+      ),
     );
     await prisma.affiliateSite.update({
       where: { id: site!.id },
